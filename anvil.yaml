@@ -5,11 +5,14 @@ name: Tabulator
 runtime_options: {version: 2, client_version: '3', server_version: python3-sandbox}
 metadata: {}
 startup_form: Form1
-native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/dist/css/materialize/tabulator_materialize.min.css\"\
+native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.3/dist/css/materialize/tabulator_materialize.min.css\"\
     \ rel=\"stylesheet\">\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.5.3/dist/js/tabulator.min.js\"\
     ></script>\n<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js\"\
     ></script>\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.5.3/dist/js/jquery_wrapper.min.js\"\
-    ></script>\n<script>\nfunction guid() {\n    function _p8(s) {\n        var p\
+    ></script>\n\n<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js\"\
+    ></script>\n<script src=\"https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js\"\
+    ></script>\n<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css\"\
+    \ />\n\n\n\n<script>\nfunction guid() {\n    function _p8(s) {\n        var p\
     \ = (Math.random().toString(16)+\"000000000\").substr(2,8);\n        return s\
     \ ? \"-\" + p.substr(0,4) + \"-\" + p.substr(4,4) : p ;\n    }\n    return _p8()\
     \ + _p8(true) + _p8(true) + _p8();\n}  \n</script>\n\n<script>\n\nvar Tables =\
@@ -43,13 +46,15 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \    var editor = document.createElement(\"input\");\n\n    editor.setAttribute(\"\
     type\", \"date\");\n\n    //create and style input\n    editor.style.padding =\
     \ \"3px\";\n    editor.style.width = \"100%\";\n    editor.style.boxSizing = \"\
-    border-box\";\n \n    //Set value of editor to the current value of the cell\n\
+    border-box\";\n\n    //Set value of editor to the current value of the cell\n\
     \    editor.value = moment(cell.getValue(), \"DD/MM/YYYY\").format(\"YYYY-MM-DD\"\
     )\n\n    //set focus on the select box when the editor is selected (timeout allows\
     \ for editor to be added to DOM)\n    onRendered(function(){\n        editor.focus();\n\
     \        editor.style.css = \"100%\";\n    });\n\n    //when the value has been\
-    \ set, trigger the cell to update\n    function successFunc(){\n        success(moment(editor.value,\
-    \ \"YYYY-MM-DD\").format(\"DD/MM/YYYY\"));\n    }\n\n    editor.addEventListener(\"\
-    change\", successFunc);\n    editor.addEventListener(\"blur\", successFunc);\n\
-    \n    //return the editor element\n    return editor;\n};\n\n</script>"}
+    \ set, trigger the cell to update\n    function successFunc(){\n      console.log(editor.value)\n\
+    \      if (editor.value){\n        success(moment(editor.value, \"YYYY-MM-DD\"\
+    ).format(\"DD/MM/YYYY\"));\n      }\n      else{\n        cancel()\n      }\n\
+    \    }\n\t\n    \n    \n    //editor.addEventListener(\"change\", successFunc);\n\
+    \    editor.addEventListener(\"blur\", successFunc);\n\n    //return the editor\
+    \ element\n    return editor;\n};\n\n</script>"}
 renamed: true
