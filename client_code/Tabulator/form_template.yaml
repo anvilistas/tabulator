@@ -1,0 +1,26 @@
+container:
+  type: HtmlTemplate
+  properties: {tooltip: '', background: '', foreground: '', border: '', visible: true,
+    role: null, html: "<div id='example-table'></div>\n\n<script>\n\nvar mytable =\
+      \ new Tabulator(\"#example-table\", {\n\n    layout:\"fitColumns\",\n    pagination:\"\
+      local\",\n  \t//data:tabledata, //load data into table\t\n    paginationSize:6,\n\
+      \    paginationSizeSelector:[3, 6, 8, 10],\n    movableColumns:true,\n    columns:[\n\
+      \        {title:\"Name\", field:\"name\", width:200},\n        {title:\"Progress\"\
+      , field:\"progress\", formatter:\"progress\", sorter:\"number\"},\n        {title:\"\
+      Gender\", field:\"gender\"},\n        {title:\"Rating\", field:\"rating\", formatter:\"\
+      star\", align:\"center\", width:100},\n        {title:\"Favourite Color\", field:\"\
+      col\"},\n        {title:\"Date Of Birth\", field:\"dob\", align:\"center\",\
+      \ sorter:\"date\"},\n        {title:\"Driver\", field:\"car\", align:\"center\"\
+      , formatter:\"tickCross\"},\n    ],\n});\n\n\nconsole.log('mytable',mytable)\n\
+      </script>\n\n"}
+  event_bindings: {show: form_show}
+components: []
+is_package: true
+custom_component: true
+properties:
+- {name: height, type: number, default_value: 200, default_binding_prop: true}
+- {name: data, type: object, default_value: null}
+- {name: layout, type: string, default_value: fitColumns}
+- {name: columns, type: object, default_value: null}
+events:
+- {name: row_click, default_event: true}

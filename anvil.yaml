@@ -1,6 +1,29 @@
-allow_embedding: false
-package_name: Material_Design_18
-name: Material Design 18
-startup_form: Form1
-runtime_options: {version: 2, client_version: '3', server_version: python3-sandbox}
 services: []
+package_name: Tabulator
+allow_embedding: false
+name: Tabulator
+runtime_options: {version: 2, client_version: '3', server_version: python3-sandbox}
+metadata: {}
+startup_form: Form1
+native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/dist/css/materialize/tabulator_materialize.min.css\"\
+    \ rel=\"stylesheet\">\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.5.3/dist/js/tabulator.min.js\"\
+    ></script>\n<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js\"\
+    ></script>\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.5.3/dist/js/jquery_wrapper.min.js\"\
+    ></script>\n<script>\nfunction guid() {\n    function _p8(s) {\n        var p\
+    \ = (Math.random().toString(16)+\"000000000\").substr(2,8);\n        return s\
+    \ ? \"-\" + p.substr(0,4) + \"-\" + p.substr(4,4) : p ;\n    }\n    return _p8()\
+    \ + _p8(true) + _p8(true) + _p8();\n}  \n</script>\n\n<script>\n\nvar Tables =\
+    \ {};\n\nfunction create_table(self, height, layout){\n  \tself = self.v._anvil.element[0];\n\
+    \tuid = guid();\n    Tables[uid] = new Tabulator(self, {\n      layout: layout,\n\
+    \      pagination:\"local\",\t\n      height: height + 'px',\n      paginationSize:6,\n\
+    \      paginationSizeSelector:[3, 6, 8, 10],\n      movableColumns:true,\n   \
+    \   columns:[],\n      rowSelected:function(row){ anvil.call(self, 'row_selected',\
+    \ row)},\n      rowClick:function(e,row){console.log(row); anvil.call(self, 'row_click',\
+    \ row._row.data)},\n  });\n  return uid;\n};\n  \nfunction set_data(uid, data)\
+    \ {\n  table = Tables[uid];  \n  table.updateOrAddData(data);\n};\n  \nfunction\
+    \ set_columns(uid, columns) {\n  table = Tables[uid];  \n  table.setColumns(columns);\n\
+    };\n\nfunction set_height(uid, height) {\n  table = Tables[uid];  \n  table.setHeight(height);\n\
+    //  table = table.v._anvil.element\n//  table.css('height', height+'px')\n};\n\
+    </script>\n\n\n<script>\n  \nfunction setup_table(uid, data) {\n  table = Tables[uid];\
+    \  \n  \n  table.redraw();\n}\n  \n</script>"}
+renamed: true

@@ -2,11 +2,48 @@ is_package: true
 container:
   type: HtmlTemplate
   properties: {html: '@theme:standard-page.html'}
+  event_bindings: {show: form_show}
 components:
 - type: ColumnPanel
-  properties: {}
+  properties: {col_widths: '{}'}
   name: content_panel
   layout_properties: {slot: default}
+  components:
+  - type: ColumnPanel
+    properties: {role: card, col_widths: '{}'}
+    name: card_1
+    layout_properties: {grid_position: 'GLPIVL,DKSQJP'}
+    components:
+    - type: form:Tabulator
+      properties: {height: 400, layout: fitColumns}
+      name: form2_1
+      layout_properties: {grid_position: 'MVXFHU,IISQKO'}
+      data_bindings:
+      - {property: data, code: "[\n    {'name':\"Oli baba\", 'progress':12, 'gender':\"\
+          male\", 'rating':1, 'col':\"red\" },\n    {'id':2, 'name':\"Mary May\",\
+          \ 'progress':1, 'gender':\"female\", 'rating':2, 'col':\"blue\" },\n   \
+          \ {'id':3, 'name':\"Christine Lobowski\", 'progress':42, 'gender':\"female\"\
+          , 'rating':0, 'col':\"green\" },\n    {'id':4, 'name':\"Brendon Philips\"\
+          , 'progress':100, 'gender':\"male\", 'rating':1, 'col':\"orange\" },\n \
+          \   {'id':5, 'name':\"Margret Marmajuke\", 'progress':16, 'gender':\"female\"\
+          , 'rating':5, 'col':\"yellow\"},\n{'id':6, 'name':\"Oli B\", 'progress':12,\
+          \ 'gender':\"male\", 'rating':1, 'col':\"red\" },\n    {'id':7, 'name':\"\
+          \ May\", 'progress':1, 'gender':\"female\", 'rating':2, 'col':\"blue\" },\n\
+          \    {'id':8, 'name':\" Lobowski\", 'progress':42, 'gender':\"female\",\
+          \ 'rating':0, 'col':\"green\" },\n    {'id':9, 'name':\"N\", 'progress':100,\
+          \ 'gender':\"male\", 'rating':1, 'col':\"orange\" },\n    {'id':10, 'name':\"\
+          Marmajuke\", 'progress':16, 'gender':\"female\", 'rating':5, 'col':\"yellow\"\
+          },\n]"}
+      - {property: columns, code: "[\n          {'title':\"Name\", 'field':\"name\"\
+          , 'width':200},\n          {'title':\"Progress\", 'field':\"progress\",\
+          \ 'formatter':\"progress\", 'sorter':\"number\"},\n          {'title':\"\
+          Gender\", 'field':\"gender\"},\n          {'title':\"Rating\", 'field':\"\
+          rating\", 'formatter':\"star\", 'align':\"center\", 'width':100},\n    \
+          \      {'title':\"Favourite Color\", 'field':\"col\"},\n          {'title':\"\
+          Date Of Birth\", 'field':\"dob\", 'align':\"center\", 'sorter':\"date\"\
+          },\n          {'title':\"Driver\", 'field':\"car\", 'align':\"center\",\
+          \ 'formatter':\"tickCross\"},\n      ]"}
+      event_bindings: {row_click: form2_1_row_click}
 - type: FlowPanel
   properties: {}
   name: navbar_links
