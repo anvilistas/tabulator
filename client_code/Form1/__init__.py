@@ -20,11 +20,21 @@ class Form1(Form1Template):
 #     {'id':5, 'name':"Margret Marmajuke", 'progress':16, 'gender':"female", 'rating':5, 'col':"yellow"},
 # ];
     pass
+    
+
+  def primary_color_1_click(self, **event_args):
+    """This method is called when the button is clicked"""
+    self.form2_1.add_row()
+
+  def primary_color_2_click(self, **event_args):
+    """This method is called when the button is clicked"""
+    self.form2_1.set_group_by('gender')
 
   def form2_1_row_click(self, **event_args):
-    print(event_args)
     print(event_args['row'])
-    
+
+
+
 
 
 

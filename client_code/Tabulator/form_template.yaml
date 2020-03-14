@@ -22,5 +22,7 @@ properties:
 - {name: data, type: object, default_value: null}
 - {name: layout, type: string, default_value: fitColumns}
 - {name: columns, type: object, default_value: null}
+- {name: pagination_size_selector, type: string, default_value: 3 6 10}
+- {name: index, type: string, default_value: id}
 events:
 - {name: row_click, default_event: true}

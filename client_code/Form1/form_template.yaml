@@ -9,13 +9,30 @@ components:
   name: content_panel
   layout_properties: {slot: default}
   components:
+  - type: Button
+    properties: {role: primary-color, align: center, tooltip: '', border: '', enabled: true,
+      foreground: '', visible: true, text: Add Row, font_size: null, font: '', spacing_above: small,
+      icon_align: left, spacing_below: small, italic: false, background: '', bold: false,
+      underline: false, icon: ''}
+    name: primary_color_1
+    layout_properties: {grid_position: 'DDBOBN,LLZBVT'}
+    event_bindings: {click: primary_color_1_click}
+  - type: Button
+    properties: {role: secondary-color, align: center, tooltip: '', border: '', enabled: true,
+      foreground: '', visible: true, text: groupby gender, font_size: null, font: '',
+      spacing_above: small, icon_align: left, spacing_below: small, italic: false,
+      background: '', bold: false, underline: false, icon: ''}
+    name: primary_color_2
+    layout_properties: {grid_position: 'DDBOBN,SINGIQ'}
+    event_bindings: {click: primary_color_2_click}
   - type: ColumnPanel
     properties: {role: card, col_widths: '{}'}
     name: card_1
     layout_properties: {grid_position: 'GLPIVL,DKSQJP'}
     components:
     - type: form:Tabulator
-      properties: {height: 400, layout: fitColumns}
+      properties: {height: 400, layout: fitColumns, pagination_size_selector: None,
+        index: name}
       name: form2_1
       layout_properties: {grid_position: 'MVXFHU,IISQKO'}
       data_bindings:
@@ -35,15 +52,19 @@ components:
           Marmajuke\", 'progress':16, 'gender':\"female\", 'rating':5, 'col':\"yellow\"\
           },\n]"}
       - {property: columns, code: "[\n          {'title':\"Name\", 'field':\"name\"\
-          , 'width':200},\n          {'title':\"Progress\", 'field':\"progress\",\
-          \ 'formatter':\"progress\", 'sorter':\"number\"},\n          {'title':\"\
-          Gender\", 'field':\"gender\"},\n          {'title':\"Rating\", 'field':\"\
-          rating\", 'formatter':\"star\", 'align':\"center\", 'width':100},\n    \
-          \      {'title':\"Favourite Color\", 'field':\"col\"},\n          {'title':\"\
-          Date Of Birth\", 'field':\"dob\", 'align':\"center\", 'sorter':\"date\"\
-          },\n          {'title':\"Driver\", 'field':\"car\", 'align':\"center\",\
-          \ 'formatter':\"tickCross\"},\n      ]"}
+          },\n          {'title':\"Progress\", 'field':\"progress\", 'formatter':\"\
+          progress\", 'sorter':\"number\"},\n          {'title':\"Gender\", 'field':\"\
+          gender\"},\n          {'title':\"Rating\", 'field':\"rating\", 'formatter':\"\
+          star\", 'align':\"center\"},\n          {'title':\"Favourite Color\", 'field':\"\
+          col\"},\n          {'title':\"Date Of Birth\", 'field':\"dob\", 'align':\"\
+          center\", 'sorter':\"date\", \"editor\":\"dateEditor\"},\n          {'title':\"\
+          Driver\", 'field':\"car\", 'align':\"center\", 'formatter':\"tickCross\"\
+          },\n      ]"}
       event_bindings: {row_click: form2_1_row_click}
+  - type: DatePicker
+    properties: {}
+    name: date_picker_1
+    layout_properties: {grid_position: 'PBUVRF,MZCENW'}
 - type: FlowPanel
   properties: {}
   name: navbar_links
