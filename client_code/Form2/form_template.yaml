@@ -20,27 +20,12 @@ components:
     components:
     - type: form:Tabulator
       properties: {pagination: true, index: id, height: 400, header_visible: true,
-        pagination_size: 10, header_align: middle, row_selectable: true, pagination_size_selector: '',
-        layout: fitColumns, auto_columns: true, writeback: true, movable_columns: false,
+        pagination_size: 4, header_align: middle, row_selectable: true, pagination_size_selector: 3 6 10,
+        layout: fitColumns, auto_columns: false, writeback: true, movable_columns: false,
         resizable_columns: true, pagination_button_count: 5}
       name: tabulator_1
       layout_properties: {grid_position: 'SBQFEG,KNGYAG'}
       data_bindings:
-      - {property: data, code: "[\n    {'name':\"Oli baba\", 'progress':12, 'gender':\"\
-          male\", 'rating':1, 'col':\"red\" },\n    {'id':2, 'name':\"Mary May\",\
-          \ 'progress':1, 'gender':\"female\", 'rating':2, 'col':\"blue\" },\n   \
-          \ {'id':3, 'name':\"Christine Lobowski\", 'progress':42, 'gender':\"female\"\
-          , 'rating':0, 'col':\"green\" },\n    {'id':4, 'name':\"Brendon Philips\"\
-          , 'progress':100, 'gender':\"male\", 'rating':1, 'col':\"orange\" },\n \
-          \   {'id':5, 'name':\"Margret Marmajuke\", 'progress':16, 'gender':\"female\"\
-          , 'rating':5, 'col':\"yellow\"},\n    {'id':6, 'name':\"Oli B\", 'progress':12,\
-          \ 'gender':\"male\", 'rating':1, 'col':\"red\" },\n    {'id':7, 'name':\"\
-          \ May\", 'progress':1, 'gender':\"female\", 'rating':2, 'col':\"blue\" },\n\
-          \    {'id':8, 'name':\" Lobowski\", 'progress':42, 'gender':\"female\",\
-          \ 'rating':0, 'col':\"green\" },\n    {'id':9, 'name':\"N\", 'progress':100,\
-          \ 'gender':\"male\", 'rating':1, 'col':\"orange\" },\n    {'id':10, 'name':\"\
-          Marmajuke\", 'progress':16, 'gender':\"female\", 'rating':5, 'col':\"yellow\"\
-          },\n]"}
       - {property: columns, code: "[\n          {'title':\"Name\", 'field':\"name\"\
           },\n          {'title':\"Progress\", 'field':\"progress\", 'formatter':\"\
           progress\", 'sorter':\"number\"},\n          {'title':\"Gender\", 'field':\"\

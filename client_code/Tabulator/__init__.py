@@ -1,5 +1,8 @@
 from ._anvil_designer import TabulatorTemplate
 from anvil import *
+import anvil.tables as tables
+import anvil.tables.query as q
+from anvil.tables import app_tables
 import anvil.server
 
 
@@ -138,7 +141,9 @@ class Tabulator(TabulatorTemplate):
 
     @pagination.setter
     def pagination(self, value):
-        self._pagination = bool(value)
+        if value:
+          value = 'local'
+        self._pagination = value
 
     @property
     def pagination_size(self):

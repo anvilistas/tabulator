@@ -1,4 +1,7 @@
-services: []
+services:
+- source: /runtime/services/tables.yml
+  client_config: {}
+  server_config: {auto_create_missing_columns: true}
 startup: {type: form, module: Form2}
 package_name: Tabulator
 allow_embedding: false
@@ -26,8 +29,8 @@ native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.
     \     anvil.call(self, \"row_click\", row.getData());\n        },\n        cellEdited:\
     \ function (cell) {\n            anvil.call(self, \"row_edited\", cell.getRow().getData());\n\
     \        }\n    });\n}\n  \nfunction set_data(self, data) {\n  table = find_table(self);\n\
-    \  table.updateOrAddData(data);\n};\n  \nfunction set_columns(self, columns) {\n\
-    \  for (let i=0; i<columns.length; i++){\n    if (columns[i]['editor'] == 'dateEditor')\
+    \  table.setData(data);\n};\n  \nfunction set_columns(self, columns) {\n  for\
+    \ (let i=0; i<columns.length; i++){\n    if (columns[i]['editor'] == 'dateEditor')\
     \ {\n      columns[i]['editor'] = dateEditor;\n    }\n  }\n  table = find_table(self);\n\
     \  table.setColumns(columns);\n};\n  \n\nfunction set_height(self, height) {\n\
     \  table = find_table(self);\n  table.setHeight(height);\n};\n  \nfunction set_group_by(self,\
@@ -35,17 +38,17 @@ native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.
     \ add_row(self, row, top, pos) {\n  \ttable = find_table(self);\n \ttable.addRow(row,\
     \ top, pos);\n};\n\n\nfunction update_row(self, index, row) {\n  table = find_table(self);\n\
     \  console.log(table.updateRow(index, row));\n}\n  \nfunction redraw(self, data)\
-    \ {\n  table = find_table(self);\n  table.redraw();\n}\n\n\n</script>\n\n\n<script>\n\
-    \    var dateEditor = function(cell, onRendered, success, cancel, editorParams){\n\
-    \    //cell - the cell component for the editable cell\n    //onRendered - function\
-    \ to call when the editor has been rendered\n    //success - function to call\
-    \ to pass the successfuly updated value to Tabulator\n    //cancel - function\
-    \ to call to abort the edit and return to a normal cell\n    //editorParams -\
-    \ params object passed into the editorParams column definition property\n\n  \
-    \  //create and style editor\n    var editor = document.createElement(\"input\"\
-    );\n\n    editor.setAttribute(\"type\", \"date\");\n\n    //create and style input\n\
-    \    editor.style.padding = \"3px\";\n    editor.style.width = \"100%\";\n   \
-    \ editor.style.boxSizing = \"border-box\";\n      $(editor).addClass('datepicker')\n\
+    \ {\n  table = find_table(self);\n  table.redraw();\n  window.table = table;\n\
+    }\n\n\n</script>\n\n\n<script>\n    var dateEditor = function(cell, onRendered,\
+    \ success, cancel, editorParams){\n    //cell - the cell component for the editable\
+    \ cell\n    //onRendered - function to call when the editor has been rendered\n\
+    \    //success - function to call to pass the successfuly updated value to Tabulator\n\
+    \    //cancel - function to call to abort the edit and return to a normal cell\n\
+    \    //editorParams - params object passed into the editorParams column definition\
+    \ property\n\n    //create and style editor\n    var editor = document.createElement(\"\
+    input\");\n\n    editor.setAttribute(\"type\", \"date\");\n\n    //create and\
+    \ style input\n    editor.style.padding = \"3px\";\n    editor.style.width = \"\
+    100%\";\n    editor.style.boxSizing = \"border-box\";\n      $(editor).addClass('datepicker')\n\
     \n    //Set value of editor to the current value of the cell\n    editor.value\
     \ = moment(cell.getValue(), \"DD/MM/YYYY\").format(\"YYYY-MM-DD\")\n\n    //set\
     \ focus on the select box when the editor is selected (timeout allows for editor\
@@ -56,7 +59,8 @@ native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.
     ).format(\"DD/MM/YYYY\"));\n      }\n      else{\n        cancel()\n      }\n\
     \    }\n\t\n    \n    \n    //editor.addEventListener(\"change\", successFunc);\n\
     \    editor.addEventListener(\"blur\", successFunc);\n\n    //return the editor\
-    \ element\n    return editor;\n};\n</script>"}
+    \ element\n    return editor;\n};\n  \n  \n  function explore(me) {\n    window.me\
+    \ = me\n    console.log(me)\n  }\n</script>"}
 dependency_order: []
 dependency_code: {}
 renamed: true
