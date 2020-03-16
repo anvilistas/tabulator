@@ -16,7 +16,7 @@ native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.
     \    resizable_columns,\n    row_selectable\n) {\n    self = self.v._anvil.element[0];\n\
     \n    new Tabulator(self, {\n        autoColumns: auto_columns,\n        headerAlign:\
     \ header_align,\n        headerVisible: header_visible,\n        height: height,\n\
-    \        index: index,\n        layoutColumnsOnNewData: true,\n        layout:\
+    \        index: index,\n        //layoutColumnsOnNewData: true,\n        layout:\
     \ layout,\n        moveableColumns: moveable_columns,\n        pagination: pagination,\n\
     \        paginationButtonCount: pagination_button_count,\n        paginationSize:\
     \ pagination_size,\n        paginationSizeSelector: pagination_size_selector,\n\

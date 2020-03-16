@@ -1,5 +1,6 @@
 from ._anvil_designer import TabulatorTemplate
 from anvil import *
+import anvil.server
 
 
 class Tabulator(TabulatorTemplate):

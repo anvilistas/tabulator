@@ -52,10 +52,6 @@ components:
           },\n      ]"}
       event_bindings: {row_click: tabulator_1_row_click, row_edited: tabulator_1_row_edited,
         show: tabulator_1_show}
-  - type: DatePicker
-    properties: {}
-    name: date_picker_1
-    layout_properties: {slot: title, grid_position: 'SKRMOK,HDPNYI'}
 - type: FlowPanel
   properties: {}
   name: navbar_links
