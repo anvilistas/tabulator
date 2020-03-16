@@ -24,7 +24,7 @@ class Tabulator(TabulatorTemplate):
                     self._pagination_size,
                     self._pagination_size_selector,
                     self._resizable_columns,
-                    self._row_selectable
+                    'highlight' if self._row_selectable == 'checkbox' else self._row_selectable
                     ) 
         # Any code you write here will run when the form opens.
 
@@ -46,11 +46,28 @@ class Tabulator(TabulatorTemplate):
         
     def get_selected(self):
         js.call_js('get_selected', self)
+
+    def add_data(self, data, top=False, pos=None):
+      js.call_js('add_data', self, data,top, pos)
+      self._data += data
+      
+
+      
+    def update_or_add_data(self, data):
+        js.call_js('update_or_add_row', self, data)
+        for row in data:
+            try:
+                update_row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
+                update_row.update(row)
+            except StopIteration as e:
+                self._data.append(row)
     
     
 
 
 # Events
+
+      
     def row_selected(self, row):
         try:
             row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
@@ -104,6 +121,15 @@ class Tabulator(TabulatorTemplate):
         if self.parent:
             js.call_js('set_height', self, value)
 
+    @property
+    def columns(self):
+        return self._columns
+
+    @columns.setter
+    def columns(self, value):
+        print('setting columns')
+        self._columns = value
+        js.call_js('set_columns', self, self._columns, self._row_selectable=='checkbox')
             
     @property
     def index(self):
@@ -113,6 +139,7 @@ class Tabulator(TabulatorTemplate):
     def index(self, value):
         self._index = value
 
+        
     @property
     def writeback(self):
         return self._writeback
@@ -151,6 +178,7 @@ class Tabulator(TabulatorTemplate):
 
     @header_align.setter
     def header_align(self, value):
+        value = value.strip().lower()
         if value not in ('top', 'middle', 'bottom'):
             value = 'middle'
         self._header_align = value
@@ -195,7 +223,8 @@ class Tabulator(TabulatorTemplate):
 
     @row_selectable.setter
     def row_selectable(self, value):
-        self._row_selectable = bool(value)
+        """true, false, checkbox, highlight"""
+        self._row_selectable = value
 
     @property
     def pagination_size_selector(self):
@@ -220,16 +249,6 @@ class Tabulator(TabulatorTemplate):
         if value not in layouts:
             value = 'fitColumns'
         self._layout = value
-
-    @property
-    def columns(self):
-        return self._columns
-
-    @columns.setter
-    def columns(self, value):
-        print('setting columns')
-        self._columns = value
-        js.call_js('set_columns', self, self._columns)
 
         
     def form_show(self, **event_args):

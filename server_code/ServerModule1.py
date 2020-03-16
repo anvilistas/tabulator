@@ -33,6 +33,7 @@ def random_date(first_date, second_date):
     return datetime.fromtimestamp(random_timestamp).date()
 
 @anvil.server.callable
+@timeit
 def add_rows(n=1000):
   for i in range(n):
     gender = random.choice(['male', 'female'])
@@ -43,27 +44,24 @@ def add_rows(n=1000):
     'progress' : random.randint(0,100),
     'rating' : random.randint(0,5),
     'col' : random.choice('blue green yellow red'.split()),
-    'driver' : random.choice([True, False]),
+    'car' : random.choice([True, False]),
     'dob' : random_date(datetime(1950, 1, 1), datetime.now())
     }
     app_tables.data.add_row(**row)
   
-@anvil.server.callable
-@timeit
-def get_rows():
-  rows = []
-  for row in app_tables.data.search()[:20]:
-    row_dict = dict(row)
-    row_dict['id'] = row.get_id()
-    row_dict['dob'] = row['dob'].strftime("%d/%m/%Y")
-    rows.append(row_dict)
-  
-  return rows
 
 @anvil.server.callable
+@timeit
 def get_table_search():
   print(len(app_tables.data.search()))
-  return app_tables.data.search()
+  csv = app_tables.data.search().to_csv()
+  import pandas as pd
+  import anvil.media
+  with anvil.media.TempFile(csv) as f:
+    df = pd.read_csv(f)
+  df.rename(columns={'ID':'id'}, inplace=True)
+  df = df.convert_dtypes()
+  return df.to_dict('records')
 
 
 

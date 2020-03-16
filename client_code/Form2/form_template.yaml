@@ -2,6 +2,7 @@ is_package: true
 container:
   type: HtmlTemplate
   properties: {html: '@theme:standard-page.html'}
+  event_bindings: {show: form_show}
 components:
 - type: ColumnPanel
   properties: {col_widths: '{}'}
@@ -20,7 +21,7 @@ components:
     components:
     - type: form:Tabulator
       properties: {pagination: true, index: id, height: '', header_visible: true,
-        pagination_size: 4, header_align: middle, row_selectable: false, pagination_size_selector: 3 6 10,
+        pagination_size: 4, header_align: middle, row_selectable: checkbox, pagination_size_selector: 3 6 10,
         layout: fitColumns, auto_columns: false, writeback: true, movable_columns: false,
         resizable_columns: true, pagination_button_count: 5}
       name: tabulator_1
@@ -41,3 +42,7 @@ components:
   properties: {}
   name: navbar_links
   layout_properties: {slot: nav-right}
+- type: Timer
+  properties: {interval: 1}
+  name: timer_1
+  event_bindings: {tick: timer_1_tick}

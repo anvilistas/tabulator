@@ -28,7 +28,7 @@ properties:
 - {name: pagination, type: boolean, default_value: true}
 - {name: pagination_size, type: number, default_value: 10}
 - {name: pagination_button_count, type: number, default_value: 5}
-- {name: row_selectable, type: boolean, default_value: null}
+- {name: row_selectable, type: string, default_value: checkbox}
 events:
 - {name: row_click, default_event: true, description: when a row is clicked}
 - {name: row_selected, description: when a row is selected}

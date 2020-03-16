@@ -10,9 +10,7 @@ class Form2(Form2Template):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
     rows = anvil.server.call('get_table_search')
-    js.call_js('explore', rows)
     self.tabulator_1.data = rows
-    
     
     # Any code you write here will run when the form opens.
     
@@ -27,6 +25,13 @@ class Form2(Form2Template):
   def primary_color_1_click(self, **event_args):
     """This method is called when the button is clicked"""
     self.tabulator_1.update_row({'id':4, 'name':'BoBo'})
+
+
+  def form_show(self, **event_args):
+    """This method is called when the HTML panel is shown on the screen"""
+#     anvil.server.call_s('add_rows',100)
+    pass
+
 
 
 
