@@ -50,7 +50,6 @@ class Tabulator(TabulatorTemplate):
     def add_data(self, data, top=False, pos=None):
       js.call_js('add_data', self, data,top, pos)
       self._data += data
-      
 
       
     def update_or_add_data(self, data):
@@ -69,6 +68,7 @@ class Tabulator(TabulatorTemplate):
 
       
     def row_selected(self, row):
+        print('row selected')
         try:
             row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
         except StopIteration as e:
@@ -97,8 +97,31 @@ class Tabulator(TabulatorTemplate):
         else:
             row = js_row
         self.raise_event('row_edited', row=row)
+        
+        
+    def row_selection_change(self, rows):
+        selected_rows = []
+        for row in rows:
+            try:
+                row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
+                selected_rows.append(row)
+            except StopIteration as e:
+                pass
+        self.raise_event('row_selection_change', rows=selected_rows)
 
         
+    def get_selected(self):
+        rows = js.call_js('get_selected', self)
+        selected_rows = []
+        for row in rows:
+            try:
+                row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
+                selected_rows.append(row)
+            except StopIteration as e:
+                pass
+        return selected_rows
+      
+         
 # properties
     @property
     def data(self):

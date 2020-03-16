@@ -35,3 +35,4 @@ events:
 - {name: row_edited, description: when a row is edited - returns the row - will edit the data inplace if writeback is set to True}
 - {name: show, description: when the tabulator component is shown on the screen}
 - {name: hide, description: when the tabulator element is hidden from the screen}
+- {name: row_selection_change}

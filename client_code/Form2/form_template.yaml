@@ -37,7 +37,7 @@ components:
           Driver\", 'field':\"car\", 'align':\"center\", 'formatter':\"tickCross\"\
           },\n      ]"}
       event_bindings: {row_click: tabulator_1_row_click, row_edited: tabulator_1_row_edited,
-        show: tabulator_1_show}
+        show: tabulator_1_show, row_selection_change: tabulator_1_row_selection_change}
 - type: FlowPanel
   properties: {}
   name: navbar_links

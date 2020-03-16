@@ -32,6 +32,11 @@ class Form2(Form2Template):
 #     anvil.server.call_s('add_rows',100)
     pass
 
+  def tabulator_1_row_selection_change(self, **event_args):
+    print('row_selection_change')
+    print(len(self.tabulator_1.get_selected()))
+
+
 
 
 

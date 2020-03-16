@@ -28,52 +28,52 @@ native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.
     , row.getData());\n        },\n        rowClick: function (e, row) {\n       \
     \     anvil.call(self, \"row_click\", row.getData());\n        },\n        cellEdited:\
     \ function (cell) {\n            anvil.call(self, \"row_edited\", cell.getRow().getData());\n\
-    \        }\n    });\n}\n  \nfunction set_data(self, data) {\n  if (data.v && data.v._anvil_is_LiveObjectProxy)\
-    \ {\n    items = data.v._spec.iterItems.items\n    data = []\n    for (let i =\
-    \ 0; i<items.length; i++) {\n      let item = items[i]._spec.itemCache\n     \
-    \ Object.keys(item).forEach(function(key){ item[key] = item[key].v});\n      item['id']\
-    \ = items[i]._spec.id\n      data.push(item);\n    }\n  }\n  table = find_table(self);\n\
-    \  table.setData(data);\n};\n  \nfunction set_columns(self, columns, checkbox_select)\
-    \ {\n  for (let i=0; i<columns.length; i++){\n    if (columns[i]['editor'] ==\
-    \ 'dateEditor') {\n      columns[i]['editor'] = dateEditor;\n    }\n  }\n  if\
-    \ (checkbox_select) {\n    columns.unshift({formatter:\"rowSelection\", titleFormatter:\"\
-    rowSelection\", width: '40px', \n                     align:\"center\", headerSort:false,\
-    \ cellClick:function(e,cell){console.log(cell); cell.getRow().toggleSelect()},\n\
-    \                   headerClick:function(...args){console.log(args)}, cssClass:\"\
-    row-select\"})\n  };\n\n\n\n  table = find_table(self);\n  table.setColumns(columns);\n\
-    \   $('.row-select').find('input').on('change', function(...args){$(this).parent().trigger('click')});\n\
-    };\n  \n\n\nfunction set_height(self, height) {\n  table = find_table(self);\n\
-    \  table.setHeight(height);\n};\n  \nfunction set_group_by(self, field) {\n  table\
-    \ = find_table(self);\n  table.setGroupBy(field);\n}\n  \nfunction add_row(self,\
-    \ row, top, pos) {\n  \ttable = find_table(self);\n \ttable.addRow(row, top, pos);\n\
-    };\n\n\nfunction update_row(self, index, row) {\n  table = find_table(self);\n\
-    \  console.log(table.updateRow(index, row));\n}\n\nfunction update_or_add_data(self,\
-    \ data) {\n  table = find_table(self);\n  table.updateOrAddData(data);\n}\n  \n\
-    function add_data(self, data, top, pos) {\n  table = find_table(self);\n  table.addData(data,\
-    \ top, pos);\n}\n  \nfunction redraw(self, data) {\n  table = find_table(self);\n\
-    \  table.redraw();\n  window.table = table;\n}\n\n\n</script>\n\n\n<script>\n\
-    \    var dateEditor = function(cell, onRendered, success, cancel, editorParams){\n\
-    \    //cell - the cell component for the editable cell\n    //onRendered - function\
-    \ to call when the editor has been rendered\n    //success - function to call\
-    \ to pass the successfuly updated value to Tabulator\n    //cancel - function\
-    \ to call to abort the edit and return to a normal cell\n    //editorParams -\
-    \ params object passed into the editorParams column definition property\n\n  \
-    \  //create and style editor\n    var editor = document.createElement(\"input\"\
-    );\n\n    editor.setAttribute(\"type\", \"date\");\n\n    //create and style input\n\
-    \    editor.style.padding = \"3px\";\n    editor.style.width = \"100%\";\n   \
-    \ editor.style.boxSizing = \"border-box\";\n      $(editor).addClass('datepicker')\n\
-    \n    //Set value of editor to the current value of the cell\n    editor.value\
-    \ = moment(cell.getValue(), \"DD/MM/YYYY\").format(\"YYYY-MM-DD\")\n\n    //set\
-    \ focus on the select box when the editor is selected (timeout allows for editor\
-    \ to be added to DOM)\n    onRendered(function(){\n        editor.focus();\n \
-    \       editor.style.css = \"100%\";\n    });\n\n    //when the value has been\
-    \ set, trigger the cell to update\n    function successFunc(){\n      console.log(editor.value)\n\
-    \      if (editor.value){\n        success(moment(editor.value, \"YYYY-MM-DD\"\
-    ).format(\"DD/MM/YYYY\"));\n      }\n      else{\n        cancel()\n      }\n\
-    \    }\n\t\n    \n    \n    //editor.addEventListener(\"change\", successFunc);\n\
-    \    editor.addEventListener(\"blur\", successFunc);\n\n    //return the editor\
-    \ element\n    return editor;\n};\n  \n  \n  function explore(me) {\n    window.me\
-    \ = me\n    console.log(me)\n  }\n</script>"}
+    \        },\n      rowSelectionChanged:function(data, rows){\n    \tanvil.call(self,\
+    \ \"row_selection_change\", data);\n    \t},\n    });\n}\n  \nfunction set_data(self,\
+    \ data) {\n  if (data.v && data.v._anvil_is_LiveObjectProxy) {\n    items = data.v._spec.iterItems.items\n\
+    \    data = []\n    for (let i = 0; i<items.length; i++) {\n      let item = items[i]._spec.itemCache\n\
+    \      Object.keys(item).forEach(function(key){ item[key] = item[key].v});\n \
+    \     item['id'] = items[i]._spec.id\n      data.push(item);\n    }\n  }\n  table\
+    \ = find_table(self);\n  table.setData(data);\n};\n  \nfunction set_columns(self,\
+    \ columns, checkbox_select) {\n  for (let i=0; i<columns.length; i++){\n    if\
+    \ (columns[i]['editor'] == 'dateEditor') {\n      columns[i]['editor'] = dateEditor;\n\
+    \    }\n  }\n  if (checkbox_select) {\n    columns.unshift({formatter:\"rowSelection\"\
+    , titleFormatter:\"rowSelection\", width: '40px', \n                     align:\"\
+    center\", headerSort:false, cellClick:function(e,cell){cell.getRow().toggleSelect()}})\n\
+    \  };\n\n\n\n  table = find_table(self);\n  table.setColumns(columns);\n};\n \
+    \ \n\n\nfunction set_height(self, height) {\n  table = find_table(self);\n  table.setHeight(height);\n\
+    };\n  \nfunction set_group_by(self, field) {\n  table = find_table(self);\n  table.setGroupBy(field);\n\
+    }\n  \nfunction add_row(self, row, top, pos) {\n  \ttable = find_table(self);\n\
+    \ \ttable.addRow(row, top, pos);\n};\n\n\nfunction update_row(self, index, row)\
+    \ {\n  table = find_table(self);\n  console.log(table.updateRow(index, row));\n\
+    }\n\nfunction update_or_add_data(self, data) {\n  table = find_table(self);\n\
+    \  table.updateOrAddData(data);\n}\n  \nfunction add_data(self, data, top, pos)\
+    \ {\n  table = find_table(self);\n  table.addData(data, top, pos);\n}\n  \nfunction\
+    \ get_selected(self) {\n  table = find_table(self);\n  return table.getSelectedData();\n\
+    }\n  \nfunction redraw(self, data) {\n  table = find_table(self);\n  table.redraw();\n\
+    \  window.table = table;\n}\n\n\n</script>\n\n\n<script>\n    var dateEditor =\
+    \ function(cell, onRendered, success, cancel, editorParams){\n    //cell - the\
+    \ cell component for the editable cell\n    //onRendered - function to call when\
+    \ the editor has been rendered\n    //success - function to call to pass the successfuly\
+    \ updated value to Tabulator\n    //cancel - function to call to abort the edit\
+    \ and return to a normal cell\n    //editorParams - params object passed into\
+    \ the editorParams column definition property\n\n    //create and style editor\n\
+    \    var editor = document.createElement(\"input\");\n\n    editor.setAttribute(\"\
+    type\", \"date\");\n\n    //create and style input\n    editor.style.padding =\
+    \ \"3px\";\n    editor.style.width = \"100%\";\n    editor.style.boxSizing = \"\
+    border-box\";\n      $(editor).addClass('datepicker')\n\n    //Set value of editor\
+    \ to the current value of the cell\n    editor.value = moment(cell.getValue(),\
+    \ \"DD/MM/YYYY\").format(\"YYYY-MM-DD\")\n\n    //set focus on the select box\
+    \ when the editor is selected (timeout allows for editor to be added to DOM)\n\
+    \    onRendered(function(){\n        editor.focus();\n        editor.style.css\
+    \ = \"100%\";\n    });\n\n    //when the value has been set, trigger the cell\
+    \ to update\n    function successFunc(){\n      console.log(editor.value)\n  \
+    \    if (editor.value){\n        success(moment(editor.value, \"YYYY-MM-DD\").format(\"\
+    DD/MM/YYYY\"));\n      }\n      else{\n        cancel()\n      }\n    }\n\t\n\
+    \    \n    \n    //editor.addEventListener(\"change\", successFunc);\n    editor.addEventListener(\"\
+    blur\", successFunc);\n\n    //return the editor element\n    return editor;\n\
+    };\n  \n  \n  function explore(me) {\n    window.me = me\n    console.log(me)\n\
+    \  }\n</script>"}
 dependency_order: []
 dependency_code: {}
 renamed: true
