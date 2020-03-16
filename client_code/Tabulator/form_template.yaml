@@ -1,18 +1,13 @@
 container:
   type: HtmlTemplate
   properties: {tooltip: '', background: '', foreground: '', border: '', visible: true,
-    role: null, html: "<div id='example-table'></div>\n\n<script>\n\nvar mytable =\
-      \ new Tabulator(\"#example-table\", {\n\n    layout:\"fitColumns\",\n    pagination:\"\
-      local\",\n  \t//data:tabledata, //load data into table\t\n    paginationSize:6,\n\
-      \    paginationSizeSelector:[3, 6, 8, 10],\n    movableColumns:true,\n    columns:[\n\
-      \        {title:\"Name\", field:\"name\", width:200},\n        {title:\"Progress\"\
-      , field:\"progress\", formatter:\"progress\", sorter:\"number\"},\n        {title:\"\
-      Gender\", field:\"gender\"},\n        {title:\"Rating\", field:\"rating\", formatter:\"\
-      star\", align:\"center\", width:100},\n        {title:\"Favourite Color\", field:\"\
-      col\"},\n        {title:\"Date Of Birth\", field:\"dob\", align:\"center\",\
-      \ sorter:\"date\"},\n        {title:\"Driver\", field:\"car\", align:\"center\"\
-      , formatter:\"tickCross\"},\n    ],\n});\n\n\nconsole.log('mytable',mytable)\n\
-      </script>\n\n"}
+    role: null, html: "<div id='placeholder-table'></div>\n\n<script>\n\nvar mytable\
+      \ = new Tabulator(\"#placeholder-table\", {\n\n    layout:\"fitColumns\",\n\
+      \    pagination:\"local\",\t\n    paginationSize:6,\n    autoColumns: true,\n\
+      \  \tdata: [{columnA:'columnA', columnB:'columnB', columnC:'columnC', columnD:'columnD'},\n\
+      \          {columnA:'columnA', columnB:'columnB', columnC:'columnC', columnD:'columnD'}],\n\
+      });\n\n</script>\n\n<style>\n  .tabulator-row .tabulator-cell {\n    font-style:\
+      \ italic;\n  }\n</style>\n\n"}
   event_bindings: {show: form_show}
 components: []
 is_package: true
@@ -24,5 +19,18 @@ properties:
 - {name: columns, type: object, default_value: null}
 - {name: pagination_size_selector, type: string, default_value: 3 6 10}
 - {name: index, type: string, default_value: id}
+- {name: writeback, type: boolean, default_value: true}
+- {name: auto_columns, type: boolean, default_value: null}
+- {name: resizable_columns, type: boolean, default_value: true}
+- {name: movable_columns, type: boolean, default_value: false}
+- {name: header_align, type: string, default_value: middle}
+- {name: header_visible, type: boolean, default_value: true}
+- {name: pagination, type: boolean, default_value: true}
+- {name: pagination_size, type: number, default_value: 10}
+- {name: pagination_button_count, type: number, default_value: 5}
+- {name: row_selectable, type: boolean, default_value: null}
 events:
 - {name: row_click, default_event: true}
+- {name: row_selected}
+- {name: show}
+- {name: row_edited}

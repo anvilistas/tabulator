@@ -46,6 +46,22 @@ class Tabulator(TabulatorTemplate):
   def index(self, value):
     self._index = value
     
+  @property
+  def writeback(self):
+    return self._writeback
+  
+  @index.setter
+  def writeback(self, value):
+    self._writeback = value
+    
+  @property
+  def index(self):
+    return self._index
+  
+  @index.setter
+  def index(self, value):
+    self._index = value
+    
     
   @property
   def pagination_size_selector(self):

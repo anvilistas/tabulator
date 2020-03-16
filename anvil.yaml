@@ -59,4 +59,6 @@ native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.
     \    \n    \n    //editor.addEventListener(\"change\", successFunc);\n    editor.addEventListener(\"\
     blur\", successFunc);\n\n    //return the editor element\n    return editor;\n\
     };\n</script>"}
+dependency_order: []
+dependency_code: {}
 renamed: true
