@@ -12,3 +12,16 @@ class Form2(Form2Template):
   def tabulator_1_row_click(self, **event_args):
     print(event_args['row'])
 
+  def tabulator_1_row_edited(self, **event_args):
+    """This method is called when a row is edited - returns the row - will edit the data inplace if writeback is set to True"""
+    print(event_args['row'])
+
+  def primary_color_1_click(self, **event_args):
+    """This method is called when the button is clicked"""
+    self.tabulator_1.update_row({'id':4, 'name':'BoBo'})
+
+
+
+
+
+

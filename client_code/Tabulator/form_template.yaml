@@ -30,7 +30,8 @@ properties:
 - {name: pagination_button_count, type: number, default_value: 5}
 - {name: row_selectable, type: boolean, default_value: null}
 events:
-- {name: row_click, default_event: true}
-- {name: row_selected}
-- {name: show}
-- {name: row_edited}
+- {name: row_click, default_event: true, description: when a row is clicked}
+- {name: row_selected, description: when a row is selected}
+- {name: row_edited, description: when a row is edited - returns the row - will edit the data inplace if writeback is set to True}
+- {name: show, description: when the tabulator component is shown on the screen}
+- {name: hide, description: when the tabulator element is hidden from the screen}

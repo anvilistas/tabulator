@@ -8,6 +8,11 @@ components:
   name: content_panel
   layout_properties: {slot: default}
   components:
+  - type: Button
+    properties: {text: primary_color_1, role: primary-color}
+    name: primary_color_1
+    layout_properties: {grid_position: 'SWMMFH,HSGJFO'}
+    event_bindings: {click: primary_color_1_click}
   - type: ColumnPanel
     properties: {role: card, col_widths: '{}'}
     name: card_1
@@ -15,7 +20,7 @@ components:
     components:
     - type: form:Tabulator
       properties: {pagination: true, index: id, height: 400, header_visible: true,
-        pagination_size: 10, header_align: middle, row_selectable: null, pagination_size_selector: '',
+        pagination_size: 10, header_align: middle, row_selectable: true, pagination_size_selector: '',
         layout: fitColumns, auto_columns: true, writeback: true, movable_columns: false,
         resizable_columns: true, pagination_button_count: 5}
       name: tabulator_1
@@ -45,7 +50,8 @@ components:
           center\", 'sorter':\"date\", \"editor\":\"dateEditor\"},\n          {'title':\"\
           Driver\", 'field':\"car\", 'align':\"center\", 'formatter':\"tickCross\"\
           },\n      ]"}
-      event_bindings: {row_click: tabulator_1_row_click}
+      event_bindings: {row_click: tabulator_1_row_click, row_edited: tabulator_1_row_edited,
+        show: tabulator_1_show}
   - type: DatePicker
     properties: {}
     name: date_picker_1
