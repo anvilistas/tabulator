@@ -2,12 +2,12 @@ container:
   type: HtmlTemplate
   properties: {tooltip: '', background: '', foreground: '', border: '', visible: true,
     role: null, html: "<div id='placeholder-table'></div>\n\n<script>\n\nvar mytable\
-      \ = new Tabulator(\"#placeholder-table\", {\n\n    layout:\"fitColumns\",\n\
-      \    pagination:\"local\",\t\n    paginationSize:6,\n    autoColumns: true,\n\
-      \  \tdata: [{columnA:'columnA', columnB:'columnB', columnC:'columnC', columnD:'columnD'},\n\
-      \          {columnA:'columnA', columnB:'columnB', columnC:'columnC', columnD:'columnD'}],\n\
-      });\n\n</script>\n\n<style>\n  .tabulator-row .tabulator-cell {\n    font-style:\
-      \ italic;\n  }\n</style>\n\n"}
+      \ = new Tabulator(\"#placeholder-table\", {\n    layout:\"fitColumns\",\n  \
+      \  pagination:\"local\",\n    paginationSize:6,\n    paginationSizeSelector:[3,\
+      \ 6, 8, 10],\n    autoColumns: true,\n  \tdata: [{columnA:'columnA', columnB:'columnB',\
+      \ columnC:'columnC', columnD:'columnD'},\n          {columnA:'columnA', columnB:'columnB',\
+      \ columnC:'columnC', columnD:'columnD'}],\n});\n\n</script>\n\n<style>\n  .tabulator-row\
+      \ .tabulator-cell {\n    font-style: italic;\n  }\n</style>\n\n"}
   event_bindings: {show: form_show}
 components: []
 is_package: true
