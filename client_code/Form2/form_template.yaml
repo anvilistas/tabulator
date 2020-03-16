@@ -16,7 +16,7 @@ components:
     - type: form:Tabulator
       properties: {pagination: true, index: id, height: 400, header_visible: true,
         pagination_size: 10, header_align: middle, row_selectable: null, pagination_size_selector: '',
-        layout: fitColumns, auto_columns: null, writeback: true, movable_columns: false,
+        layout: fitColumns, auto_columns: true, writeback: true, movable_columns: false,
         resizable_columns: true, pagination_button_count: 5}
       name: tabulator_1
       layout_properties: {grid_position: 'SBQFEG,KNGYAG'}
@@ -46,6 +46,10 @@ components:
           Driver\", 'field':\"car\", 'align':\"center\", 'formatter':\"tickCross\"\
           },\n      ]"}
       event_bindings: {row_click: tabulator_1_row_click}
+  - type: DatePicker
+    properties: {}
+    name: date_picker_1
+    layout_properties: {slot: title, grid_position: 'SKRMOK,HDPNYI'}
 - type: FlowPanel
   properties: {}
   name: navbar_links

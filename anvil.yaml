@@ -10,25 +10,23 @@ native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.
     \ rel=\"stylesheet\">\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.5.3/dist/js/tabulator.min.js\"\
     ></script>\n<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js\"\
     ></script>\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.5.3/dist/js/jquery_wrapper.min.js\"\
-    ></script>\n\n<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js\"\
-    ></script>\n<script src=\"https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js\"\
-    ></script>\n<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css\"\
-    \ />\n<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/icon?family=Material+Icons\"\
-    \ />\n\n\n\n<script>\nfunction guid() {\n    function _p8(s) {\n        var p\
-    \ = (Math.random().toString(16)+\"000000000\").substr(2,8);\n        return s\
-    \ ? \"-\" + p.substr(0,4) + \"-\" + p.substr(4,4) : p ;\n    }\n    return _p8()\
-    \ + _p8(true) + _p8(true) + _p8();\n}  \n</script>\n\n<script>\n\nvar Tables =\
-    \ {};\n  var uid = 'a'\n  \nfunction find_table(self){\n  console.log(Tabulator.prototype.findTable(self.v._anvil.element[0]));\n\
+    ></script>\n\n<script>\n\nfunction find_table(self){\n  console.log(Tabulator.prototype.findTable(self.v._anvil.element[0]));\n\
     \  table = Tabulator.prototype.findTable(self.v._anvil.element[0])[0];\n  return\
-    \ table\n}\n\nfunction create_table(self, height, layout, pagination_size_selector,\
-    \ index){\n  \tself = self.v._anvil.element[0];\n\tuid = guid();\n    //Tables[uid]\
-    \ = \n  new Tabulator(self, {\n      layoutColumnsOnNewData: true,\n      index:\
-    \ index,\n      layout: layout,\n      pagination:\"local\",\t\n      height:\
-    \ height + 'px',\n      paginationSize:6,\n      paginationSizeSelector:pagination_size_selector,\n\
-    \      movableColumns:true,\n      columns:[],\n      rowSelected:function(row){\
-    \ anvil.call(self, 'row_selected', row)},\n      rowClick:function(e,row){console.log(row);\
-    \ console.log(row._row.data); console.log(row.getData()); console.log(row.getIndex());\
-    \ anvil.call(self, 'row_click', row._row.data)},\n  });\n  return uid;\n};\n \
+    \ table\n}\n\nfunction create_table(\n    self,\n    auto_columns,\n    header_align,\n\
+    \    header_visible,\n    index,\n    layout,\n    moveable_columns,\n    pagination,\n\
+    \    pagination_button_count,\n    pagination_size,\n    pagination_size_selector,\n\
+    \    resizable_columns,\n    row_selectable\n) {\n    self = self.v._anvil.element[0];\n\
+    \n    new Tabulator(self, {\n        autoColumns: auto_columns,\n        headerAlign:\
+    \ header_align,\n        headerVisible: header_visible,\n        height: height,\n\
+    \        index: index,\n        layoutColumnsOnNewData: true,\n        layout:\
+    \ layout,\n        moveableColumns: moveable_columns,\n        pagination: pagination,\n\
+    \        paginationButtonCount: pagination_button_count,\n        paginationSize:\
+    \ pagination_size,\n        paginationSizeSelector: pagination_size_selector,\n\
+    \        resizableColumns: resizable_columns,\n        rowSelectable: row_selectable,\n\
+    \        rowSelected: function (row) {\n            anvil.call(self, \"row_selected\"\
+    , row.getData());\n        },\n        rowClick: function (e, row) {\n       \
+    \     anvil.call(self, \"row_click\", row.getData());\n        },\n        cellEdited:\
+    \ function (cell) {\n            console.log(cell);\n        }\n    });\n}\n \
     \ \nfunction set_data(self, data) {\n  table = find_table(self);\n  table.updateOrAddData(data);\n\
     };\n  \nfunction set_columns(self, columns) {\n  for (let i=0; i<columns.length;\
     \ i++){\n    if (columns[i]['editor'] == 'dateEditor') {\n      columns[i]['editor']\
