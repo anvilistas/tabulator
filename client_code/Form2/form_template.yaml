@@ -2,39 +2,24 @@ is_package: true
 container:
   type: HtmlTemplate
   properties: {html: '@theme:standard-page.html'}
-  event_bindings: {show: form_show}
 components:
 - type: ColumnPanel
   properties: {col_widths: '{}'}
   name: content_panel
   layout_properties: {slot: default}
   components:
-  - type: Button
-    properties: {role: primary-color, align: center, tooltip: '', border: '', enabled: true,
-      foreground: '', visible: true, text: Add Row, font_size: null, font: '', spacing_above: small,
-      icon_align: left, spacing_below: small, italic: false, background: '', bold: false,
-      underline: false, icon: ''}
-    name: primary_color_1
-    layout_properties: {grid_position: 'DDBOBN,LLZBVT'}
-    event_bindings: {click: primary_color_1_click}
-  - type: Button
-    properties: {role: secondary-color, align: center, tooltip: '', border: '', enabled: true,
-      foreground: '', visible: true, text: groupby gender, font_size: null, font: '',
-      spacing_above: small, icon_align: left, spacing_below: small, italic: false,
-      background: '', bold: false, underline: false, icon: ''}
-    name: primary_color_2
-    layout_properties: {grid_position: 'DDBOBN,SINGIQ'}
-    event_bindings: {click: primary_color_2_click}
   - type: ColumnPanel
     properties: {role: card, col_widths: '{}'}
     name: card_1
-    layout_properties: {grid_position: 'GLPIVL,DKSQJP'}
+    layout_properties: {grid_position: 'WTCVIW,DQKJZM'}
     components:
     - type: form:Tabulator
-      properties: {height: 400, layout: fitColumns, pagination_size_selector: None,
-        index: name}
-      name: form2_1
-      layout_properties: {grid_position: 'MVXFHU,IISQKO'}
+      properties: {pagination: true, index: id, height: 400, header_visible: true,
+        pagination_size: 10, header_align: middle, row_selectable: null, pagination_size_selector: '',
+        layout: fitColumns, auto_columns: null, writeback: true, movable_columns: false,
+        resizable_columns: true, pagination_button_count: 5}
+      name: tabulator_1
+      layout_properties: {grid_position: 'SBQFEG,KNGYAG'}
       data_bindings:
       - {property: data, code: "[\n    {'name':\"Oli baba\", 'progress':12, 'gender':\"\
           male\", 'rating':1, 'col':\"red\" },\n    {'id':2, 'name':\"Mary May\",\
@@ -43,7 +28,7 @@ components:
           , 'rating':0, 'col':\"green\" },\n    {'id':4, 'name':\"Brendon Philips\"\
           , 'progress':100, 'gender':\"male\", 'rating':1, 'col':\"orange\" },\n \
           \   {'id':5, 'name':\"Margret Marmajuke\", 'progress':16, 'gender':\"female\"\
-          , 'rating':5, 'col':\"yellow\"},\n{'id':6, 'name':\"Oli B\", 'progress':12,\
+          , 'rating':5, 'col':\"yellow\"},\n    {'id':6, 'name':\"Oli B\", 'progress':12,\
           \ 'gender':\"male\", 'rating':1, 'col':\"red\" },\n    {'id':7, 'name':\"\
           \ May\", 'progress':1, 'gender':\"female\", 'rating':2, 'col':\"blue\" },\n\
           \    {'id':8, 'name':\" Lobowski\", 'progress':42, 'gender':\"female\",\
@@ -60,11 +45,7 @@ components:
           center\", 'sorter':\"date\", \"editor\":\"dateEditor\"},\n          {'title':\"\
           Driver\", 'field':\"car\", 'align':\"center\", 'formatter':\"tickCross\"\
           },\n      ]"}
-      event_bindings: {row_click: form2_1_row_click}
-  - type: DatePicker
-    properties: {}
-    name: date_picker_1
-    layout_properties: {grid_position: 'PBUVRF,MZCENW'}
+      event_bindings: {row_click: tabulator_1_row_click}
 - type: FlowPanel
   properties: {}
   name: navbar_links

@@ -1,10 +1,11 @@
 services: []
+startup: {type: form, module: Form2}
 package_name: Tabulator
 allow_embedding: false
 name: Tabulator
 runtime_options: {version: 2, client_version: '3', server_version: python3-sandbox}
 metadata: {}
-startup_form: Form1
+startup_form: Tabulator
 native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.3/dist/css/materialize/tabulator_materialize.min.css\"\
     \ rel=\"stylesheet\">\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.5.3/dist/js/tabulator.min.js\"\
     ></script>\n<script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js\"\
