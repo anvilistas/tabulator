@@ -13,7 +13,7 @@ components: []
 is_package: true
 custom_component: true
 properties:
-- {name: height, type: number, default_value: 200, default_binding_prop: true}
+- {name: height, type: string, default_value: '400', default_binding_prop: true}
 - {name: data, type: object, default_value: null}
 - {name: layout, type: string, default_value: fitColumns}
 - {name: columns, type: object, default_value: null}

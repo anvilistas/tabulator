@@ -28,7 +28,11 @@ native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.
     , row.getData());\n        },\n        rowClick: function (e, row) {\n       \
     \     anvil.call(self, \"row_click\", row.getData());\n        },\n        cellEdited:\
     \ function (cell) {\n            anvil.call(self, \"row_edited\", cell.getRow().getData());\n\
-    \        }\n    });\n}\n  \nfunction set_data(self, data) {\n  table = find_table(self);\n\
+    \        }\n    });\n}\n  \nfunction set_data(self, data) {\n  if (data.v && data.v._anvil_is_LiveObjectProxy)\
+    \ {\n    items = data.v._spec.iterItems.items\n    data = []\n    for (let i =\
+    \ 0; i<items.length; i++) {\n      let item = items[i]._spec.itemCache\n     \
+    \ Object.keys(item).forEach(function(key){ item[key] = item[key].v});\n      item['id']\
+    \ = items[i]._spec.id\n      data.push(item);\n    }\n  }\n  table = find_table(self);\n\
     \  table.setData(data);\n};\n  \nfunction set_columns(self, columns) {\n  for\
     \ (let i=0; i<columns.length; i++){\n    if (columns[i]['editor'] == 'dateEditor')\
     \ {\n      columns[i]['editor'] = dateEditor;\n    }\n  }\n  table = find_table(self);\n\

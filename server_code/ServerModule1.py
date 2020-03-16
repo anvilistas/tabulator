@@ -62,6 +62,7 @@ def get_rows():
 
 @anvil.server.callable
 def get_table_search():
+  print(len(app_tables.data.search()))
   return app_tables.data.search()
 
 

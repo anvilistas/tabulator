@@ -59,11 +59,15 @@ class Tabulator(TabulatorTemplate):
         self.raise_event('row_selected', row=row)
 
     def row_click(self, row):
-        try:
-            row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
-        except StopIteration as e:
-            row = None
+        if isinstance(self._data, list):
+            try:
+                row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
+            except StopIteration as e:
+                row = None
+        elif isinstance(self._data, LiveObjectProxy):
+            print(dir(self._data))
         self.raise_event('row_click', row=row)     
+
         
     def row_edited(self, js_row):
         if self._writeback:
@@ -77,6 +81,30 @@ class Tabulator(TabulatorTemplate):
             row = js_row
         self.raise_event('row_edited', row=row)
 
+        
+# properties
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, value):
+        self._data = value
+        js.call_js('set_data', self, self._data)
+
+    @property
+    def height(self):
+        return self._height
+
+    @height.setter
+    def height(self, value):
+        if value.isdigit():
+          value = value+'px'
+        self._height = value
+        if self.parent:
+            js.call_js('set_height', self, value)
+
+            
     @property
     def index(self):
         return self._index
@@ -202,25 +230,6 @@ class Tabulator(TabulatorTemplate):
         print('setting columns')
         self._columns = value
         js.call_js('set_columns', self, self._columns)
-
-    @property
-    def data(self):
-        return self._data
-
-    @data.setter
-    def data(self, value):
-        self._data = value
-        js.call_js('set_data', self, self._data)
-
-    @property
-    def height(self):
-        return self._height
-
-    @height.setter
-    def height(self, value):
-        self._height = value
-        if self.parent:
-            js.call_js('set_height', self, value)
 
         
     def form_show(self, **event_args):

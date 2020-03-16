@@ -9,10 +9,11 @@ class Form2(Form2Template):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
-    rows = anvil.server.call('get_rows')
+    rows = anvil.server.call('get_table_search')
+    js.call_js('explore', rows)
     self.tabulator_1.data = rows
-    js.call_js('explore', anvil.server.call('get_table_search'))
-
+    
+    
     # Any code you write here will run when the form opens.
     
 
