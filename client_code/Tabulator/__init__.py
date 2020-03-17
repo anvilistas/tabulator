@@ -25,7 +25,7 @@ class Tabulator(TabulatorTemplate):
                     self._pagination_size_selector,
                     self._resizable_columns,
                     'highlight' if self._row_selectable == 'checkbox' else self._row_selectable
-                    ) 
+                    )
         # Any code you write here will run when the form opens.
 
 # Methods
@@ -34,7 +34,18 @@ class Tabulator(TabulatorTemplate):
             raise KeyError(f'you should provide an index for this row: {self._index}')
         self._data.append(row)
         js.call_js('add_row', self, row, top, pos)
-
+    
+    def delete_row(self, index):
+        js.call_js('delete_row', self, index)
+    
+    def get_row(self, index):
+        row = js.call_js('get_row', index)
+        try:
+            row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
+        except StopIteration as e:
+            row = None
+        return row
+        
     def select_row(self, row):
         js.call_js('select_row', self, row)
 
@@ -81,8 +92,6 @@ class Tabulator(TabulatorTemplate):
 
 
 # Events
-
-      
     def row_selected(self, row):
         print('row selected')
         try:
@@ -92,13 +101,10 @@ class Tabulator(TabulatorTemplate):
         self.raise_event('row_selected', row=row)
 
     def row_click(self, row):
-        if isinstance(self._data, list):
-            try:
-                row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
-            except StopIteration as e:
-                row = None
-        elif isinstance(self._data, LiveObjectProxy):
-            print(dir(self._data))
+        try:
+            row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
+        except StopIteration as e:
+            row = None
         self.raise_event('row_click', row=row)     
 
         
