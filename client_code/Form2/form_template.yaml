@@ -38,6 +38,18 @@ components:
           },\n      ]"}
       event_bindings: {row_click: tabulator_1_row_click, row_edited: tabulator_1_row_edited,
         show: tabulator_1_show, row_selection_change: tabulator_1_row_selection_change}
+    - type: FlowPanel
+      properties: {}
+      name: flow_panel_1
+      layout_properties: {grid_position: 'GYLFNZ,NRKFJH'}
+      components:
+      - type: Button
+        properties: {role: primary-color, align: left, tooltip: '', border: '', enabled: true,
+          foreground: '', visible: true, text: button_1, font_size: null, font: '',
+          spacing_above: small, icon_align: left, spacing_below: small, italic: false,
+          background: '', bold: false, underline: false, icon: ''}
+        name: button_1
+        layout_properties: {grid_position: 'MXJVAZ,VBVOWP'}
 - type: FlowPanel
   properties: {}
   name: navbar_links

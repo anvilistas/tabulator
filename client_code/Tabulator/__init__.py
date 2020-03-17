@@ -61,7 +61,23 @@ class Tabulator(TabulatorTemplate):
             except StopIteration as e:
                 self._data.append(row)
     
-    
+    def set_filter(self, field, type=None, value=None):
+        """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'"""
+        js.call_js('set_filter', self, field, type, value)
+        
+    def add_filter(self, field, type, value):
+        js.call_js('add_filter', self, field, type, value)
+        
+    def remove_filter(self, field, type, value):
+        js.call_js('remove_filter', self, field, type, value)
+        
+    def get_filters(self):
+        return js.call_js('get_filter', self)
+      
+    def clear_filter(self, *args):
+        """include an arg of True to clear header filters as well"""
+        return js.call_js('clear_filter', self, *args)
+        
 
 
 # Events

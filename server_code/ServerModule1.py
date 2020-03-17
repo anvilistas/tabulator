@@ -61,6 +61,8 @@ def get_table_search():
     df = pd.read_csv(f)
   df.rename(columns={'ID':'id'}, inplace=True)
   df = df.convert_dtypes()
+  print(df.dtypes)
+  df['dob'] = pd.to_datetime(df['dob']).dt.strftime('%d/%m/%Y')
   return df.to_dict('records')
 
 
