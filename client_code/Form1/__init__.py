@@ -24,18 +24,7 @@ class Form1(Form1Template):
     print(f"{event_args['event_name']}: {event_args['row']['id']}")
 
   def tabulator_1_row_selection_change(self, **event_args):
-    print(f"{event_args['event_name']}: {len(event_args['rows'])} selected")
-    if len(event_args['rows']):
-      self.delete_selected.visible = True
-    if len(event_args['rows']) == 1:
-      self.edit_selected.visible = True
-
-  def delete_selected_click(self, **event_args):
-    """This method is called when the button is clicked"""
-    index = self.tabulator_1.index
-    indices = [row[index] for row in self.tabulator_1.get_selected()]
-    
-    self.tabulator_1.delete_row(indices)
+    print(f"{event_args['event_name']}: {len(event_args['rows'])}")
     
 
   def edit_selected_click(self, **event_args):
@@ -65,6 +54,9 @@ class Form1(Form1Template):
   def reset_filter_click(self, **event_args):
     """This method is called when the button is clicked"""
     self.tabulator_1.clear_filter()
+
+
+
 
 
 

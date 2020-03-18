@@ -54,7 +54,7 @@ class Tabulator(TabulatorTemplate):
      
     def get_selected(self):
         return js.call_js('get_selected', self)
-
+      
     def add_data(self, data, top=False, pos=None):
         js.call_js('add_data', self, data, top, pos)
         self.data = js.call_js('get_data', self)
