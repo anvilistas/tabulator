@@ -2,13 +2,12 @@ services:
 - source: /runtime/services/tables.yml
   client_config: {}
   server_config: {auto_create_missing_columns: true}
-startup: {type: form, module: Form2}
+startup: {type: form, module: Form1}
 package_name: Tabulator
 allow_embedding: false
 name: Tabulator
 runtime_options: {version: 2, client_version: '3', server_version: python3-full}
 metadata: {}
-startup_form: Tabulator
 native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.3/dist/css/bootstrap/tabulator_bootstrap.min.css\"\
     \ rel=\"stylesheet\">\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.5.3/dist/js/tabulator.min.js\"\
     ></script>\n\n\n\n<script>\n\nfunction find_table(self){\n  console.log(Tabulator.prototype.findTable(self.v._anvil.element[0]));\n\

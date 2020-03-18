@@ -32,13 +32,11 @@ def random_date(first_date, second_date):
     random_timestamp = random.randint(first_timestamp, second_timestamp)
     return datetime.fromtimestamp(random_timestamp).date()
 
-@anvil.server.callable
-@timeit
-def add_rows(n=1000):
-  for i in range(n):
-    gender = random.choice(['male', 'female'])
+  
+def add_row():
+  gender = random.choice(['male', 'female'])
     
-    row = {
+  row = {
     'gender' : gender,
     'name' : get_full_name(gender),
     'progress' : random.randint(0,100),
@@ -47,8 +45,28 @@ def add_rows(n=1000):
     'car' : random.choice([True, False]),
     'dob' : random_date(datetime(1950, 1, 1), datetime.now())
     }
-    app_tables.data.add_row(**row)
+  return row
   
+
+@anvil.server.callable
+@timeit
+def add_rows(n=1000):
+  for i in range(n):
+    row = add_row()
+    app_tables.data.add_row(**row)
+
+    
+@anvil.server.callable
+@timeit
+def get_list_data(n=100):
+  data = []
+  for i in range(n):
+    row = add_row()
+    row['id'] = i
+    row['dob'] = row['dob'].strftime('%d/%m/%Y')
+    data.append(row)
+  return data
+
 
 @anvil.server.callable
 @timeit

@@ -1,0 +1,55 @@
+is_package: true
+container:
+  type: HtmlTemplate
+  properties: {html: '@theme:standard-page.html'}
+components:
+- type: ColumnPanel
+  properties: {col_widths: '{}'}
+  name: content_panel
+  layout_properties: {slot: default}
+  components:
+  - type: ColumnPanel
+    properties: {role: card, col_widths: '{}'}
+    name: card_2
+    layout_properties: {grid_position: 'RXGEFE,DFJTGU'}
+    components:
+    - type: Button
+      properties: {role: primary-color, align: center, tooltip: '', border: '', enabled: true,
+        foreground: '', visible: true, text: Add Data, font_size: null, font: '',
+        spacing_above: small, icon_align: left, spacing_below: small, italic: false,
+        background: '', bold: false, underline: false, icon: ''}
+      name: add_data
+      layout_properties: {grid_position: 'HXRNLL,DZTCYP'}
+      event_bindings: {click: button_1_click}
+    - type: FlowPanel
+      properties: {}
+      name: flow_panel_1
+      layout_properties: {grid_position: 'RCKNDX,FVEAQQ'}
+      components: []
+  - type: ColumnPanel
+    properties: {role: card, col_widths: '{}'}
+    name: card_1
+    layout_properties: {grid_position: 'IYATBR,LCCEHH'}
+    components:
+    - type: form:Tabulator
+      properties: {pagination: true, index: id, height: '', header_visible: true,
+        pagination_size: 4, header_align: middle, row_selectable: checkbox, pagination_size_selector: 3 6 10,
+        layout: fitColumns, auto_columns: false, writeback: true, movable_columns: false,
+        resizable_columns: true, pagination_button_count: 5}
+      name: tabulator_1
+      layout_properties: {grid_position: 'BRRLIJ,TNMJAP'}
+      data_bindings:
+      - {property: columns, code: "[\n          {'title':\"Name\", 'field':\"name\"\
+          },\n          {'title':\"Progress\", 'field':\"progress\", 'formatter':\"\
+          progress\", 'sorter':\"number\"},\n          {'title':\"Gender\", 'field':\"\
+          gender\"},\n          {'title':\"Rating\", 'field':\"rating\", 'formatter':\"\
+          star\", 'align':\"center\"},\n          {'title':\"Favourite Color\", 'field':\"\
+          col\"},\n          {'title':\"Date Of Birth\", 'field':\"dob\", 'align':\"\
+          center\", 'sorter':\"date\", \"editor\":\"dateEditor\"},\n          {'title':\"\
+          Driver\", 'field':\"car\", 'align':\"center\", 'formatter':\"tickCross\"\
+          },\n      ]"}
+      event_bindings: {row_click: tabulator_1_row_click, row_selection_change: tabulator_1_row_selection_change}
+- type: FlowPanel
+  properties: {}
+  name: navbar_links
+  layout_properties: {slot: nav-right}

@@ -93,7 +93,6 @@ class Tabulator(TabulatorTemplate):
 
 # Events
     def row_selected(self, row):
-        print('row selected')
         try:
             row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
         except StopIteration as e:
