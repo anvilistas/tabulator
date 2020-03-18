@@ -22,11 +22,12 @@ class Tabulator(TabulatorTemplate):
                     self._resizable_columns,
                     'highlight' if self._row_selectable == 'checkbox' else self._row_selectable
                     )
+        self._data = []
         # Any code you write here will run when the form opens.
 
 # Methods
     def add_row(self, row, top=True, pos=None):
-        if not row.get(self._index):
+        if row.get(self._index) is None:
             raise KeyError(f"you should provide an index '{self._index}' for this row")
         if anvil.js.call_js('get_row', self, row.get(self._index)):
             raise KeyError(f"The index '{self._index}' should be unique")
