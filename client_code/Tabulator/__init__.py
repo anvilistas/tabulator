@@ -1,9 +1,5 @@
 from ._anvil_designer import TabulatorTemplate
 from anvil import *
-import anvil.tables as tables
-import anvil.tables.query as q
-from anvil.tables import app_tables
-import anvil.server
 
 
 class Tabulator(TabulatorTemplate):
@@ -116,6 +112,9 @@ class Tabulator(TabulatorTemplate):
     def get_selected(self):
         rows = js.call_js('get_selected', self)
         return rows
+      
+    def cell_click(self, field, row):
+        self.raise_event('cell_click', field=field, row=row)
       
       
 # properties

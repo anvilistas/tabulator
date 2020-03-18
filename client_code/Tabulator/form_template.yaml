@@ -35,3 +35,4 @@ events:
 - {name: show, description: when the tabulator component is shown on the screen}
 - {name: hide, description: when the tabulator element is hidden from the screen}
 - {name: row_selection_change}
+- {name: cell_click, description: when a cell is clicked - event_args include field and row}
