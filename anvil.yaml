@@ -1,8 +1,8 @@
 services: []
-startup: {type: form, module: Form1}
-package_name: TabulatorV1
+startup: {type: form, module: Tabulator}
+package_name: Tabulator
 allow_embedding: false
-name: TabulatorV1
+name: Tabulator
 runtime_options: {version: 2, client_version: '3', server_version: python3-full}
 metadata: {}
 startup_form: Tabulator
@@ -20,7 +20,7 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ e.url){case\"string\":l=e.url;break;case\"function\":l=e.url(t)}return e.target&&n.setAttribute(\"\
     target\",e.target),e.download&&(r=\"function\"==typeof r?r(t):!0===r?\"\":r,n.setAttribute(\"\
     download\",r)),n.innerHTML=this.emptyToSpace(this.sanitizeHTML(i)),n}return\"\
-    &nbsp;\"};\n\nTabulator.prototype.moduleBindings.edit.prototype.editors.dateEditor=function(t,e,o,n,a){var\
+    &nbsp;\"};\n// datepicker editor\nTabulator.prototype.moduleBindings.edit.prototype.editors.dateEditor=function(t,e,o,n,a){var\
     \ d=document.createElement(\"input\");return d.setAttribute(\"type\",\"date\"\
     ),d.style.padding=\"3px\",d.style.width=\"100%\",d.style.boxSizing=\"border-box\"\
     ,$(d).addClass(\"datepicker\"),d.value=moment(t.getValue(),\"DD/MM/YYYY\").format(\"\
@@ -76,29 +76,9 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ {\n\ttable = find_table(self);\n  \tconsole.log(table.getSorters());\n  \ttable.clearSort();\n\
     \  \t//table.setSort(table.options.index, 'asc');\n  \ttable.setData(table.getData())\n\
     }\n\n  \nfunction redraw(self) {\n  table = find_table(self);\n  table.redraw();\n\
-    \  window.table = table;\n}\n\n\n</script>\n\n\n<script>\nTabulator.prototype.moduleBindings.edit.prototype.editors.dateEditor\
-    \ = function(cell, onRendered, success, cancel, editorParams){\n    //cell - the\
-    \ cell component for the editable cell\n    //onRendered - function to call when\
-    \ the editor has been rendered\n    //success - function to call to pass the successfuly\
-    \ updated value to Tabulator\n    //cancel - function to call to abort the edit\
-    \ and return to a normal cell\n    //editorParams - params object passed into\
-    \ the editorParams column definition property\n\n    //create and style editor\n\
-    \    var editor = document.createElement(\"input\");\n\n    editor.setAttribute(\"\
-    type\", \"date\");\n\n    //create and style input\n    editor.style.padding =\
-    \ \"3px\";\n    editor.style.width = \"100%\";\n    editor.style.boxSizing = \"\
-    border-box\";\n      $(editor).addClass('datepicker')\n\n    //Set value of editor\
-    \ to the current value of the cell\n    editor.value = moment(cell.getValue(),\
-    \ \"DD/MM/YYYY\").format(\"YYYY-MM-DD\")\n\n    //set focus on the select box\
-    \ when the editor is selected (timeout allows for editor to be added to DOM)\n\
-    \    onRendered(function(){\n        editor.focus();\n        editor.style.css\
-    \ = \"100%\";\n    });\n\n    //when the value has been set, trigger the cell\
-    \ to update\n    function successFunc(){\n      console.log(editor.value)\n  \
-    \    if (editor.value){\n        success(moment(editor.value, \"YYYY-MM-DD\").format(\"\
-    DD/MM/YYYY\"));\n      }\n      else{\n        cancel()\n      }\n    }\n\t\n\
-    \    \n    \n    //editor.addEventListener(\"change\", successFunc);\n    editor.addEventListener(\"\
-    blur\", successFunc);\n\n    //return the editor element\n    return editor;\n\
-    };\n  \n  \nfunction explore(me) {\n    window.me = me\n    console.log(me)\n\
-    \  }\n</script>\n<style>\n  .tabulator{\n    margin-bottom : 4px;\n  }\n</style>"}
+    \  window.table = table;\n}\n\n</script>\n\n\n<script>\nfunction explore(me) {\n\
+    \    window.me = me\n    console.log(me)\n  }\n</script>\n<style>\n  .tabulator{\n\
+    \    margin-bottom : 4px;\n  }\n</style>"}
 dependency_order: []
 dependency_code: {}
 renamed: true

@@ -13,11 +13,11 @@ components: []
 is_package: true
 custom_component: true
 properties:
-- {name: height, type: string, default_value: '400', default_binding_prop: true}
+- {name: height, type: string, default_value: '', default_binding_prop: true}
 - {name: data, type: object, default_value: null}
 - {name: layout, type: string, default_value: fitColumns}
 - {name: columns, type: object, default_value: null}
-- {name: pagination_size_selector, type: string, default_value: 3 6 10}
+- {name: pagination_size_selector, type: string, default_value: 6 10 20}
 - {name: index, type: string, default_value: id}
 - {name: auto_columns, type: boolean, default_value: null}
 - {name: resizable_columns, type: boolean, default_value: true}
@@ -32,7 +32,5 @@ events:
 - {name: row_click, default_event: true, description: when a row is clicked}
 - {name: row_selected, description: when a row is selected}
 - {name: row_edited, description: when a row is edited - returns the row - will edit the data inplace if writeback is set to True}
-- {name: show, description: when the tabulator component is shown on the screen}
-- {name: hide, description: when the tabulator element is hidden from the screen}
 - {name: row_selection_change}
 - {name: cell_click, description: when a cell is clicked - event_args include field and row}
