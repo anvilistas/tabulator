@@ -8,20 +8,20 @@ allow_embedding: false
 name: Tabulator
 runtime_options: {version: 2, client_version: '3', server_version: python3-full}
 metadata: {}
+startup_form: Form1
 native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.3/dist/css/bootstrap/tabulator_bootstrap.min.css\"\
     \ rel=\"stylesheet\">\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.5.3/dist/js/tabulator.min.js\"\
-    ></script>\n\n\n\n<script>\n\nfunction find_table(self){\n  console.log(Tabulator.prototype.findTable(self.v._anvil.element[0]));\n\
-    \  table = Tabulator.prototype.findTable(self.v._anvil.element[0])[0];\n  return\
-    \ table\n}\n\nfunction create_table(\n    self,\n    auto_columns,\n    header_align,\n\
-    \    header_visible,\n    height,\n    index,\n    layout,\n    moveable_columns,\n\
-    \    pagination,\n    pagination_button_count,\n    pagination_size,\n    pagination_size_selector,\n\
-    \    resizable_columns,\n    row_selectable\n) {\n    self = self.v._anvil.element[0];\n\
-    \n    new Tabulator(self, {\n        autoColumns: auto_columns,\n        headerAlign:\
-    \ header_align,\n        headerVisible: header_visible,\n        height: height,\n\
-    \        index: index,\n        //layoutColumnsOnNewData: true,\n        layout:\
-    \ layout,\n        moveableColumns: moveable_columns,\n        pagination: pagination,\n\
-    \        paginationButtonCount: pagination_button_count,\n        paginationSize:\
-    \ pagination_size,\n        paginationSizeSelector: pagination_size_selector,\n\
+    ></script>\n\n\n\n<script>\n\nfunction find_table(self){\n  table = Tabulator.prototype.findTable(self.v._anvil.element[0])[0];\n\
+    \  return table\n}\n\nfunction create_table(\n    self,\n    auto_columns,\n \
+    \   header_align,\n    header_visible,\n    height,\n    index,\n    layout,\n\
+    \    moveable_columns,\n    pagination,\n    pagination_button_count,\n    pagination_size,\n\
+    \    pagination_size_selector,\n    resizable_columns,\n    row_selectable\n)\
+    \ {\n    self = self.v._anvil.element[0];\n\n    new Tabulator(self, {\n     \
+    \   autoColumns: auto_columns,\n        headerAlign: header_align,\n        headerVisible:\
+    \ header_visible,\n        height: height,\n        index: index,\n        //layoutColumnsOnNewData:\
+    \ true,\n        layout: layout,\n        moveableColumns: moveable_columns,\n\
+    \        pagination: pagination,\n        paginationButtonCount: pagination_button_count,\n\
+    \        paginationSize: pagination_size,\n        paginationSizeSelector: pagination_size_selector,\n\
     \        resizableColumns: resizable_columns,\n        selectable: row_selectable,\n\
     \        rowSelected: function (row) {\n            anvil.call(self, \"row_selected\"\
     , row.getData());\n        },\n        rowClick: function (e, row) {\n       \
@@ -33,12 +33,13 @@ native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.
     \    data = []\n    for (let i = 0; i<items.length; i++) {\n      let item = items[i]._spec.itemCache\n\
     \      Object.keys(item).forEach(function(key){ item[key] = item[key].v});\n \
     \     item['id'] = items[i]._spec.id\n      data.push(item);\n    }\n  }\n  table\
-    \ = find_table(self);\n  table.setData(data);\n};\n  \nfunction set_columns(self,\
-    \ columns, checkbox_select) {\n  for (let i=0; i<columns.length; i++){\n    if\
-    \ (columns[i]['editor'] == 'dateEditor') {\n      columns[i]['editor'] = dateEditor;\n\
-    \    }\n  }\n  if (checkbox_select) {\n    columns.unshift({formatter:\"rowSelection\"\
-    , titleFormatter:\"rowSelection\", width: '40px', \n                     align:\"\
-    center\", headerSort:false, cellClick:function(e,cell){cell.getRow().toggleSelect()}})\n\
+    \ = find_table(self);\n  table.setData(data);\n};\n  \nfunction get_data(self)\
+    \ {\n\ttable = find_table(self);\n  \treturn table.getData();\n}\n  \nfunction\
+    \ set_columns(self, columns, checkbox_select) {\n  for (let i=0; i<columns.length;\
+    \ i++){\n    if (columns[i]['editor'] == 'dateEditor') {\n      columns[i]['editor']\
+    \ = dateEditor;\n    }\n  }\n  if (checkbox_select) {\n    columns.unshift({formatter:\"\
+    rowSelection\", titleFormatter:\"rowSelection\", width: '40px', \n           \
+    \          align:\"center\", headerSort:false, cellClick:function(e,cell){cell.getRow().toggleSelect()}})\n\
     \  };\n\n  table = find_table(self);\n  table.setColumns(columns);\n};\n  \n\n\
     \nfunction set_height(self, height) {\n  table = find_table(self);\n  table.setHeight(height);\n\
     };\n  \nfunction set_group_by(self, field) {\n  table = find_table(self);\n  table.setGroupBy(field);\n\
@@ -53,36 +54,39 @@ native_deps: {head_html: "\n<link href=\"https://unpkg.com/tabulator-tables@4.5.
     \ get_selected(self) {\n  table = find_table(self);\n  return table.getSelectedData();\n\
     }\n  \nfunction set_filter(self, field, type, value){\n\ttable = find_table(self);\n\
     \  \ttable.setFilter(field, type, value);\n}\n  \nfunction add_filter(self,field,\
-    \ type, value) {\n  \ttable = find_table(self);\n  \treturn table.addFilter(field,\
-    \ type, value);\n}\n  \nfunction remove_filter(self, field, type, value) {\n \
-    \ \ttable = find_table(self);\n  \treturn table.removeFilter(field, type, value);\n\
-    }\n  \nfunction get_filters(self) {\n  \ttable = find_table(self);\n  \treturn\
-    \ table.getFilters();\n}\n  \nfunction clear_filter(self, ...args) {\n\ttable\
-    \ = find_table(self);\n  \treturn table.clearFilter(...args);\n}\n  \nfunction\
-    \ redraw(self, data) {\n  table = find_table(self);\n  table.redraw();\n  window.table\
-    \ = table;\n}\n\n\n</script>\n\n\n<script>\n    var dateEditor = function(cell,\
-    \ onRendered, success, cancel, editorParams){\n    //cell - the cell component\
-    \ for the editable cell\n    //onRendered - function to call when the editor has\
-    \ been rendered\n    //success - function to call to pass the successfuly updated\
-    \ value to Tabulator\n    //cancel - function to call to abort the edit and return\
-    \ to a normal cell\n    //editorParams - params object passed into the editorParams\
-    \ column definition property\n\n    //create and style editor\n    var editor\
-    \ = document.createElement(\"input\");\n\n    editor.setAttribute(\"type\", \"\
-    date\");\n\n    //create and style input\n    editor.style.padding = \"3px\";\n\
-    \    editor.style.width = \"100%\";\n    editor.style.boxSizing = \"border-box\"\
-    ;\n      $(editor).addClass('datepicker')\n\n    //Set value of editor to the\
-    \ current value of the cell\n    editor.value = moment(cell.getValue(), \"DD/MM/YYYY\"\
-    ).format(\"YYYY-MM-DD\")\n\n    //set focus on the select box when the editor\
-    \ is selected (timeout allows for editor to be added to DOM)\n    onRendered(function(){\n\
-    \        editor.focus();\n        editor.style.css = \"100%\";\n    });\n\n  \
-    \  //when the value has been set, trigger the cell to update\n    function successFunc(){\n\
-    \      console.log(editor.value)\n      if (editor.value){\n        success(moment(editor.value,\
-    \ \"YYYY-MM-DD\").format(\"DD/MM/YYYY\"));\n      }\n      else{\n        cancel()\n\
-    \      }\n    }\n\t\n    \n    \n    //editor.addEventListener(\"change\", successFunc);\n\
-    \    editor.addEventListener(\"blur\", successFunc);\n\n    //return the editor\
-    \ element\n    return editor;\n};\n  \n  \n  function explore(me) {\n    window.me\
-    \ = me\n    console.log(me)\n  }\n</script>\n<style>\n  .tabulator{\n    margin-bottom\
-    \ :4px;\n  }\n</style>"}
+    \ type, value) {\n  \ttable = find_table(self);\n  \ttable.addFilter(field, type,\
+    \ value);\n}\n  \nfunction remove_filter(self, field, type, value) {\n  \ttable\
+    \ = find_table(self);\n  \ttable.removeFilter(field, type, value);\n}\n  \nfunction\
+    \ get_filters(self) {\n  \ttable = find_table(self);\n  \treturn table.getFilters();\n\
+    }\n  \nfunction clear_filter(self, ...args) {\n\ttable = find_table(self);\n \
+    \ \ttable.clearFilter(...args);\n}\n  \nfunction set_sort(self, ...args) {\n\t\
+    table = find_table(self);\n  \ttable.setSort(...args);\n}\n  \nfunction clear_sort(self)\
+    \ {\n\ttable = find_table(self);\n  \tconsole.log(table.getSorters());\n  \ttable.clearSort();\n\
+    \  \t//table.setSort(table.options.index, 'asc');\n  \ttable.setData(table.getData())\n\
+    }\n\n  \nfunction redraw(self) {\n  table = find_table(self);\n  table.redraw();\n\
+    \  window.table = table;\n}\n\n\n</script>\n\n\n<script>\n    var dateEditor =\
+    \ function(cell, onRendered, success, cancel, editorParams){\n    //cell - the\
+    \ cell component for the editable cell\n    //onRendered - function to call when\
+    \ the editor has been rendered\n    //success - function to call to pass the successfuly\
+    \ updated value to Tabulator\n    //cancel - function to call to abort the edit\
+    \ and return to a normal cell\n    //editorParams - params object passed into\
+    \ the editorParams column definition property\n\n    //create and style editor\n\
+    \    var editor = document.createElement(\"input\");\n\n    editor.setAttribute(\"\
+    type\", \"date\");\n\n    //create and style input\n    editor.style.padding =\
+    \ \"3px\";\n    editor.style.width = \"100%\";\n    editor.style.boxSizing = \"\
+    border-box\";\n      $(editor).addClass('datepicker')\n\n    //Set value of editor\
+    \ to the current value of the cell\n    editor.value = moment(cell.getValue(),\
+    \ \"DD/MM/YYYY\").format(\"YYYY-MM-DD\")\n\n    //set focus on the select box\
+    \ when the editor is selected (timeout allows for editor to be added to DOM)\n\
+    \    onRendered(function(){\n        editor.focus();\n        editor.style.css\
+    \ = \"100%\";\n    });\n\n    //when the value has been set, trigger the cell\
+    \ to update\n    function successFunc(){\n      console.log(editor.value)\n  \
+    \    if (editor.value){\n        success(moment(editor.value, \"YYYY-MM-DD\").format(\"\
+    DD/MM/YYYY\"));\n      }\n      else{\n        cancel()\n      }\n    }\n\t\n\
+    \    \n    \n    //editor.addEventListener(\"change\", successFunc);\n    editor.addEventListener(\"\
+    blur\", successFunc);\n\n    //return the editor element\n    return editor;\n\
+    };\n  \n  \nfunction explore(me) {\n    window.me = me\n    console.log(me)\n\
+    \  }\n</script>\n<style>\n  .tabulator{\n    margin-bottom : 4px;\n  }\n</style>"}
 dependency_order: []
 dependency_code: {}
 renamed: true

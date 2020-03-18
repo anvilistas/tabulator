@@ -64,6 +64,7 @@ def get_list_data(n=100):
     row = add_row()
     row['id'] = i
     row['dob'] = row['dob'].strftime('%d/%m/%Y')
+    row['foo'] = 'bar'
     data.append(row)
   return data
 

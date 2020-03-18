@@ -19,7 +19,6 @@ properties:
 - {name: columns, type: object, default_value: null}
 - {name: pagination_size_selector, type: string, default_value: 3 6 10}
 - {name: index, type: string, default_value: id}
-- {name: writeback, type: boolean, default_value: true}
 - {name: auto_columns, type: boolean, default_value: null}
 - {name: resizable_columns, type: boolean, default_value: true}
 - {name: movable_columns, type: boolean, default_value: false}

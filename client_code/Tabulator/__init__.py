@@ -31,46 +31,37 @@ class Tabulator(TabulatorTemplate):
 # Methods
     def add_row(self, row={}, top=True, pos=None):
         if not row.get(self._index):
-            raise KeyError(f'you should provide an index for this row: {self._index}')
-        self._data.append(row)
+            raise KeyError(f"you should provide an index '{self._index}' for this row")
+        if js.call_js('get_row', row.get(self._index)):
+            raise KeyError(f"The index '{self._index}' should be unique")
         js.call_js('add_row', self, row, top, pos)
+        self.data = js.call_js('get_data', self)
     
     def delete_row(self, index):
         js.call_js('delete_row', self, index)
-    
+        self.data = js.call_js('get_data', self)
+
+    def update_row(self, index, row):
+        js.call_js('update_row', self, index, row)
+        self.data = js.call_js('get_data', self)
+        
     def get_row(self, index):
         row = js.call_js('get_row', index)
-        try:
-            row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
-        except StopIteration as e:
-            row = None
         return row
         
     def select_row(self, row):
         js.call_js('select_row', self, row)
-
-    def update_row(self, row):
-        js.call_js('update_row', self, row.get(self._index), row)
-
-    def set_group_by(self, field):
-        js.call_js('set_group_by', self, field)
-        
+     
     def get_selected(self):
-        js.call_js('get_selected', self)
+        return js.call_js('get_selected', self)
 
     def add_data(self, data, top=False, pos=None):
-      js.call_js('add_data', self, data,top, pos)
-      self._data += data
+        js.call_js('add_data', self, data, top, pos)
+        self.data = js.call_js('get_data', self)
 
-      
     def update_or_add_data(self, data):
         js.call_js('update_or_add_row', self, data)
-        for row in data:
-            try:
-                update_row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
-                update_row.update(row)
-            except StopIteration as e:
-                self._data.append(row)
+        self.data = js.call_js('get_data', self)
     
     def set_filter(self, field, type=None, value=None):
         """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'"""
@@ -87,62 +78,46 @@ class Tabulator(TabulatorTemplate):
       
     def clear_filter(self, *args):
         """include an arg of True to clear header filters as well"""
-        return js.call_js('clear_filter', self, *args)
+        js.call_js('clear_filter', self, *args)
         
-
+    def set_sort(self, column, ascending=True):
+        """first argument can also be a list of sorters [{'column':'name', 'ascending':True}]"""
+        if isinstance(column, list):
+            sorters = column
+            for sorter in sorters:
+                sorter['dir'] = 'asc' if sorter.pop('ascending') else 'desc'
+            js.call_js('set_sort', self, sorters)
+        elif isinstance(column, str):
+            js.call_js('set_sort', self, column, 'asc' if ascending else 'desc')
+        else:
+            raise TypeError('expected first argument to be a list of sorters or the column field name')
+    
+    def clear_sort(self):
+        js.call_js('clear_sort', self)
+        
+    def set_group_by(self, field):
+        js.call_js('set_group_by', self, field)
+   
 
 # Events
     def row_selected(self, row):
-        try:
-            row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
-        except StopIteration as e:
-            row = None
         self.raise_event('row_selected', row=row)
 
     def row_click(self, row):
-        try:
-            row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
-        except StopIteration as e:
-            row = None
         self.raise_event('row_click', row=row)     
 
-        
-    def row_edited(self, js_row):
-        if self._writeback:
-            try:
-                row = next(row for row in self._data if row.get(
-                self.index, float('nan')) == js_row.get(self.index))
-                row.update(js_row)
-            except StopIteration as e:
-                row = None
-        else:
-            row = js_row
+    def row_edited(self, row):
+        self.data = js.call_js('get_data', self)
         self.raise_event('row_edited', row=row)
         
-        
     def row_selection_change(self, rows):
-        selected_rows = []
-        for row in rows:
-            try:
-                row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
-                selected_rows.append(row)
-            except StopIteration as e:
-                pass
-        self.raise_event('row_selection_change', rows=selected_rows)
-
+        self.raise_event('row_selection_change', rows=rows)
         
     def get_selected(self):
         rows = js.call_js('get_selected', self)
-        selected_rows = []
-        for row in rows:
-            try:
-                row = next(r for r in self._data if r.get(self.index, float('nan')) == row.get(self.index))
-                selected_rows.append(row)
-            except StopIteration as e:
-                pass
-        return selected_rows
+        return rows
       
-         
+      
 # properties
     @property
     def data(self):
@@ -150,8 +125,8 @@ class Tabulator(TabulatorTemplate):
 
     @data.setter
     def data(self, value):
-        self._data = value
-        js.call_js('set_data', self, self._data)
+        js.call_js('set_data', self, value)
+        self._data = js.call_js('get_data', self)
 
     @property
     def height(self):
@@ -171,7 +146,6 @@ class Tabulator(TabulatorTemplate):
 
     @columns.setter
     def columns(self, value):
-        print('setting columns')
         self._columns = value
         js.call_js('set_columns', self, self._columns, self._row_selectable=='checkbox')
             
@@ -182,15 +156,6 @@ class Tabulator(TabulatorTemplate):
     @index.setter
     def index(self, value):
         self._index = value
-
-        
-    @property
-    def writeback(self):
-        return self._writeback
-
-    @index.setter
-    def writeback(self, value):
-        self._writeback = bool(value)
 
     @property
     def auto_columns(self):
