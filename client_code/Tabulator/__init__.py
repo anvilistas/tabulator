@@ -5,6 +5,8 @@ import anvil
 class Tabulator(TabulatorTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
+        self._columns = []
+        self._data = []
         self.init_components(**properties)
         anvil.js.call_js('create_table',
                     self,
@@ -22,8 +24,7 @@ class Tabulator(TabulatorTemplate):
                     self._resizable_columns,
                     'highlight' if self._row_selectable == 'checkbox' else self._row_selectable
                     )
-        self._columns = []
-        self._data = []
+
         # Any code you write here will run when the form opens.
 
 # Methods
