@@ -26,19 +26,19 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     ),d.style.padding=\"3px\",d.style.width=\"100%\",d.style.boxSizing=\"border-box\"\
     ,$(d).addClass(\"datepicker\"),d.value=moment(t.getValue(),\"DD/MM/YYYY\").format(\"\
     YYYY-MM-DD\"),e(function(){d.focus(),d.style.css=\"100%\"}),d.addEventListener(\"\
-    blur\",function(){console.log(d.value),d.value?o(moment(d.value,\"YYYY-MM-DD\"\
-    ).format(\"DD/MM/YYYY\")):n()}),d};\n</script>\n\n\n<script>\nfunction find_table(self)\
-    \ {\n    table = Tabulator.prototype.findTable(self.v._anvil.element[0])[0];\n\
-    \    return table;\n}\n\nfunction create_table(\n    self,\n    auto_columns,\n\
-    \    header_align,\n    header_visible,\n    height,\n    index,\n    layout,\n\
-    \    moveable_columns,\n    pagination,\n    pagination_button_count,\n    pagination_size,\n\
-    \    pagination_size_selector,\n    resizable_columns,\n    row_selectable\n)\
-    \ {\n    self = self.v._anvil.element[0];\n\n    new Tabulator(self, {\n     \
-    \   autoColumns: auto_columns,\n        headerAlign: header_align,\n        headerVisible:\
-    \ header_visible,\n        height: height,\n        index: index,\n        //layoutColumnsOnNewData:\
-    \ true,\n        layout: layout,\n        moveableColumns: moveable_columns,\n\
-    \        pagination: pagination,\n        paginationButtonCount: pagination_button_count,\n\
-    \        paginationSize: pagination_size,\n        paginationSizeSelector: pagination_size_selector,\n\
+    blur\",function(){d.value?o(moment(d.value,\"YYYY-MM-DD\").format(\"DD/MM/YYYY\"\
+    )):n()}),d};\n</script>\n\n\n<script>\nfunction find_table(self) {\n    table\
+    \ = Tabulator.prototype.findTable(self.v._anvil.element[0])[0];\n    return table;\n\
+    }\n\nfunction create_table(\n    self,\n    auto_columns,\n    header_align,\n\
+    \    header_visible,\n    height,\n    index,\n    layout,\n    moveable_columns,\n\
+    \    pagination,\n    pagination_button_count,\n    pagination_size,\n    pagination_size_selector,\n\
+    \    resizable_columns,\n    row_selectable\n) {\n    self = self.v._anvil.element[0];\n\
+    \n    new Tabulator(self, {\n        autoColumns: auto_columns,\n        headerAlign:\
+    \ header_align,\n        headerVisible: header_visible,\n        height: height,\n\
+    \        index: index,\n        //layoutColumnsOnNewData: true,\n        layout:\
+    \ layout,\n        moveableColumns: moveable_columns,\n        pagination: pagination,\n\
+    \        paginationButtonCount: pagination_button_count,\n        paginationSize:\
+    \ pagination_size,\n        paginationSizeSelector: pagination_size_selector,\n\
     \        resizableColumns: resizable_columns,\n        selectable: row_selectable,\n\
     \        rowSelected: function (row) {\n            anvil.call(self, \"row_selected\"\
     , row.getData());\n        },\n        rowClick: function (e, row) {\n       \
@@ -65,22 +65,21 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     if (!row) {\n      return null;\n    } else {\n      return row.getData();   \
     \   \n    }\n\n}\n\nfunction delete_row(self, index) {\n    table = find_table(self);\n\
     \    table.deleteRow(index);\n}\n\nfunction update_row(self, index, row) {\n \
-    \   table = find_table(self);\n    console.log(table.updateRow(index, row));\n\
-    }\n\nfunction update_or_add_data(self, data) {\n    table = find_table(self);\n\
-    \    table.updateOrAddData(data);\n}\n\nfunction add_data(self, data, top, pos)\
-    \ {\n    table = find_table(self);\n    table.addData(data, top, pos);\n}\n\n\
-    function get_selected(self) {\n    table = find_table(self);\n    return table.getSelectedData();\n\
-    }\n\nfunction set_filter(self, field, type, value) {\n    table = find_table(self);\n\
-    \    table.setFilter(field, type, value);\n}\n\nfunction add_filter(self, field,\
-    \ type, value) {\n    table = find_table(self);\n    table.addFilter(field, type,\
-    \ value);\n}\n\nfunction remove_filter(self, field, type, value) {\n    table\
-    \ = find_table(self);\n    table.removeFilter(field, type, value);\n}\n\nfunction\
-    \ get_filters(self) {\n    table = find_table(self);\n    return table.getFilters();\n\
-    }\n\nfunction clear_filter(self, ...args) {\n    table = find_table(self);\n \
-    \   table.clearFilter(...args);\n}\n\nfunction set_sort(self, ...args) {\n   \
-    \ table = find_table(self);\n    table.setSort(...args);\n}\n\nfunction clear_sort(self)\
-    \ {\n    table = find_table(self);\n    console.log(table.getSorters());\n   \
-    \ table.clearSort();\n    // reset table data\n    table.setData(table.getData());\n\
+    \   table = find_table(self);\n    table.updateRow(index, row);\n}\n\nfunction\
+    \ update_or_add_data(self, data) {\n    table = find_table(self);\n    table.updateOrAddData(data);\n\
+    }\n\nfunction add_data(self, data, top, pos) {\n    table = find_table(self);\n\
+    \    table.addData(data, top, pos);\n}\n\nfunction get_selected(self) {\n    table\
+    \ = find_table(self);\n    return table.getSelectedData();\n}\n\nfunction set_filter(self,\
+    \ field, type, value) {\n    table = find_table(self);\n    table.setFilter(field,\
+    \ type, value);\n}\n\nfunction add_filter(self, field, type, value) {\n    table\
+    \ = find_table(self);\n    table.addFilter(field, type, value);\n}\n\nfunction\
+    \ remove_filter(self, field, type, value) {\n    table = find_table(self);\n \
+    \   table.removeFilter(field, type, value);\n}\n\nfunction get_filters(self) {\n\
+    \    table = find_table(self);\n    return table.getFilters();\n}\n\nfunction\
+    \ clear_filter(self, ...args) {\n    table = find_table(self);\n    table.clearFilter(...args);\n\
+    }\n\nfunction set_sort(self, ...args) {\n    table = find_table(self);\n    table.setSort(...args);\n\
+    }\n\nfunction clear_sort(self) {\n    table = find_table(self);\n    table.getSorters();\n\
+    \    table.clearSort();\n    // reset table data\n    table.setData(table.getData());\n\
     }\n\nfunction redraw(self) {\n    table = find_table(self);\n    table.redraw();\n\
     }\n</script>\n\n<style>\n  .tabulator{\n    margin-bottom : 4px;\n  }\n  .title-center{\n\
     \    text-align: center !important;\n  }\n</style>"}
