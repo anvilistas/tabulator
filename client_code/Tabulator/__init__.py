@@ -133,9 +133,9 @@ class Tabulator(TabulatorTemplate):
 
     @height.setter
     def height(self, value):
-        if value.isdigit():
-          value = value+'px'
         self._height = value
+        if value.isdigit():
+            value = value+'px'
         if self.parent:
             js.call_js('set_height', self, value)
 
