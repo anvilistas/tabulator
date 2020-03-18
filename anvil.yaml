@@ -53,10 +53,11 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ set_columns(self, columns, checkbox_select) {\n    if (checkbox_select) {\n\
     \        columns.unshift({\n            formatter: \"rowSelectionDisplay\",\n\
     \            titleFormatter: \"rowSelectionDisplay\",\n            width: \"40px\"\
-    ,\n            align: \"center\",\n            headerSort: false,\n          \
-    \  cellClick: function (e, cell) {\n                cell.getRow().toggleSelect();\n\
-    \            }\n        });\n    }\n    table = find_table(self);\n    table.setColumns(columns);\n\
-    }\n\nfunction set_height(self, height) {\n    table = find_table(self);\n    table.setHeight(height);\n\
+    ,\n            align: \"center\",\n            headerSort: false,\n          \t\
+    cssClass: 'title-center',\n            cellClick: function (e, cell) {\n     \
+    \           cell.getRow().toggleSelect();\n            }\n        });\n    }\n\
+    \    table = find_table(self);\n    table.setColumns(columns);\n}\n\nfunction\
+    \ set_height(self, height) {\n    table = find_table(self);\n    table.setHeight(height);\n\
     }\n\nfunction set_group_by(self, field) {\n    table = find_table(self);\n   \
     \ table.setGroupBy(field);\n}\n\nfunction add_row(self, row, top, pos) {\n   \
     \ table = find_table(self);\n    table.addRow(row, top, pos);\n}\n\nfunction get_row(self,\
