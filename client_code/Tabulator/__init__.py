@@ -103,10 +103,6 @@ class Tabulator(TabulatorTemplate):
 
     def row_click(self, row):
         self.raise_event('row_click', row=row)     
-
-    def row_edited(self, row):
-        self.data = anvil.js.call_js('get_data', self)
-        self.raise_event('row_edited', row=row)
         
     def row_selection_change(self, rows):
         self.raise_event('row_selection_change', rows=rows)
@@ -117,6 +113,10 @@ class Tabulator(TabulatorTemplate):
       
     def cell_click(self, field, row):
         self.raise_event('cell_click', field=field, row=row)
+        
+    def cell_edited(self, field, row):
+        self._data = anvil.js.call_js('get_data', self)
+        self.raise_event('cell_edited', field=field, row=row)
       
       
 # properties

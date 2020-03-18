@@ -31,6 +31,6 @@ properties:
 events:
 - {name: row_click, default_event: true, description: when a row is clicked}
 - {name: row_selected, description: when a row is selected}
-- {name: row_edited, description: when a row is edited - returns the row - will edit the data inplace if writeback is set to True}
 - {name: row_selection_change}
 - {name: cell_click, description: when a cell is clicked - event_args include field and row}
+- {name: cell_edited, description: when a cell is edited - event_args include field and row}
