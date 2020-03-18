@@ -22,6 +22,7 @@ class Tabulator(TabulatorTemplate):
                     self._resizable_columns,
                     'highlight' if self._row_selectable == 'checkbox' else self._row_selectable
                     )
+        self._columns = []
         self._data = []
         # Any code you write here will run when the form opens.
 
