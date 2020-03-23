@@ -264,7 +264,7 @@ class Tabulator(TabulatorTemplate):
         
     def form_show(self, **event_args):
         """This method is called when the HTML panel is shown on the screen"""
-        anvil.js.call_js('redraw', self)
-
+        anvil.js.call_js('replace_data', self, self._data)
+        
 
 

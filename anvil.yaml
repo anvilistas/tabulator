@@ -81,8 +81,9 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     }\n\nfunction clear_sort(self) {\n    table = find_table(self);\n    table.getSorters();\n\
     \    table.clearSort();\n    // reset table data\n    table.setData(table.getData());\n\
     }\n\nfunction redraw(self) {\n    table = find_table(self);\n    table.redraw();\n\
-    }\n</script>\n\n<style>\n  .tabulator{\n    margin-bottom : 4px;\n  }\n  .title-center{\n\
-    \    text-align: center !important;\n  }\n</style>"}
+    }\n  \nfunction replace_data(self, data) {\n    table = find_table(self);\n  \
+    \  table.replaceData(data);\n}\n</script>\n\n<style>\n  .tabulator{\n    margin-bottom\
+    \ : 4px;\n  }\n  .title-center{\n    text-align: center !important;\n  }\n</style>"}
 dependency_order: []
 dependency_code: {}
 renamed: true
