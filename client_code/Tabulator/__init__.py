@@ -284,7 +284,6 @@ class Tabulator(TabulatorTemplate):
     def _timer_redraw(self, sender, **event_args):
         sender.interval = 0
         sender.remove_from_parent()
-        anvil.js.call_js('replace_data', self, self._data)
         anvil.js.call_js('redraw', self)
         # print('replace_data')
         
@@ -292,6 +291,7 @@ class Tabulator(TabulatorTemplate):
     def redraw(self, **event_args):
         """This method is called when the HTML panel is shown on the screen"""
         # hack for dodgy rendering
+        anvil.js.call_js('replace_data', self, self._data)
         _t = anvil.Timer(interval=.001)
         _t.set_event_handler('tick', self._timer_redraw)
         self.add_component(_t)
