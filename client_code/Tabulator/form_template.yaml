@@ -8,7 +8,7 @@ container:
       \ columnD:'columnD'},\n          {columnA:'columnA', columnB:'columnB', columnC:'columnC',\
       \ columnD:'columnD'}],\n\t});\n\n});\n</script>\n\n<style>\n  .tabulator-row\
       \ .tabulator-cell {\n    font-style: italic;\n  }\n</style>\n\n"}
-  event_bindings: {show: form_show}
+  event_bindings: {show: redraw}
 components: []
 is_package: true
 custom_component: true
