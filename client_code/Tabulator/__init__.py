@@ -285,6 +285,7 @@ class Tabulator(TabulatorTemplate):
         sender.interval = 0
         sender.remove_from_parent()
         anvil.js.call_js('redraw', self)
+        print('replace_data')
         anvil.js.call_js('replace_data', self._data)
         
     def redraw(self, **event_args):
