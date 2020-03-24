@@ -28,6 +28,8 @@ properties:
 - {name: pagination_size, type: number, default_value: 10}
 - {name: pagination_button_count, type: number, default_value: 5}
 - {name: row_selectable, type: string, default_value: checkbox}
+- {name: spacing_above, type: string, default_value: small}
+- {name: spacing_below, type: string, default_value: small}
 events:
 - {name: row_click, default_event: true, description: when a row is clicked}
 - {name: row_selected, description: when a row is selected}

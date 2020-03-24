@@ -20,10 +20,13 @@ class Tabulator(TabulatorTemplate):
                     self._pagination_size,
                     self._pagination_size_selector,
                     self._resizable_columns,
-                    'highlight' if self._row_selectable == 'checkbox' else self._row_selectable
+                    'highlight' if self._row_selectable == 'checkbox' else self._row_selectable,
+                    self._spacing_above,
+                    self._spacing_below,
                     )
-        self._columns = []
         self._data = []
+        
+
         # Any code you write here will run when the form opens.
 
 # Methods
@@ -260,8 +263,24 @@ class Tabulator(TabulatorTemplate):
         if value not in layouts:
             value = 'fitColumns'
         self._layout = value
+    
+    @property
+    def spacing_above(self):
+        return self._spacing_above
+      
+    @spacing_above.setter
+    def spacing_above(self, value):
+        self._spacing_above = value
+      
+    @property
+    def spacing_below(self):
+        return self._spacing_below
+      
+    @spacing_below.setter
+    def spacing_below(self, value):
+        self._spacing_below = value
 
-        
+
     def _timer_redraw(self, sender, **event_args):
         sender.interval = 0
         sender.remove_from_parent()
@@ -273,5 +292,4 @@ class Tabulator(TabulatorTemplate):
         _t = anvil.Timer(interval=.001)
         _t.set_event_handler('tick', self._timer_redraw)
         self.add_component(_t)
-
-
+        
