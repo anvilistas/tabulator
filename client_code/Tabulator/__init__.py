@@ -65,6 +65,11 @@ class Tabulator(TabulatorTemplate):
         anvil.js.call_js('update_or_add_row', self, data)
         self._data = anvil.js.call_js('get_data', self)
     
+    def replace_data(self, data):
+        # useful to keep the datatable in the same place
+        anvil.js.call_js('replace_data', self, data)
+        self._data = anvil.js.call_js('get_data', self)   
+    
     def set_filter(self, field, type=None, value=None):
         """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'"""
         anvil.js.call_js('set_filter', self, field, type, value)
