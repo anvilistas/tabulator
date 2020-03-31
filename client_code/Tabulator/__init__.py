@@ -81,7 +81,7 @@ class Tabulator(TabulatorTemplate):
         anvil.js.call_js('remove_filter', self, field, type, value)
         
     def get_filters(self):
-        return anvil.js.call_js('get_filter', self)
+        return anvil.js.call_js('get_filters', self)
       
     def clear_filter(self, *args):
         """include an arg of True to clear header filters as well"""
