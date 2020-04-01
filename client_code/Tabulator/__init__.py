@@ -4,8 +4,27 @@ import anvil
 
 class Tabulator(TabulatorTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
-        self.init_components(**properties)
+        # allow Tabulator to be set in code with default values
+        defaults = {'auto_columns': None, 
+                    'header_align': 'middle', 
+                    'header_visible': True, 
+                    'height': '', 
+                    'index': 'id', 
+                    'layout': 'fitColumns', 
+                    'movable_columns': False, 
+                    'pagination': True, 
+                    'pagination_button_count': 5, 
+                    'pagination_size': 10,
+                    'pagination_size_selector': '6 10 20', 
+                    'resizable_columns': True, 
+                    'row_selectable': 'checkbox',
+                    'spacing_above': 'small', 
+                    'spacing_below': 'small', 
+                   }
+
+        defaults.update(properties)
+        
+        self.init_components(**defaults)
         anvil.js.call_js('create_table',
                     self,
                     self._auto_columns,
@@ -27,7 +46,6 @@ class Tabulator(TabulatorTemplate):
         self._data = []
         
 
-        # Any code you write here will run when the form opens.
 
 # Methods
     def add_row(self, row, top=True, pos=None):
@@ -64,12 +82,12 @@ class Tabulator(TabulatorTemplate):
     def update_or_add_data(self, data):
         anvil.js.call_js('update_or_add_row', self, data)
         self._data = anvil.js.call_js('get_data', self)
-    
+
     def replace_data(self, data):
         # useful to keep the datatable in the same place
         anvil.js.call_js('replace_data', self, data)
-        self._data = anvil.js.call_js('get_data', self)   
-    
+        self._data = anvil.js.call_js('get_data', self)
+
     def set_filter(self, field, type=None, value=None):
         """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'"""
         anvil.js.call_js('set_filter', self, field, type, value)
@@ -77,7 +95,7 @@ class Tabulator(TabulatorTemplate):
     def add_filter(self, field, type, value):
         anvil.js.call_js('add_filter', self, field, type, value)
         
-    def remove_filter(self, field, type, value):
+    def remove_filter(self, field=None, type=None, value=None):
         anvil.js.call_js('remove_filter', self, field, type, value)
         
     def get_filters(self):
@@ -289,7 +307,7 @@ class Tabulator(TabulatorTemplate):
     def _timer_redraw(self, sender, **event_args):
         sender.interval = 0
         sender.remove_from_parent()
-        anvil.js.call_js('redraw', self)        
+        anvil.js.call_js('redraw', self)
         
     def redraw(self, **event_args):
         """This method is called when the HTML panel is shown on the screen"""
