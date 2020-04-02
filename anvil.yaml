@@ -56,7 +56,7 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     }\n\nfunction set_columns(self, columns, checkbox_select) {\n  table = find_table(self);\n\
     \    if (checkbox_select) {\n        columns.unshift({\n            formatter:\
     \ \"rowSelectionDisplay\",\n            titleFormatter: \"rowSelectionDisplay\"\
-    ,\n            width: table.options.layout.includes('Columns') ? \"40px\" : null,\n\
+    ,\n            width: 40,\n\
     \            align: \"center\",\n            headerSort: false,\n          \t\
     cssClass: 'title-center',\n            cellClick: function (e, cell) {\n     \
     \           cell.getRow().toggleSelect();\n            }\n        });\n    }\n\
