@@ -307,7 +307,6 @@ class Tabulator(TabulatorTemplate):
     def redraw(self, **event_args):
         """This method is called when the HTML panel is shown on the screen"""
         # redraw on show
-        anvil.js.call_js('replace_data', self, self._data)
         anvil.js.call_js('redraw', self)
 
         
