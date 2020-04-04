@@ -303,18 +303,11 @@ class Tabulator(TabulatorTemplate):
     def spacing_below(self, value):
         self._spacing_below = value
 
-
-    def _timer_redraw(self, sender, **event_args):
-        sender.interval = 0
-        sender.remove_from_parent()
-        anvil.js.call_js('redraw', self)
         
     def redraw(self, **event_args):
         """This method is called when the HTML panel is shown on the screen"""
-        # hack for fitData
+        # redraw on show
         anvil.js.call_js('replace_data', self, self._data)
-        # hack for dodgy rendering full width row
-        _t = anvil.Timer(interval=.001)
-        _t.set_event_handler('tick', self._timer_redraw)
-        self.add_component(_t)
+        anvil.js.call_js('redraw', self)
+
         
