@@ -76,11 +76,12 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ component);\n\n                return component._anvil.element[0];\n\n     \
     \       }\n        }\n      \n      if (typeof c.editor == 'object' && c.editor.v\
     \ !== undefined) {\n            // then we have an anvil element\n           \
-    \ const editor_component = c.editor.v;\n            c.editor = function (cell,\
-    \ onRendered, success, cancel, editorParams) {\n              \tconsole.log(editorParams)\n\
-    \                let kwargs = [];\n              \tif (editorParams === undefined)\
-    \ {editorParams = {}};\n                if (editor_component.superClass_.tp$name.includes('Template'))\
-    \ {\n                    // then anvil Form so give it the item for any data bindings\n\
+    \ const editor_component = c.editor.v;\n//        \tconsole.log(c.editor);\n \
+    \           c.editor = function (cell, onRendered, success, cancel, editorParams)\
+    \ {\n              \tconsole.log(editorParams)\n                let kwargs = [];\n\
+    \              \tif (editorParams === undefined) {editorParams = {}};\n      \
+    \          if (editor_component.superClass_.tp$name.includes('Template')) {\n\
+    \                    // then anvil Form so give it the item for any data bindings\n\
     \                    editorParams['item'] = cell.getData();\n                }\n\
     \              \t// map the formatterParams into a skulpt keyword argument\n \
     \             \t\n              \t\n                Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
@@ -88,11 +89,15 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \             let component = Sk.misceval.applyOrSuspend(editor_component, undefined,\
     \ undefined, kwargs, []);\n                // make the component's parent the\
     \ tabulator\n                anvil.call(self.v._anvil.element, 'add_component',\
-    \ component);\n\t\t\t\tconsole.log(component);\n              \tconst editor =\
-    \ component._anvil.element;\n              \tconsole.log(editor);\n          \
-    \    \tconsole.log(cancel)\n              \n      //        \teditor.on('focus',\
-    \ function(){console.log('focus')});\n      //        \teditor.on('hide', function(){console.log('hide');});\n\
-    \              \teditor.on('blur', function(){console.log('blur');});\n      //\
+    \ component);\n\t\t\t\tconsole.log(editor_component);\n\t\t\t\tconsole.log(component);\n\
+    \              \tconst editor = component._anvil.element;\n              \tconsole.log(editor);\n\
+    \              \tconsole.log(cancel);\n              \twindow.c = component;\n\
+    \              \twindow.ec = editor_component;\n              \tcomponent.constructor.close_editor\
+    \ = new Sk.builtin.func(function(){console.log('close editor'); cancel();})\n\
+    \      //        \tcomponent._anvil.__proto__.close_editor = Sk.builtin.func(function(){cancel()});\n\
+    \              \n      //        \teditor.on('focus', function(){console.log('focus')});\n\
+    \      //        \teditor.on('hide', function(){console.log('hide');});\n    \
+    \  //        \teditor.on('blur', function(){console.log('blur');});\n      //\
     \        \teditor.on('click', function(){console.log('click');});\n      //  \
     \      \teditor.on('focusout', function(){setTimeout(function(){console.log('focusout');cancel()},100);});\n\
     \      //        \teditor.on('focusin', function(){console.log('focusin');});\n\
