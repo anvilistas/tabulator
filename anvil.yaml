@@ -63,18 +63,45 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \      const c = columns[i]\n        if (typeof c.formatter == 'object' && c.formatter.v\
     \ !== undefined) {\n            // then we have an anvil element\n           \
     \ const formatter_component = c.formatter.v;\n            c.formatter = function\
-    \ (cell, formatterParams, onRendered) {\n              \tconsole.log('component',\
-    \ formatter_component);\n                const kwargs = [];\n                if\
-    \ (formatter_component.superClass_.tp$name.includes('Template')) {\n         \
-    \           // then anvil Form so give it the item for any data bindings\n   \
-    \                 formatterParams['item'] = cell.getData();\n                }\n\
-    \              \t// map the formatterParams into a skulpt keyword argument\n \
-    \               Sk.abstr.mappingUnpackIntoKeywordArray(kwargs, Sk.ffi.remapToPy(formatterParams))\n\
-    \              \t// init the component\n                const component = Sk.misceval.applyOrSuspend(formatter_component,\
+    \ (cell, formatterParams, onRendered) {\n                let kwargs = [];\n  \
+    \            \tif (formatterParams === undefined) {formatterParams = {}};\n  \
+    \              if (formatter_component.superClass_.tp$name.includes('Template'))\
+    \ {\n                    // then anvil Form so give it the item for any data bindings\n\
+    \                    formatterParams['item'] = cell.getData();\n             \
+    \   }\n              \t// map the formatterParams into a skulpt keyword argument\n\
+    \                Sk.abstr.mappingUnpackIntoKeywordArray(kwargs, Sk.ffi.remapToPy(formatterParams))\n\
+    \              \t// init the component\n                let component = Sk.misceval.applyOrSuspend(formatter_component,\
     \ undefined, undefined, kwargs, []);\n                // make the component's\
     \ parent the tabulator\n                anvil.call(self.v._anvil.element, 'add_component',\
     \ component);\n\n                return component._anvil.element[0];\n\n     \
-    \       }\n        }\n    }\n\n    table.setColumns(columns);\n}\n\nfunction set_height(self,\
+    \       }\n        }\n      \n      if (typeof c.editor == 'object' && c.editor.v\
+    \ !== undefined) {\n            // then we have an anvil element\n           \
+    \ const editor_component = c.editor.v;\n            c.editor = function (cell,\
+    \ onRendered, success, cancel, editorParams) {\n              \tconsole.log(editorParams)\n\
+    \                let kwargs = [];\n              \tif (editorParams === undefined)\
+    \ {editorParams = {}};\n                if (editor_component.superClass_.tp$name.includes('Template'))\
+    \ {\n                    // then anvil Form so give it the item for any data bindings\n\
+    \                    editorParams['item'] = cell.getData();\n                }\n\
+    \              \t// map the formatterParams into a skulpt keyword argument\n \
+    \             \t\n              \t\n                Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
+    \ Sk.ffi.remapToPy(editorParams))\n              \t// init the component\n   \
+    \             let component = Sk.misceval.applyOrSuspend(editor_component, undefined,\
+    \ undefined, kwargs, []);\n                // make the component's parent the\
+    \ tabulator\n                anvil.call(self.v._anvil.element, 'add_component',\
+    \ component);\n\t\t\t\tconsole.log(component);\n              \tconst editor =\
+    \ component._anvil.element;\n              \tconsole.log(editor);\n          \
+    \    \tconsole.log(cancel)\n              \n      //        \teditor.on('focus',\
+    \ function(){console.log('focus')});\n      //        \teditor.on('hide', function(){console.log('hide');});\n\
+    \              \teditor.on('blur', function(){console.log('blur');});\n      //\
+    \        \teditor.on('click', function(){console.log('click');});\n      //  \
+    \      \teditor.on('focusout', function(){setTimeout(function(){console.log('focusout');cancel()},100);});\n\
+    \      //        \teditor.on('focusin', function(){console.log('focusin');});\n\
+    \      //        \teditor.on('submin', function(){console.log('submit');});\n\
+    \      //        \n      //        \teditor[0].addEventListener(\"change\", function(){console.log('change');cancel()});\n\
+    \   \t  //\t\teditor[0].addEventListener(\"blur\", function(){console.log('blur');cancel()});\n\
+    \              \t\n              \teditor.css('padding','8px');\n            \
+    \  window.e = editor;\n                return editor[0];\n\n            }\n  \
+    \      }\n      \n    }\n\n    table.setColumns(columns);\n}\n\nfunction set_height(self,\
     \ height) {\n    table = find_table(self);\n    table.setHeight(height);\n}\n\n\
     function set_group_by(self, field) {\n    table = find_table(self);\n    table.setGroupBy(field);\n\
     }\n\nfunction add_row(self, row, top, pos) {\n    table = find_table(self);\n\
