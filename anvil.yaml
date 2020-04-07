@@ -126,6 +126,7 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ .column-panel, .tabulator-cell input {margin: 0 !important;}\n  .tabulator-cell\
     \ .form-control {padding-top: 0 !important;}\n  .title-center{\n    text-align:\
     \ center !important;\n  }\n</style>"}
+db_schema: []
 dependency_order: []
 dependency_code: {}
 renamed: true
