@@ -27,11 +27,17 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     ,$(d).addClass(\"datepicker\"),d.value=moment(t.getValue(),\"DD/MM/YYYY\").format(\"\
     YYYY-MM-DD\"),e(function(){d.focus(),d.style.css=\"100%\"}),d.addEventListener(\"\
     blur\",function(){d.value?o(moment(d.value,\"YYYY-MM-DD\").format(\"DD/MM/YYYY\"\
-    )):n()}),d};\n</script>\n\n\n<script>\n// trigger redraw on window resize\n$(window).on('resize',\
-    \ function(){\n  $.each(Tabulator.prototype.findTable('.tabulator'), function(){\n\
-    \    this.redraw()\n  })\n});\n  \nfunction find_table(self) {\n    table = Tabulator.prototype.findTable(self.v._anvil.element[0])[0];\n\
-    \    return table;\n}\n\nfunction create_table(\n    self,\n    auto_columns,\n\
-    \    header_align,\n    header_visible,\n    height,\n    index,\n    layout,\n\
+    )):n()}),d};\n</script>\n\n<script>\n// patch for deepCloning Skulpt elements\n\
+    Tabulator.prototype.helpers.deepClone = function (t) {\n    var e = Array.isArray(t)\
+    \ ? [] : {};\n    for (var o in t){\n        null != t[o] && \"object\" === _typeof(t[o])\
+    \ && t[o].v !== undefined?\n        t[o] instanceof Date ?\n        (e[o] = new\
+    \ Date(t[o])) :\n        (e[o] = this.deepClone(t[o])) :\n        (e[o] = t[o]);\n\
+    \    }\n    return e;\n};\n</script>\n\n<script>\n// trigger redraw on window\
+    \ resize\n$(window).on('resize', function(){\n  $.each(Tabulator.prototype.findTable('.tabulator'),\
+    \ function(){\n    this.redraw()\n  })\n});\n  \nfunction find_table(self) {\n\
+    \    table = Tabulator.prototype.findTable(self.v._anvil.element[0])[0];\n   \
+    \ return table;\n}\n\nfunction create_table(\n    self,\n    auto_columns,\n \
+    \   header_align,\n    header_visible,\n    height,\n    index,\n    layout,\n\
     \    moveable_columns,\n    pagination,\n    pagination_button_count,\n    pagination_size,\n\
     \    pagination_size_selector,\n    resizable_columns,\n    row_selectable,\n\
     \    spacing_above,\n    spacing_below,\n) {\n    self = self.v._anvil.element[0];\n\
