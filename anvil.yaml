@@ -59,77 +59,78 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \      $(self).addClass('anvil-spacing-below-'+spacing_below);\n      \n}\n\n\
     function set_data(self, data) {\n    table = find_table(self);\n    table.setData(data);\n\
     }\n\nfunction get_data(self) {\n    table = find_table(self);\n    return table.getData();\n\
-    }\n\nfunction set_columns(self, columns, checkbox_select) {\n  table = find_table(self);\n\
+    }\n\nfunction set_columns(self, columns, checkbox_select) {\n    table = find_table(self);\n\
     \    if (checkbox_select) {\n        columns.unshift({\n            formatter:\
     \ \"rowSelectionDisplay\",\n            titleFormatter: \"rowSelectionDisplay\"\
     ,\n            width: 40,\n            align: \"center\",\n            headerSort:\
-    \ false,\n          \tcssClass: 'title-center',\n            cellClick: function\
+    \ false,\n            cssClass: 'title-center',\n            cellClick: function\
     \ (e, cell) {\n                cell.getRow().toggleSelect();\n            }\n\
-    \        });\n    }\n    \n  \tfor (let i = 0; i < columns.length; i++) {\n  \
-    \      const c = columns[i]\n        if (typeof c.formatter == 'object' && c.formatter.v\
+    \        });\n    }\n\n    for (let i = 0; i < columns.length; i++) {\n      \
+    \  const c = columns[i]\n        if (typeof c.formatter == 'object' && c.formatter.v\
     \ !== undefined) {\n            // then we have an anvil element\n           \
     \ const formatter_component = c.formatter.v;\n            c.formatter = function\
     \ (cell, formatterParams, onRendered) {\n                if (formatter_component.superClass_.tp$name.includes('Template'))\
     \ {\n                    // then anvil Form so give it the item for any data bindings\n\
     \                    formatterParams['item'] = cell.getData();\n             \
-    \   }\n              \t// map the formatterParams into a skulpt keyword argument\n\
+    \   }\n                // map the formatterParams into a skulpt keyword argument\n\
     \                let kwargs = [];\n                Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
-    \ Sk.ffi.remapToPy(formatterParams))\n              \t// init the component\n\
+    \ Sk.ffi.remapToPy(formatterParams))\n                // init the component\n\
     \                let component = Sk.misceval.applyOrSuspend(formatter_component,\
     \ undefined, undefined, kwargs, []);\n                // make the component's\
     \ parent the tabulator\n                anvil.call(self.v._anvil.element, 'add_component',\
     \ component);\n\n                return component._anvil.element[0];\n\n     \
-    \       }\n        }\n      \n      if (typeof c.editor == 'object' && c.editor.v\
+    \       }\n        }\n\n        if (typeof c.editor == 'object' && c.editor.v\
     \ !== undefined) {\n            // then we have an anvil element\n           \
     \ const editor_component = c.editor.v;\n            c.editor = function (cell,\
     \ onRendered, success, cancel, editorParams) {\n                if (editor_component.superClass_.tp$name.includes('Template'))\
     \ {\n                    // then anvil Form so give it the item for any data bindings\n\
     \                    editorParams['item'] = cell.getData();\n                }\n\
-    \              \t// map the editorParams into a skulpt keyword argument      \
+    \                // map the editorParams into a skulpt keyword argument      \
     \        \t\n                let kwargs = [];\n                Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
-    \ Sk.ffi.remapToPy(editorParams))\n              \t// init the component\n   \
+    \ Sk.ffi.remapToPy(editorParams))\n                // init the component\n   \
     \             let component = Sk.misceval.applyOrSuspend(editor_component, undefined,\
-    \ undefined, kwargs, []);\n              \tconst editor = component._anvil.element;\
-    \              \n              \n                // make the component's parent\
-    \ the tabulator\n                anvil.call(self.v._anvil.element, 'add_component',\
-    \ component);\n              \tclose_editor = function(kwa) {\n              \
-    \      cancel()\n                  \tSk.abstr.gattr(component, Sk.builtin.str('remove_from_parent')).tp$call([])\n\
-    \                };\n              \tclose_editor.co_kwargs = 1;\n           \
-    \   \tcomponent._anvil.eventHandlers['x-close-editor'] = new Sk.builtin.func(close_editor);\n\
-    \n\n              \teditor.css('padding','8px');\n              \n           \
-    \   \teditor[0].addEventListener('blur', function(e){\n                  if (!e.target.parentElement.classList.contains('anvil-datepicker')\
-    \ || (e.relatedTarget && e.relatedTarget.tagName !== 'SELECT')){\n           \
-    \         // hack for datepicker\n                    cancel()\n             \
-    \     }\n                },true);\n              \n              \tonRendered(function(){\n\
-    \                  // focus the first non-div element\n                  editor.find(':not(div)').first().trigger('focus');\n\
-    \                });\n              \n                return editor[0];\n    \
-    \        }\n        }\n      \n    }\n\n    table.setColumns(columns);\n}\n\n\
-    function set_height(self, height) {\n    table = find_table(self);\n    table.setHeight(height);\n\
-    }\n\nfunction set_group_by(self, field) {\n    table = find_table(self);\n   \
-    \ table.setGroupBy(field);\n}\n\nfunction add_row(self, row, top, pos) {\n   \
-    \ table = find_table(self);\n    table.addRow(row, top, pos);\n}\n\nfunction get_row(self,\
-    \ index) {\n    table = find_table(self);\n  \trow = table.getRow(index);\n  \t\
-    if (!row) {\n      return null;\n    } else {\n      return row.getData();   \
-    \   \n    }\n\n}\n\nfunction delete_row(self, index) {\n    table = find_table(self);\n\
-    \    table.deleteRow(index);\n}\n\nfunction update_row(self, index, row) {\n \
-    \   table = find_table(self);\n    table.updateRow(index, row);\n}\n\nfunction\
-    \ update_or_add_data(self, data) {\n    table = find_table(self);\n    table.updateOrAddData(data);\n\
-    }\n\nfunction add_data(self, data, top, pos) {\n    table = find_table(self);\n\
-    \    table.addData(data, top, pos);\n}\n\nfunction get_selected(self) {\n    table\
-    \ = find_table(self);\n    return table.getSelectedData();\n}\n\nfunction set_filter(self,\
-    \ field, type, value) {\n    table = find_table(self);\n    table.setFilter(field,\
-    \ type, value);\n}\n\nfunction add_filter(self, field, type, value) {\n    table\
-    \ = find_table(self);\n    table.addFilter(field, type, value);\n}\n\nfunction\
-    \ remove_filter(self, field, type, value) {\n    table = find_table(self);\n \
-    \   table.removeFilter(field, type, value);\n}\n\nfunction get_filters(self) {\n\
-    \    table = find_table(self);\n    return table.getFilters();\n}\n\nfunction\
-    \ clear_filter(self, ...args) {\n    table = find_table(self);\n    table.clearFilter(...args);\n\
-    }\n\nfunction set_sort(self, ...args) {\n    table = find_table(self);\n    table.setSort(...args);\n\
-    }\n\nfunction clear_sort(self) {\n    table = find_table(self);\n    table.getSorters();\n\
-    \    table.clearSort();\n    // reset table data\n    table.setData(table.getData());\n\
-    }\n\nfunction redraw(self) {\n    table = find_table(self);\n    table.redraw();\n\
-    }\n\nfunction replace_data(self, data) {\n    table = find_table(self);\n    table.replaceData(data);\n\
-    \  \n}\n  \n\n  \n</script>\n\n<style>\n  .tabulator.anvil-spacing-below-none{margin-bottom\
+    \ undefined, kwargs, []);\n\n                // make the component's parent the\
+    \ tabulator\n                anvil.call(self.v._anvil.element, 'add_component',\
+    \ component);\n                close_editor = function (kwa) {\n             \
+    \       cancel()\n                    Sk.abstr.gattr(component, Sk.builtin.str('remove_from_parent')).tp$call([])\n\
+    \                };\n                close_editor.co_kwargs = 1;\n           \
+    \     component._anvil.eventHandlers['x-close-editor'] = new Sk.builtin.func(close_editor);\n\
+    \n\n                const editor = component._anvil.element;\n               \
+    \ editor.css('padding', '8px');\n\n                editor[0].addEventListener('blur',\
+    \ function (e) {\n                    if (!e.target.parentElement.classList.contains('anvil-datepicker')\
+    \ || (e.relatedTarget && e.relatedTarget.tagName !== 'SELECT')) {\n          \
+    \              // hack for datepicker\n                        cancel()\n    \
+    \                }\n                }, true);\n\n                onRendered(function\
+    \ () {\n                    // focus the first non-div element\n             \
+    \       editor.find(':not(div)').first().trigger('focus');\n                });\n\
+    \n                return editor[0];\n            }\n        }\n\n    }\n\n   \
+    \ table.setColumns(columns);\n}\n\nfunction set_height(self, height) {\n    table\
+    \ = find_table(self);\n    table.setHeight(height);\n}\n\nfunction set_group_by(self,\
+    \ field) {\n    table = find_table(self);\n    table.setGroupBy(field);\n}\n\n\
+    function add_row(self, row, top, pos) {\n    table = find_table(self);\n    table.addRow(row,\
+    \ top, pos);\n}\n\nfunction get_row(self, index) {\n    table = find_table(self);\n\
+    \  \trow = table.getRow(index);\n  \tif (!row) {\n      return null;\n    } else\
+    \ {\n      return row.getData();      \n    }\n\n}\n\nfunction delete_row(self,\
+    \ index) {\n    table = find_table(self);\n    table.deleteRow(index);\n}\n\n\
+    function update_row(self, index, row) {\n    table = find_table(self);\n    table.updateRow(index,\
+    \ row);\n}\n\nfunction update_or_add_data(self, data) {\n    table = find_table(self);\n\
+    \    table.updateOrAddData(data);\n}\n\nfunction add_data(self, data, top, pos)\
+    \ {\n    table = find_table(self);\n    table.addData(data, top, pos);\n}\n\n\
+    function get_selected(self) {\n    table = find_table(self);\n    return table.getSelectedData();\n\
+    }\n\nfunction set_filter(self, field, type, value) {\n    table = find_table(self);\n\
+    \    table.setFilter(field, type, value);\n}\n\nfunction add_filter(self, field,\
+    \ type, value) {\n    table = find_table(self);\n    table.addFilter(field, type,\
+    \ value);\n}\n\nfunction remove_filter(self, field, type, value) {\n    table\
+    \ = find_table(self);\n    table.removeFilter(field, type, value);\n}\n\nfunction\
+    \ get_filters(self) {\n    table = find_table(self);\n    return table.getFilters();\n\
+    }\n\nfunction clear_filter(self, ...args) {\n    table = find_table(self);\n \
+    \   table.clearFilter(...args);\n}\n\nfunction set_sort(self, ...args) {\n   \
+    \ table = find_table(self);\n    table.setSort(...args);\n}\n\nfunction clear_sort(self)\
+    \ {\n    table = find_table(self);\n    table.getSorters();\n    table.clearSort();\n\
+    \    // reset table data\n    table.setData(table.getData());\n}\n\nfunction redraw(self)\
+    \ {\n    table = find_table(self);\n    table.redraw();\n}\n\nfunction replace_data(self,\
+    \ data) {\n    table = find_table(self);\n    table.replaceData(data);\n  \n}\n\
+    \  \n\n  \n</script>\n\n<style>\n  .tabulator.anvil-spacing-below-none{margin-bottom\
     \ : 0px;}\n  .tabulator.anvil-spacing-below-small{margin-bottom : 4px;}\n  .tabulator.anvil-spacing-below-medium{margin-bottom\
     \ : 8px;}\n  .tabulator.anvil-spacing-below-large{margin-bottom : 16px;}\n  .tabulator-cell\
     \ .column-panel, .tabulator-cell input {margin: 0 !important;}\n  .tabulator-cell\
