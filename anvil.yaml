@@ -134,8 +134,7 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ : 8px;}\n  .tabulator.anvil-spacing-below-large{margin-bottom : 16px;}\n  .tabulator-cell\
     \ .column-panel, .tabulator-cell input {margin: 0 !important;}\n  .tabulator-cell\
     \ .form-control {padding-top: 0 !important;}\n  .title-center{\n    text-align:\
-    \ center !important;\n  }\n  .tabulator-page.active {color: %color:Primary 700%;}\n\
-    </style>"}
+    \ center !important;\n  }\n</style>"}
 db_schema: []
 dependency_order: []
 dependency_code: {}
