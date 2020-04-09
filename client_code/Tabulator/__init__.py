@@ -155,6 +155,7 @@ class Tabulator(TabulatorTemplate):
     def data(self, value):
         anvil.js.call_js('set_data', self, value)
         self._data = anvil.js.call_js('get_data', self)
+        print(self._data)
 
     @property
     def height(self):
