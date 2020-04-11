@@ -88,21 +88,21 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ component);\n\n                return component._anvil.element[0];\n\n     \
     \       }\n        }\n\n        if (typeof c.editor == 'object' && c.editor.v\
     \ !== undefined) {\n            // then we have an anvil element\n           \
-    \ const editor_component = c.editor.v;\n            c.editor = function (cell,\
-    \ onRendered, success, cancel, editorParams) {\n                if (editor_component.superClass_.tp$name.includes('Template'))\
+    \ const anvil_editor = c.editor.v;\n            c.editor = function (cell, onRendered,\
+    \ success, cancel, editorParams) {\n                if (anvil_editor.superClass_.tp$name.includes('Template'))\
     \ {\n                    // then anvil Form so give it the item for any data bindings\n\
     \                    editorParams['item'] = cell.getData();\n                }\n\
     \n                // map the editorParams into a skulpt keyword argument     \
     \         \t\n                let kwargs = [];\n                Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
     \ Sk.ffi.remapToPy(helperMapToPy(editorParams)))\n                // init the\
     \ component\n              \t\n                //let component = anvil.call(table.element,\
-    \ '_render_cell', editor_component, editorParams)\n              // component\
-    \ = anvil.call(table.element, '_render_cell_with_function', editor_function, editorParams)\n\
-    \                let component = Sk.misceval.applyOrSuspend(editor_component,\
-    \ undefined, undefined, kwargs, []);\n                // make the component's\
-    \ parent the tabulator\n                anvil.call(table.element, 'add_component',\
-    \ component);\n\n\n                const editor = component._anvil.element;\n\
-    \                const blur_cancel = function (e) {\n                    if (!e.target.parentElement.classList.contains('anvil-datepicker')\
+    \ '_render_cell', anvil_editor, editorParams)\n              // component = anvil.call(table.element,\
+    \ '_render_cell_with_function', editor_function, editorParams)\n             \
+    \   let component = Sk.misceval.applyOrSuspend(anvil_editor, undefined, undefined,\
+    \ kwargs, []);\n                // make the component's parent the tabulator\n\
+    \                anvil.call(table.element, 'add_component', component);\n\n\n\
+    \                const editor = component._anvil.element;\n                const\
+    \ blur_cancel = function (e) {\n                    if (!e.target.parentElement.classList.contains('anvil-datepicker')\
     \ || (e.relatedTarget && e.relatedTarget.tagName !== 'SELECT')) {\n          \
     \              // hack for datepicker\n                        cancel()\n    \
     \                }\n                }\n                editor[0].addEventListener('blur',\
