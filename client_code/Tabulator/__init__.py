@@ -144,7 +144,11 @@ class Tabulator(TabulatorTemplate):
     def cell_edited(self, field, row):
         self._data = anvil.js.call_js('get_data', self)
         self.raise_event('cell_edited', field=field, row=row)
-      
+ 
+    def redraw(self, **event_args):
+        """This method is called when the HTML panel is shown on the screen"""
+        # redraw on show
+        anvil.js.call_js('redraw', self)
       
 # properties
     @property
@@ -304,9 +308,12 @@ class Tabulator(TabulatorTemplate):
         self._spacing_below = value
 
         
-    def redraw(self, **event_args):
-        """This method is called when the HTML panel is shown on the screen"""
-        # redraw on show
-        anvil.js.call_js('redraw', self)
 
-        
+# private methods
+    def _render_cell_with_function(self, render_function, row):
+        return render_function(row)
+
+    def _render_cell_with_component(self, component, properties):
+        component = component(**properties)
+        self.add_component(component)
+        return component
