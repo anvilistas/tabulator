@@ -310,10 +310,9 @@ class Tabulator(TabulatorTemplate):
         
 
 # private methods
-    def _render_cell_with_function(self, render_function, row):
-        return render_function(row)
+    def _render_cell(self, function_or_component, row, params):
+        pass
 
     def _render_cell_with_component(self, component, properties):
         component = component(**properties)
-        self.add_component(component)
         return component

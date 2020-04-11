@@ -95,8 +95,10 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \n                // map the editorParams into a skulpt keyword argument     \
     \         \t\n                let kwargs = [];\n                Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
     \ Sk.ffi.remapToPy(helperMapToPy(editorParams)))\n                // init the\
-    \ component\n                //let component = anvil.call(table.element, '_render_cell_with_component',\
-    \ editor_component, editorParams)\n                let component = Sk.misceval.applyOrSuspend(editor_component,\
+    \ component\n              \t\n                //let component = anvil.call(table.element,\
+    \ '_render_cell', editor_component, editorParams)\n              // component\
+    \ = anvil.call(table.element, '_render_cell_with_function', editor_function, editorParams)\n\
+    \                let component = Sk.misceval.applyOrSuspend(editor_component,\
     \ undefined, undefined, kwargs, []);\n                // make the component's\
     \ parent the tabulator\n                anvil.call(table.element, 'add_component',\
     \ component);\n\n\n                const editor = component._anvil.element;\n\
