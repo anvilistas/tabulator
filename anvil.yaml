@@ -5,7 +5,6 @@ allow_embedding: false
 name: Tabulator
 runtime_options: {version: 2, client_version: '3', server_version: python3-full}
 metadata: {}
-startup_form: Tabulator
 native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/dist/css/bootstrap/tabulator_bootstrap.min.css\"\
     \ rel=\"stylesheet\">\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.5.3/dist/js/tabulator.min.js\"\
     ></script>\n\n<script>\n// enhancments\n//rowSelectionDisplay column formatter\n\
@@ -75,14 +74,15 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \            }\n        });\n    }\n\n    for (let i = 0; i < columns.length;\
     \ i++) {\n        const c = columns[i]\n        if (typeof c.formatter == 'object'\
     \ && c.formatter.v !== undefined) {\n            // then we have an anvil element\n\
-    \            const formatter_component = c.formatter.v;\n            c.formatter\
-    \ = function (cell, formatterParams, onRendered) {\n                if (formatter_component.superClass_.tp$name.includes('Template'))\
+    \            const anvil_formatter = c.formatter.v;\n            c.formatter =\
+    \ function (cell, formatterParams, onRendered) {\n                if (formatter_component.superClass_.tp$name.includes('Template'))\
     \ {\n                    // then anvil Form so give it the item for any data bindings\n\
     \                    formatterParams['item'] = cell.getData();\n             \
     \   }\n                // map the formatterParams into a skulpt keyword argument\n\
-    \                let kwargs = [];\n                Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
-    \ Sk.ffi.remapToPy(helperMapToPy(formatterParams)))\n                // init the\
-    \ component\n                let component = Sk.misceval.applyOrSuspend(formatter_component,\
+    \              \t//let component = anvil.call(table.element, '_render_cell', anvil_formatter,\
+    \ cell.getData(), formatterParams)\n                let kwargs = [];\n       \
+    \         Sk.abstr.mappingUnpackIntoKeywordArray(kwargs, Sk.ffi.remapToPy(helperMapToPy(formatterParams)))\n\
+    \                // init the component\n                let component = Sk.misceval.applyOrSuspend(anvil_formatter,\
     \ undefined, undefined, kwargs, []);\n                // make the component's\
     \ parent the tabulator\n                anvil.call(table.element, 'add_component',\
     \ component);\n\n                return component._anvil.element[0];\n\n     \
@@ -95,10 +95,9 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \n                // map the editorParams into a skulpt keyword argument     \
     \         \t\n                let kwargs = [];\n                Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
     \ Sk.ffi.remapToPy(helperMapToPy(editorParams)))\n                // init the\
-    \ component\n              \t\n                //let component = anvil.call(table.element,\
-    \ '_render_cell', anvil_editor, editorParams)\n              // component = anvil.call(table.element,\
-    \ '_render_cell_with_function', editor_function, editorParams)\n             \
-    \   let component = Sk.misceval.applyOrSuspend(anvil_editor, undefined, undefined,\
+    \ component\n              \t//let component = anvil.call(table.element, '_render_cell',\
+    \ anvil_editor, cell.getData(), formatterParams)\n              \t\n         \
+    \       let component = Sk.misceval.applyOrSuspend(anvil_editor, undefined, undefined,\
     \ kwargs, []);\n                // make the component's parent the tabulator\n\
     \                anvil.call(table.element, 'add_component', component);\n\n\n\
     \                const editor = component._anvil.element;\n                const\
