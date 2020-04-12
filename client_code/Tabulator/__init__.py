@@ -1,10 +1,5 @@
 from ._anvil_designer import TabulatorTemplate
-import anvil
-
-print(issubclass(anvil.TextArea, anvil.Component))
-print(issubclass(anvil.ColumnPanel, anvil.Container))
-
-container = anvil.ColumnPanel(item={})
+import anvil as _anvil
 
 
 class Tabulator(TabulatorTemplate):
@@ -30,7 +25,7 @@ class Tabulator(TabulatorTemplate):
         defaults.update(properties)
         
         self.init_components(**defaults)
-        anvil.js.call_js('create_table',
+        _anvil.js.call_js('create_table',
                     self,
                     self._auto_columns,
                     self._header_align,
@@ -56,59 +51,59 @@ class Tabulator(TabulatorTemplate):
     def add_row(self, row, top=True, pos=None):
         if row.get(self._index) is None:
             raise KeyError(f"you should provide an index '{self._index}' for this row")
-        if anvil.js.call_js('get_row', self, row.get(self._index)):
+        if _anvil.js.call_js('get_row', self, row.get(self._index)):
             raise KeyError(f"The index '{self._index}' should be unique")
-        anvil.js.call_js('add_row', self, row, top, pos)
+        _anvil.js.call_js('add_row', self, row, top, pos)
         
-        self._data = anvil.js.call_js('get_data', self)
+        self._data = _anvil.js.call_js('get_data', self)
     
     def delete_row(self, index):
-        anvil.js.call_js('delete_row', self, index)
-        self._data = anvil.js.call_js('get_data', self)
+        _anvil.js.call_js('delete_row', self, index)
+        self._data = _anvil.js.call_js('get_data', self)
 
     def update_row(self, index, row):
-        anvil.js.call_js('update_row', self, index, row)
-        self._data = anvil.js.call_js('get_data', self)
+        _anvil.js.call_js('update_row', self, index, row)
+        self._data = _anvil.js.call_js('get_data', self)
         
     def get_row(self, index):
-        row = anvil.js.call_js('get_row', self, index)
+        row = _anvil.js.call_js('get_row', self, index)
         return row
         
     def select_row(self, row):
-        anvil.js.call_js('select_row', self, row)
+        _anvil.js.call_js('select_row', self, row)
      
     def get_selected(self):
-        return anvil.js.call_js('get_selected', self)
+        return _anvil.js.call_js('get_selected', self)
       
     def add_data(self, data, top=False, pos=None):
-        anvil.js.call_js('add_data', self, data, top, pos)
-        self._data = anvil.js.call_js('get_data', self)
+        _anvil.js.call_js('add_data', self, data, top, pos)
+        self._data = _anvil.js.call_js('get_data', self)
 
     def update_or_add_data(self, data):
-        anvil.js.call_js('update_or_add_row', self, data)
-        self._data = anvil.js.call_js('get_data', self)
+        _anvil.js.call_js('update_or_add_row', self, data)
+        self._data = _anvil.js.call_js('get_data', self)
 
     def replace_data(self, data):
         # useful to keep the datatable in the same place
-        anvil.js.call_js('replace_data', self, data)
-        self._data = anvil.js.call_js('get_data', self)
+        _anvil.js.call_js('replace_data', self, data)
+        self._data = _anvil.js.call_js('get_data', self)
 
     def set_filter(self, field, type=None, value=None):
         """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'"""
-        anvil.js.call_js('set_filter', self, field, type, value)
+        _anvil.js.call_js('set_filter', self, field, type, value)
         
     def add_filter(self, field, type, value):
-        anvil.js.call_js('add_filter', self, field, type, value)
+        _anvil.js.call_js('add_filter', self, field, type, value)
         
     def remove_filter(self, field=None, type=None, value=None):
-        anvil.js.call_js('remove_filter', self, field, type, value)
+        _anvil.js.call_js('remove_filter', self, field, type, value)
         
     def get_filters(self):
-        return anvil.js.call_js('get_filters', self)
+        return _anvil.js.call_js('get_filters', self)
       
     def clear_filter(self, *args):
         """include an arg of True to clear header filters as well"""
-        anvil.js.call_js('clear_filter', self, *args)
+        _anvil.js.call_js('clear_filter', self, *args)
         
     def set_sort(self, column, ascending=True):
         """first argument can also be a list of sorters [{'column':'name', 'ascending':True}]"""
@@ -116,17 +111,17 @@ class Tabulator(TabulatorTemplate):
             sorters = column
             for sorter in sorters:
                 sorter['dir'] = 'asc' if sorter.pop('ascending') else 'desc'
-            anvil.js.call_js('set_sort', self, sorters)
+            _anvil.js.call_js('set_sort', self, sorters)
         elif isinstance(column, str):
-            anvil.js.call_js('set_sort', self, column, 'asc' if ascending else 'desc')
+            _anvil.js.call_js('set_sort', self, column, 'asc' if ascending else 'desc')
         else:
             raise TypeError('expected first argument to be a list of sorters or the column field name')
     
     def clear_sort(self):
-        anvil.js.call_js('clear_sort', self)
+        _anvil.js.call_js('clear_sort', self)
         
     def set_group_by(self, field):
-        anvil.js.call_js('set_group_by', self, field)
+        _anvil.js.call_js('set_group_by', self, field)
    
 
 # Events
@@ -140,20 +135,20 @@ class Tabulator(TabulatorTemplate):
         self.raise_event('row_selection_change', rows=rows)
         
     def get_selected(self):
-        rows = anvil.js.call_js('get_selected', self)
+        rows = _anvil.js.call_js('get_selected', self)
         return rows
       
     def cell_click(self, field, row):
         self.raise_event('cell_click', field=field, row=row)
         
     def cell_edited(self, field, row):
-        self._data = anvil.js.call_js('get_data', self)
+        self._data = _anvil.js.call_js('get_data', self)
         self.raise_event('cell_edited', field=field, row=row)
  
     def redraw(self, **event_args):
         """This method is called when the HTML panel is shown on the screen"""
         # redraw on show
-        anvil.js.call_js('redraw', self)
+        _anvil.js.call_js('redraw', self)
       
 # properties
     @property
@@ -162,8 +157,8 @@ class Tabulator(TabulatorTemplate):
 
     @data.setter
     def data(self, value):
-        anvil.js.call_js('set_data', self, value)
-        self._data = anvil.js.call_js('get_data', self)
+        _anvil.js.call_js('set_data', self, value)
+        self._data = _anvil.js.call_js('get_data', self)
 
     @property
     def height(self):
@@ -175,7 +170,7 @@ class Tabulator(TabulatorTemplate):
         if value.isdigit():
             value = value+'px'
         if self.parent:
-            anvil.js.call_js('set_height', self, value)
+            _anvil.js.call_js('set_height', self, value)
 
     @property
     def columns(self):
@@ -184,7 +179,7 @@ class Tabulator(TabulatorTemplate):
     @columns.setter
     def columns(self, value):
         self._columns = value
-        anvil.js.call_js('set_columns', self, self._columns, self._row_selectable=='checkbox')
+        _anvil.js.call_js('set_columns', self, self._columns, self._row_selectable=='checkbox')
             
     @property
     def index(self):
@@ -320,10 +315,10 @@ class Tabulator(TabulatorTemplate):
             raise TypeError(f'{function_or_component} must be callable in order to be rendered')
           
         if 'Template' in function_or_component.__bases__[0]:
-            # anvil HTMLForm or BlankPanel Form so pass the row as the item and any params as properties
+            # _anvil HTMLForm or BlankPanel Form so pass the row as the item and any params as properties
             component = function_or_component(item=row, **params)
-        elif issubclass(function_or_component, anvil.Component):
-            # is an anvil component so pass the params as properties
+        elif issubclass(function_or_component, _anvil.Component):
+            # is an _anvil component so pass the params as properties
             component = function_or_component(**params)
         elif row and params:
             # the fucntion expects params so pass the row and params as kwargs
@@ -332,7 +327,7 @@ class Tabulator(TabulatorTemplate):
             # the function does not have any params so only pass the row data to the function
             component = function_or_component(row)
         
-        if not isinstance(component, anvil.Component):
+        if not isinstance(component, _anvil.Component):
             raise TypeError(f'Expected the return value from {function_or_component} to be a component')
         
         self.add_component(component)  # might be weird to check... 
