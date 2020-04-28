@@ -309,27 +309,3 @@ class Tabulator(TabulatorTemplate):
 
         
 
-# private methods
-    def _render_cell(self, function_or_component, row, params):
-        if not callable(function_or_component):
-            raise TypeError(f'{function_or_component} must be callable in order to be rendered')
-          
-        if 'Template' in function_or_component.__bases__[0]:
-            # _anvil HTMLForm or BlankPanel Form so pass the row as the item and any params as properties
-            component = function_or_component(item=row, **params)
-        elif issubclass(function_or_component, _anvil.Component):
-            # is an _anvil component so pass the params as properties
-            component = function_or_component(**params)
-        elif row and params:
-            # the fucntion expects params so pass the row and params as kwargs
-            component = function_or_component(row, **params)
-        elif row:
-            # the function does not have any params so only pass the row data to the function
-            component = function_or_component(row)
-        
-        if not isinstance(component, _anvil.Component):
-            raise TypeError(f'Expected the return value from {function_or_component} to be a component')
-        
-        self.add_component(component)  # might be weird to check... 
-        return component
-            

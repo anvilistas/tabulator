@@ -32,10 +32,8 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ t\n    }\n    for (var o in t){\n        null != t[o] && \"object\" === _typeof(t[o])\
     \ && t[o].v !== undefined?\n        t[o] instanceof Date ?\n        (e[o] = new\
     \ Date(t[o])) :\n        (e[o] = this.deepClone(t[o])) :\n        (e[o] = t[o]);\
-    \ \n    }\n    return e;\n};\n  \n  function helperMapToPy(t){\n    for (let o\
-    \ in t) {\n      if (t[o] != null && t[o].v !== undefined){\n        t[o] = t[o].v;\n\
-    \      } \n    }\n    return t\n  };\n  \n</script>\n\n<script>\n// trigger redraw\
-    \ on window resize\n$(window).on('resize', function(){\n  $.each(Tabulator.prototype.findTable('.tabulator'),\
+    \ \n    }\n    return e;\n};\n    \n</script>\n\n<script>\n// trigger redraw on\
+    \ window resize\n$(window).on('resize', function(){\n  $.each(Tabulator.prototype.findTable('.tabulator'),\
     \ function(){\n    this.redraw()\n  })\n});\n  \n  \nfunction find_table(self)\
     \ {\n    table = Tabulator.prototype.findTable(self.v._anvil.element[0])[0];\n\
     \    return table;\n}\n\nfunction create_table(\n    self,\n    auto_columns,\n\
@@ -50,18 +48,14 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \        pagination: pagination,\n        paginationButtonCount: pagination_button_count,\n\
     \        paginationSize: pagination_size,\n        paginationSizeSelector: pagination_size_selector,\n\
     \        resizableColumns: resizable_columns,\n        selectable: row_selectable,\n\
-    \        rowSelected: function (row) {\n          \ttemp_row = helperMapToPy(row.getData())\n\
-    \            anvil.call(self, \"row_selected\", temp_row);\n        },\n     \
-    \   rowClick: function (e, row) {\n          \ttemp_row = helperMapToPy(row.getData())\n\
-    \            anvil.call(self, \"row_click\", temp_row);\n        },\n        cellEdited:\
-    \ function (cell) {\n          \ttemp_row = helperMapToPy(cell.getData())\n  \
-    \          anvil.call(self, \"cell_edited\", cell.getField(), temp_row);\n   \
-    \     },\n        rowSelectionChanged: function (data, rows) {\n          \tfor\
-    \ (let i = 0; i<data.length; i++){\n              data[i] = helperMapToPy(data[i]);\n\
-    \            }\n            anvil.call(self, \"row_selection_change\", data);\n\
-    \        },\n        cellClick: function (e, cell) {\n          \ttemp_row = helperMapToPy(cell.getData())\n\
-    \            anvil.call(self, \"cell_click\", cell.getField(), temp_row);\n  \
-    \      }\n    });\n      $(self).addClass('anvil-spacing-above-'+spacing_above);\n\
+    \        rowSelected: function (row) {\n            anvil.call(self, \"row_selected\"\
+    , row.getData());\n        },\n        rowClick: function (e, row) {\n       \
+    \     anvil.call(self, \"row_click\", row.getData());\n        },\n        cellEdited:\
+    \ function (cell) {\n            anvil.call(self, \"cell_edited\", cell.getField(),\
+    \ cell.getData());\n        },\n        rowSelectionChanged: function (data, rows)\
+    \ {\n            anvil.call(self, \"row_selection_change\", data);\n        },\n\
+    \        cellClick: function (e, cell) {\n            anvil.call(self, \"cell_click\"\
+    , cell.getField(), cell.getData());\n        }\n    });\n      $(self).addClass('anvil-spacing-above-'+spacing_above);\n\
     \      $(self).addClass('anvil-spacing-below-'+spacing_below);\n      \n}\n\n\
     function set_data(self, data) {\n    table = find_table(self);\n    table.setData(data);\n\
     }\n\nfunction get_data(self) {\n    table = find_table(self);\n    data =  table.getData();\n\
@@ -71,37 +65,30 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ \"rowSelectionDisplay\",\n            width: 40,\n            align: \"center\"\
     ,\n            headerSort: false,\n            cssClass: 'title-center',\n   \
     \         cellClick: function (e, cell) {\n                cell.getRow().toggleSelect();\n\
-    \            }\n        });\n    }\n\n    for (let i = 0; i < columns.length;\
-    \ i++) {\n        const c = columns[i]\n        if (typeof c.formatter == 'object'\
-    \ && c.formatter.v !== undefined) {\n            // then we have an anvil element\n\
-    \            const anvil_formatter = c.formatter.v;\n            c.formatter =\
-    \ function (cell, formatterParams, onRendered) {\n                if (formatter_component.superClass_.tp$name.includes('Template'))\
-    \ {\n                    // then anvil Form so give it the item for any data bindings\n\
-    \                    formatterParams['item'] = cell.getData();\n             \
-    \   }\n                // map the formatterParams into a skulpt keyword argument\n\
-    \              \t//let component = anvil.call(table.element, '_render_cell', anvil_formatter,\
-    \ cell.getData(), formatterParams)\n                let kwargs = [];\n       \
-    \         Sk.abstr.mappingUnpackIntoKeywordArray(kwargs, Sk.ffi.remapToPy(helperMapToPy(formatterParams)))\n\
-    \                // init the component\n                let component = Sk.misceval.applyOrSuspend(anvil_formatter,\
-    \ undefined, undefined, kwargs, []);\n                // make the component's\
-    \ parent the tabulator\n                anvil.call(table.element, 'add_component',\
-    \ component);\n\n                return component._anvil.element[0];\n\n     \
-    \       }\n        }\n\n        if (typeof c.editor == 'object' && c.editor.v\
+    \            }\n        });\n    }\n\tconst Component =  PyDefUtils.getModule('anvil').$d.Component;\n\
+    \    const load_component = function (formatter, cell, parameters) {\n       \
+    \ // get the row as a python dict\n        let row;\n        // get a kwargs array\
+    \ from the paramaters\n        let kwargs = [];\n        Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
+    \ PyDefUtils.unwrapOrRemapToPy(parameters));\n\n        if (formatter.superClass_\
+    \ && formatter.superClass_.tp$name.includes('Template')) {\n          const item\
+    \ = [new Sk.builtin.str(\"item\"), PyDefUtils.unwrapOrRemapToPy(cell.getData())]\n\
+    \          kwargs = kwargs.concat(item);\n        } else if (formatter instanceof\
+    \ Sk.builtin.func) {\n          row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];\n\
+    \        }\n        let component = Sk.misceval.callsimArray(formatter, row, kwargs);\n\
+    \        anvil.call(table.element, 'add_component', component);\n      return\
+    \ component;\n    }\n    \n    for (let i = 0; i < columns.length; i++) {\n  \
+    \      const c = columns[i]\n        if (typeof c.formatter == 'object' && c.formatter.v\
+    \ !== undefined) {\n          \t// then we have an anvil element\n          \t\
+    const formatter_component = c.formatter.v;\n          \tc.formatter = function\
+    \ (cell, formatterParams, onRendered) {\n            let formatter = load_component(formatter_component,\
+    \ cell, formatterParams);\n            return formatter._anvil.element[0];\n \
+    \           }\n        }\n\n        if (typeof c.editor == 'object' && c.editor.v\
     \ !== undefined) {\n            // then we have an anvil element\n           \
-    \ const anvil_editor = c.editor.v;\n            c.editor = function (cell, onRendered,\
-    \ success, cancel, editorParams) {\n                if (anvil_editor.superClass_.tp$name.includes('Template'))\
-    \ {\n                    // then anvil Form so give it the item for any data bindings\n\
-    \                    editorParams['item'] = cell.getData();\n                }\n\
-    \n                // map the editorParams into a skulpt keyword argument     \
-    \         \t\n                let kwargs = [];\n                Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
-    \ Sk.ffi.remapToPy(helperMapToPy(editorParams)))\n                // init the\
-    \ component\n              \t//let component = anvil.call(table.element, '_render_cell',\
-    \ anvil_editor, cell.getData(), formatterParams)\n              \t\n         \
-    \       let component = Sk.misceval.applyOrSuspend(anvil_editor, undefined, undefined,\
-    \ kwargs, []);\n                // make the component's parent the tabulator\n\
-    \                anvil.call(table.element, 'add_component', component);\n\n\n\
-    \                const editor = component._anvil.element;\n                const\
-    \ blur_cancel = function (e) {\n                    if (!e.target.parentElement.classList.contains('anvil-datepicker')\
+    \ const editor_component = c.editor.v;\n            c.editor = function (cell,\
+    \ onRendered, success, cancel, editorParams) {\n                let component\
+    \ = load_component(editor_component, cell, editorParams);\n              \tlet\
+    \ editor = component._anvil.element;\n                const blur_cancel = function\
+    \ (e) {\n                    if (!e.target.parentElement.classList.contains('anvil-datepicker')\
     \ || (e.relatedTarget && e.relatedTarget.tagName !== 'SELECT')) {\n          \
     \              // hack for datepicker\n                        cancel()\n    \
     \                }\n                }\n                editor[0].addEventListener('blur',\
@@ -147,6 +134,4 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ .form-control {padding-top: 0 !important;}\n  .title-center{\n    text-align:\
     \ center !important;\n  }\n</style>"}
 db_schema: []
-dependency_order: []
-dependency_code: {}
 renamed: true
