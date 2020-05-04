@@ -6,6 +6,7 @@ class Tabulator(TabulatorTemplate):
     def __init__(self, **properties):
         # allow Tabulator to be set in code with default values
         self._from_cache = False
+        self._table_init = False
         
         defaults = {'auto_columns': None, 
                     'header_align': 'middle', 
@@ -22,6 +23,7 @@ class Tabulator(TabulatorTemplate):
                     'row_selectable': 'checkbox',
                     'spacing_above': 'small', 
                     'spacing_below': 'small', 
+                    'visible' : True,
                    }
 
         defaults.update(properties)
@@ -46,6 +48,9 @@ class Tabulator(TabulatorTemplate):
                     self._spacing_below,
                     )
         self._data = []
+        
+        self._table_init = True
+        self.visible = self.visible
         
         
 
@@ -325,5 +330,5 @@ class Tabulator(TabulatorTemplate):
     @visible.setter
     def visible(self, value):
         self._visible = value    
-        if self._from_cache:
+        if self._table_init:
             _anvil.js.call_js('change_visible', self, value)
