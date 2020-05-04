@@ -5,6 +5,8 @@ import anvil as _anvil
 class Tabulator(TabulatorTemplate):
     def __init__(self, **properties):
         # allow Tabulator to be set in code with default values
+        self._from_cache = False
+        
         defaults = {'auto_columns': None, 
                     'header_align': 'middle', 
                     'header_visible': True, 
@@ -44,6 +46,7 @@ class Tabulator(TabulatorTemplate):
                     self._spacing_below,
                     )
         self._data = []
+        
         
 
 
@@ -149,6 +152,13 @@ class Tabulator(TabulatorTemplate):
         """This method is called when the HTML panel is shown on the screen"""
         # redraw on show
         _anvil.js.call_js('redraw', self)
+        
+    def form_show(self, **event_args):
+        if not self._from_cache:
+            self.redraw()
+            self._from_cache = True
+            self.visible = self.visible
+
       
 # properties
     @property
@@ -307,5 +317,13 @@ class Tabulator(TabulatorTemplate):
     def spacing_below(self, value):
         self._spacing_below = value
 
-        
-
+    @property
+    def visible(self):
+        return self._visible
+          
+      
+    @visible.setter
+    def visible(self, value):
+        self._visible = value    
+        if self._from_cache:
+            _anvil.js.call_js('change_visible', self, value)

@@ -8,7 +8,7 @@ container:
       \ columnD:'columnD'},\n          {columnA:'columnA', columnB:'columnB', columnC:'columnC',\
       \ columnD:'columnD'}],\n\t});\n\n});\n</script>\n\n<style>\n  .tabulator-row\
       \ .tabulator-cell {\n    font-style: italic;\n  }\n</style>\n\n"}
-  event_bindings: {show: redraw}
+  event_bindings: {show: form_show}
 components: []
 is_package: true
 custom_component: true
@@ -30,6 +30,7 @@ properties:
 - {name: row_selectable, type: string, default_value: checkbox}
 - {name: spacing_above, type: string, default_value: small}
 - {name: spacing_below, type: string, default_value: small}
+- {name: visible, type: boolean, default_value: true}
 events:
 - {name: row_click, default_event: true, description: when a row is clicked}
 - {name: row_selected, description: when a row is selected}

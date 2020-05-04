@@ -128,6 +128,9 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \    table.clearSort();\n    // reset table data\n    table.setData(table.getData());\n\
     }\n\nfunction redraw(self) {\n    table = find_table(self);\n    table.redraw();\n\
     }\n\nfunction replace_data(self, data) {\n    table = find_table(self);\n    table.replaceData(data);\n\
+    \  \n}\n\nfunction change_visible(self, value) {\n    table = find_table(self);\n\
+    \  \tconsole.log(table);\n  \tconsole.log(value)\n  \tif (value) {\n      $(table.element).removeClass('visible-false')\n\
+    \    } else {\n      $(table.element).addClass('visible-false')\n    }\n    \n\
     \  \n}\n  \n\n  \n</script>\n\n<style>\n  .tabulator.anvil-spacing-below-none{margin-bottom\
     \ : 0px;}\n  .tabulator.anvil-spacing-below-small{margin-bottom : 4px;}\n  .tabulator.anvil-spacing-below-medium{margin-bottom\
     \ : 8px;}\n  .tabulator.anvil-spacing-below-large{margin-bottom : 16px;}\n  .tabulator-cell\
