@@ -162,7 +162,7 @@ class Tabulator(TabulatorTemplate):
         if not self._from_cache:
             self.redraw()
             self._from_cache = True
-            self.visible = self.visible
+
 
       
 # properties
