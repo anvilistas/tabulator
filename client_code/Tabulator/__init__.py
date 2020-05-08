@@ -159,7 +159,7 @@ class Tabulator(TabulatorTemplate):
         _anvil.js.call_js('redraw', self)
         
     def form_show(self, **event_args):
-        if not self._from_cache:
+#         if not self._from_cache:
             self.redraw()
             self._from_cache = True
 
