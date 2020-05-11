@@ -88,7 +88,7 @@ class Tabulator(TabulatorTemplate):
         self._data = _anvil.js.call_js('get_data', self)
 
     def update_or_add_data(self, data):
-        _anvil.js.call_js('update_or_add_row', self, data)
+        _anvil.js.call_js('update_or_add_data', self, data)
         self._data = _anvil.js.call_js('get_data', self)
 
     def replace_data(self, data):
