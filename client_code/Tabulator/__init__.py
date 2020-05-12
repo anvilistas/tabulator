@@ -1,3 +1,17 @@
+"""
+    Tabulator for Anvil
+    an anvil wrapper for tabulator: https://github.com/olifolkerd/tabulator
+    Copyright 2020 Stu Cork
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Source code published at https://github.com/s-cork/Tabulator
+"""
+
 from ._anvil_designer import TabulatorTemplate
 import anvil as _anvil
 
