@@ -16,6 +16,16 @@ from ._anvil_designer import TabulatorTemplate
 import anvil as _anvil
 
 
+def maintain_scroll_position(func):
+  def wrap(*args, **kwargs):
+    print(_anvil.js.call_js('getset_scrollposition'))
+    res = func(*args, **kwargs)
+    print(_anvil.js.call_js('getset_scrollposition', True))
+    return res
+  return wrap
+
+
+
 class Tabulator(TabulatorTemplate):
     def __init__(self, **properties):
         # allow Tabulator to be set in code with default values
@@ -104,7 +114,8 @@ class Tabulator(TabulatorTemplate):
     def update_or_add_data(self, data):
         _anvil.js.call_js('update_or_add_data', self, data)
         self._data = _anvil.js.call_js('get_data', self)
-
+    
+    @maintain_scroll_position
     def replace_data(self, data):
         # useful to keep the datatable in the same place
         _anvil.js.call_js('replace_data', self, data)
@@ -166,7 +177,8 @@ class Tabulator(TabulatorTemplate):
     def cell_edited(self, field, row):
         self._data = _anvil.js.call_js('get_data', self)
         self.raise_event('cell_edited', field=field, row=row)
- 
+  
+    @maintain_scroll_position
     def redraw(self, **event_args):
         """This method is called when the HTML panel is shown on the screen"""
         # redraw on show

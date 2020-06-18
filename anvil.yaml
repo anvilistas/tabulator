@@ -131,7 +131,10 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \  \n}\n\nfunction change_visible(self, value) {\n    table = find_table(self);\n\
     \  \tif (value) {\n      $(table.element).removeClass('visible-false')\n    }\
     \ else {\n      $(table.element).addClass('visible-false')\n    }\n    \n  \n\
-    }\n  \n\n  \n</script>\n\n<style>\n  .tabulator.anvil-spacing-below-none{margin-bottom\
+    }\n  \n  \nvar tempScrollTop = undefined;\nfunction getset_scrollposition (set)\
+    \ {\n  if (!set) {\n    window.tempScrollTop = $(window).scrollTop();\n    return\
+    \ window.tempScrollTop;\n  } else {\n    $(window).scrollTop(window.tempScrollTop);\n\
+    \    return window.tempScrollTop;\n  }\n}\n\n  \n</script>\n\n<style>\n  .tabulator.anvil-spacing-below-none{margin-bottom\
     \ : 0px;}\n  .tabulator.anvil-spacing-below-small{margin-bottom : 4px;}\n  .tabulator.anvil-spacing-below-medium{margin-bottom\
     \ : 8px;}\n  .tabulator.anvil-spacing-below-large{margin-bottom : 16px;}\n  .tabulator-cell\
     \ .column-panel, .tabulator-cell input {margin: 0 !important;}\n  .tabulator-cell\
