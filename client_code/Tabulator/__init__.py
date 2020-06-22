@@ -18,9 +18,9 @@ import anvil as _anvil
 
 def maintain_scroll_position(func):
   def wrap(*args, **kwargs):
-    print(_anvil.js.call_js('getset_scrollposition'))
+    _anvil.js.call_js('getset_scrollposition')
     res = func(*args, **kwargs)
-    print(_anvil.js.call_js('getset_scrollposition', True))
+    _anvil.js.call_js('getset_scrollposition', True)
     return res
   return wrap
 

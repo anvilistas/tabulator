@@ -132,14 +132,14 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \  \tif (value) {\n      $(table.element).removeClass('visible-false')\n    }\
     \ else {\n      $(table.element).addClass('visible-false')\n    }\n    \n  \n\
     }\n  \n  \nvar tempScrollTop = undefined;\nfunction getset_scrollposition (set)\
-    \ {\n  if (!set) {\n    window.tempScrollTop = $(window).scrollTop();\n    return\
-    \ window.tempScrollTop;\n  } else {\n    $(window).scrollTop(window.tempScrollTop);\n\
-    \    return window.tempScrollTop;\n  }\n}\n\n  \n</script>\n\n<style>\n  .tabulator.anvil-spacing-below-none{margin-bottom\
-    \ : 0px;}\n  .tabulator.anvil-spacing-below-small{margin-bottom : 4px;}\n  .tabulator.anvil-spacing-below-medium{margin-bottom\
-    \ : 8px;}\n  .tabulator.anvil-spacing-below-large{margin-bottom : 16px;}\n  .tabulator-cell\
-    \ .column-panel, .tabulator-cell input {margin: 0 !important;}\n  .tabulator-cell\
-    \ .form-control {padding-top: 0 !important;}\n  .title-center{\n    text-align:\
-    \ center !important;\n  }\n  .tabulator-header {border-bottom: none !important}\n\
-    \  .tabulator-col-content {border-bottom: 2px solid #ddd}\n</style>"}
+    \ {\n  if (!set) {\n    tempScrollTop = $(window).scrollTop();\n  } else {\n \
+    \   $(window).scrollTop(tempScrollTop);\n  }\n}\n\n  \n</script>\n\n<style>\n\
+    \  .tabulator.anvil-spacing-below-none{margin-bottom : 0px;}\n  .tabulator.anvil-spacing-below-small{margin-bottom\
+    \ : 4px;}\n  .tabulator.anvil-spacing-below-medium{margin-bottom : 8px;}\n  .tabulator.anvil-spacing-below-large{margin-bottom\
+    \ : 16px;}\n  .tabulator-cell .column-panel, .tabulator-cell input {margin: 0\
+    \ !important;}\n  .tabulator-cell .form-control {padding-top: 0 !important;}\n\
+    \  .title-center{\n    text-align: center !important;\n  }\n  .tabulator-header\
+    \ {border-bottom: none !important}\n  .tabulator-col-content {border-bottom: 2px\
+    \ solid #ddd}\n</style>"}
 db_schema: []
 renamed: true
