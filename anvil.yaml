@@ -71,10 +71,10 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ from the paramaters\n        let kwargs = [];\n        Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
     \ PyDefUtils.unwrapOrRemapToPy(parameters));\n        if (formatter.superClass_\
     \ && formatter.superClass_.tp$name.includes('Template')) {\n          const item\
-    \ = [new Sk.builtin.str(\"item\"), PyDefUtils.unwrapOrRemapToPy(cell.getData())]\n\
-    \          kwargs = kwargs.concat(item);\n        } else if (formatter instanceof\
-    \ Sk.builtin.method) {\n          row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];\n\
-    \        } else if (formatter instanceof Sk.builtin.func) {\n          row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];\n\
+    \ = [\"item\", PyDefUtils.unwrapOrRemapToPy(cell.getData())]\n          kwargs\
+    \ = kwargs.concat(item);\n        } else if (formatter instanceof Sk.builtin.method)\
+    \ {\n          row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];\n       \
+    \ } else if (formatter instanceof Sk.builtin.func) {\n          row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];\n\
     \        }\n        let component = Sk.misceval.callsimArray(formatter, row, kwargs);\n\
     \        if (!Sk.builtin.checkString(component)) {\n          anvil.call(table.element,\
     \ 'add_component', component);\n        }\n      return component;\n    }\n  \
@@ -104,9 +104,17 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ '8px');\n\n                onRendered(function () {\n                    //\
     \ focus the first non-div element\n                    editor.find(':not(div)').first().trigger('focus');\n\
     \                });\n                return editor[0];\n            }\n     \
-    \   }\n    }\n    table.setColumns(columns);\n}\n\nfunction set_height(self, height)\
-    \ {\n    table = find_table(self);\n    table.setHeight(height);\n}\n\nfunction\
-    \ set_group_by(self, field) {\n    table = find_table(self);\n    table.setGroupBy(field);\n\
+    \   }\n      if (typeof c.sorter === 'object' && Sk.builtin.checkFunction(c.sorter.v))\
+    \ {\n        const pySorter = c.sorter.v;\n        const sorterParams = [];\n\
+    \        Sk.abstr.mappingUnpackIntoKeywordArray(sorterParams, PyDefUtils.unwrapOrRemapToPy(c.sorterParams\
+    \ || {}));\n        c.sorter = function (a, b, aRow, bRow, column, dir) {\n  \
+    \        a = PyDefUtils.unwrapOrRemapToPy(a);\n          b = PyDefUtils.unwrapOrRemapToPy(b);\n\
+    \          aRow = PyDefUtils.unwrapOrRemapToPy(aRow.getData());\n          bRow\
+    \ = PyDefUtils.unwrapOrRemapToPy(bRow.getData());\n          const val = Sk.misceval.callsimArray(pySorter,\
+    \ [a, b, aRow, bRow,], sorterParams);\n          return Sk.ffi.remapToJs(val);\n\
+    \        }\n      }\n    }\n    table.setColumns(columns);\n}\n\nfunction set_height(self,\
+    \ height) {\n    table = find_table(self);\n    table.setHeight(height);\n}\n\n\
+    function set_group_by(self, field) {\n    table = find_table(self);\n    table.setGroupBy(field);\n\
     }\n\nfunction add_row(self, row, top, pos) {\n    table = find_table(self);\n\
     \    table.addRow(row, top, pos);\n}\n\nfunction get_row(self, index) {\n    table\
     \ = find_table(self);\n  \trow = table.getRow(index);\n  \tif (!row) {\n     \
