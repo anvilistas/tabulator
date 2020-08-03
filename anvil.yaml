@@ -76,12 +76,13 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ Sk.builtin.method) {\n          row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];\n\
     \        } else if (formatter instanceof Sk.builtin.func) {\n          row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];\n\
     \        }\n        let component = Sk.misceval.callsimArray(formatter, row, kwargs);\n\
-    \        anvil.call(table.element, 'add_component', component);\n      return\
-    \ component;\n    }\n    \n    for (let i = 0; i < columns.length; i++) {\n  \
-    \      const c = columns[i]\n        if (typeof c.formatter == 'object' && c.formatter.v\
-    \ !== undefined) {\n          \t// then we have an anvil element\n          \t\
-    const formatter_component = c.formatter.v;\n          \tc.formatter = function\
-    \ (cell, formatterParams, onRendered) {\n            let formatter = load_component(formatter_component,\
+    \        if (!Sk.builtin.checkString(component)) {\n          anvil.call(table.element,\
+    \ 'add_component', component);\n        }\n      return component;\n    }\n  \
+    \  \n    for (let i = 0; i < columns.length; i++) {\n        const c = columns[i]\n\
+    \        if (typeof c.formatter == 'object' && c.formatter.v !== undefined) {\n\
+    \          \t// then we have an anvil element\n          \tconst formatter_component\
+    \ = c.formatter.v;\n          \tc.formatter = function (cell, formatterParams,\
+    \ onRendered) {\n            let formatter = load_component(formatter_component,\
     \ cell, formatterParams);\n            if (Sk.builtin.checkString(formatter))\
     \ {\n              return formatter.$jsstr();\n            }\n            return\
     \ formatter._anvil.element[0];\n            }\n        }\n\n        if (typeof\
