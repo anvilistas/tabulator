@@ -82,14 +82,15 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \ !== undefined) {\n          \t// then we have an anvil element\n          \t\
     const formatter_component = c.formatter.v;\n          \tc.formatter = function\
     \ (cell, formatterParams, onRendered) {\n            let formatter = load_component(formatter_component,\
-    \ cell, formatterParams);\n            return formatter._anvil.element[0];\n \
-    \           }\n        }\n\n        if (typeof c.editor == 'object' && c.editor.v\
-    \ !== undefined) {\n            // then we have an anvil element\n           \
-    \ const editor_component = c.editor.v;\n            c.editor = function (cell,\
-    \ onRendered, success, cancel, editorParams) {\n                let component\
-    \ = load_component(editor_component, cell, editorParams);\n              \tlet\
-    \ editor = component._anvil.element;\n                const blur_cancel = function\
-    \ (e) {\n                    if (!e.target.parentElement.classList.contains('anvil-datepicker')\
+    \ cell, formatterParams);\n            if (Sk.builtin.checkString(formatter))\
+    \ {\n              return formatter.$jsstr();\n            }\n            return\
+    \ formatter._anvil.element[0];\n            }\n        }\n\n        if (typeof\
+    \ c.editor == 'object' && c.editor.v !== undefined) {\n            // then we\
+    \ have an anvil element\n            const editor_component = c.editor.v;\n  \
+    \          c.editor = function (cell, onRendered, success, cancel, editorParams)\
+    \ {\n                let component = load_component(editor_component, cell, editorParams);\n\
+    \              \tlet editor = component._anvil.element;\n                const\
+    \ blur_cancel = function (e) {\n                    if (!e.target.parentElement.classList.contains('anvil-datepicker')\
     \ || (e.relatedTarget && e.relatedTarget.tagName !== 'SELECT')) {\n          \
     \              // hack for datepicker\n                        cancel()\n    \
     \                }\n                }\n                editor[0].addEventListener('blur',\
