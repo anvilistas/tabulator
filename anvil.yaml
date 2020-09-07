@@ -26,29 +26,21 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     ,$(d).addClass(\"datepicker\"),d.value=moment(t.getValue(),\"DD/MM/YYYY\").format(\"\
     YYYY-MM-DD\"),e(function(){d.focus(),d.style.css=\"100%\"}),d.addEventListener(\"\
     blur\",function(){d.value?o(moment(d.value,\"YYYY-MM-DD\").format(\"DD/MM/YYYY\"\
-    )):n()}),d};\n\n// Filter.prototype.findFilter\nFilter.prototype.findFilter =\
-    \ function (filter) {\n\tvar self = this,\n\t    column;\n\n\tif (Array.isArray(filter))\
-    \ {\n\t\treturn this.findSubFilters(filter);\n\t}\n\n\tvar filterFunc = false;\n\
-    \n\tif (filter.field instanceof Sk.builtin.func) {\n      filterFunc = function\
-    \ filterFunc(data) {\n          const val = Sk.misceval.callsimArray(filter.field,\
-    \ PyDefUtils.unwrapOrRemapToPy(data));\n          return Sk.ffi.remapToJs(val);\n\
-    \      }\n    } else if (typeof filter.field == \"function\") {\n\t\tfilterFunc\
-    \ = function filterFunc(data) {\n\t\t\treturn filter.field(data, filter.type ||\
-    \ {}); // pass params to custom filter function\n\t\t};\n\t} else {\n\n\t\tif\
-    \ (self.filters[filter.type]) {\n\n\t\t\tcolumn = self.table.columnManager.getColumnByField(filter.field);\n\
-    \n\t\t\tif (column) {\n\t\t\t\tfilterFunc = function filterFunc(data) {\n\t\t\t\
-    \t\treturn self.filters[filter.type](filter.value, column.getFieldValue(data),\
-    \ data, filter.params || {});\n\t\t\t\t};\n\t\t\t} else {\n\t\t\t\tfilterFunc\
-    \ = function filterFunc(data) {\n\t\t\t\t\treturn self.filters[filter.type](filter.value,\
-    \ data[filter.field], data, filter.params || {});\n\t\t\t\t};\n\t\t\t}\n\t\t}\
-    \ else {\n\t\t\tconsole.warn(\"Filter Error - No such filter type found, ignoring:\
-    \ \", filter.type);\n\t\t}\n\t}\n\n\tfilter.func = filterFunc;\n\n\treturn filter.func\
-    \ ? filter : false;\n};\n</script>\n\n\n\n<script>\n// patch for deepCloning Skulpt\
-    \ elements\nTabulator.prototype.helpers.deepClone = function (t) {\n    var e\
-    \ = Array.isArray(t) ? [] : {};\n  \tif (t.v !== undefined && t.v.$d !== undefined)\
-    \ {\n      return t\n    }\n    for (var o in t){\n        null != t[o] && \"\
-    object\" === _typeof(t[o]) && t[o].v !== undefined?\n        t[o] instanceof Date\
-    \ ?\n        (e[o] = new Date(t[o])) :\n        (e[o] = this.deepClone(t[o]))\
+    )):n()}),d};\n\n// Filter.prototype.findFilter\nTabulator.prototype.moduleBindings.filter.prototype.findFilter=function(filter){var\
+    \ self=this,column;if(Array.isArray(filter)){return this.findSubFilters(filter)}var\
+    \ filterFunc=false;if(filter.field.v&&(filter.field.v instanceof Sk.builtin.func||filter.field.v\
+    \ instanceof Sk.builtin.method)){filterFunc=function filterFunc(data){const val=Sk.misceval.callsimArray(filter.field.v,[PyDefUtils.unwrapOrRemapToPy(data)]);return\
+    \ Sk.ffi.remapToJs(val)}}else if(typeof filter.field==\"function\"){filterFunc=function\
+    \ filterFunc(data){return filter.field(data,filter.type||{});}}else{if(self.filters[filter.type]){column=self.table.columnManager.getColumnByField(filter.field);if(column){filterFunc=function\
+    \ filterFunc(data){return self.filters[filter.type](filter.value,column.getFieldValue(data),data,filter.params||{})}}else{filterFunc=function\
+    \ filterFunc(data){return self.filters[filter.type](filter.value,data[filter.field],data,filter.params||{})}}}else{console.warn(\"\
+    Filter Error - No such filter type found, ignoring: \",filter.type)}}filter.func=filterFunc;return\
+    \ filter.func?filter:false};\n</script>\n\n\n\n<script>\n// patch for deepCloning\
+    \ Skulpt elements\nTabulator.prototype.helpers.deepClone = function (t) {\n  \
+    \  var e = Array.isArray(t) ? [] : {};\n  \tif (t.v !== undefined && t.v.$d !==\
+    \ undefined) {\n      return t\n    }\n    for (var o in t){\n        null !=\
+    \ t[o] && \"object\" === _typeof(t[o]) && t[o].v !== undefined?\n        t[o]\
+    \ instanceof Date ?\n        (e[o] = new Date(t[o])) :\n        (e[o] = this.deepClone(t[o]))\
     \ :\n        (e[o] = t[o]); \n    }\n    return e;\n};\n    \n</script>\n\n<script>\n\
     // trigger redraw on window resize\n$(window).on('resize', function(){\n  $.each(Tabulator.prototype.findTable('.tabulator'),\
     \ function(){\n    this.redraw()\n  })\n});\n  \n  \nfunction find_table(self)\
