@@ -1,17 +1,3 @@
-container:
-  type: HtmlTemplate
-  properties: {tooltip: '', background: '', foreground: '', border: '', visible: true,
-    role: null, html: "<div class='placeholder-table'></div>\n\n<script>\n  \n$('.placeholder-table').each(function()\
-      \ {\n    table = new Tabulator(this, {\n    layout:\"fitColumns\",\n    pagination:\"\
-      local\",\n    paginationSize:6,\n    paginationSizeSelector:[3, 6, 10],\n  \
-      \  autoColumns: true,\n  \tdata: [{columnA:'columnA', columnB:'columnB', columnC:'columnC',\
-      \ columnD:'columnD'},\n          {columnA:'columnA', columnB:'columnB', columnC:'columnC',\
-      \ columnD:'columnD'}],\n\t});\n\n});\n</script>\n\n<style>\n  .tabulator-row\
-      \ .tabulator-cell {\n    font-style: italic;\n  }\n</style>\n\n"}
-  event_bindings: {show: form_show}
-components: []
-is_package: true
-custom_component: true
 properties:
 - {name: height, type: string, default_value: '', default_binding_prop: true}
 - {name: data, type: object, default_value: null}
@@ -31,9 +17,23 @@ properties:
 - {name: spacing_above, type: string, default_value: small}
 - {name: spacing_below, type: string, default_value: small}
 - {name: visible, type: boolean, default_value: true}
+is_package: true
 events:
 - {name: row_click, default_event: true, description: when a row is clicked}
 - {name: row_selected, description: when a row is selected}
 - {name: row_selection_change}
 - {name: cell_click, description: when a cell is clicked - event_args include field and row}
 - {name: cell_edited, description: when a cell is edited - event_args include field and row}
+custom_component: true
+components: []
+container:
+  type: HtmlTemplate
+  properties: {tooltip: '', background: '', foreground: '', border: '', visible: true,
+    role: null, html: "<div class='placeholder-table'></div>\n\n<script>\n  \n$('.placeholder-table').each(function()\
+      \ {\n    table = new Tabulator(this, {\n    layout:\"fitColumns\",\n    pagination:\"\
+      local\",\n    paginationSize:6,\n    paginationSizeSelector:[3, 6, 10],\n  \
+      \  autoColumns: true,\n  \tdata: [{columnA:'columnA', columnB:'columnB', columnC:'columnC',\
+      \ columnD:'columnD'},\n          {columnA:'columnA', columnB:'columnB', columnC:'columnC',\
+      \ columnD:'columnD'}],\n\t});\n\n});\n</script>\n\n<style>\n  .tabulator-row\
+      \ .tabulator-cell {\n    font-style: italic;\n  }\n</style>\n\n"}
+  event_bindings: {show: form_show}
