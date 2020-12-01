@@ -78,12 +78,13 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.5.3/
     \    const load_component = function (formatter, cell, parameters) {\n       \
     \ // get the row as a python dict\n        let row;\n        // get a kwargs array\
     \ from the paramaters\n        let kwargs = [];\n        Sk.abstr.mappingUnpackIntoKeywordArray(kwargs,\
-    \ PyDefUtils.unwrapOrRemapToPy(parameters));\n        if (formatter.superClass_\
-    \ && formatter.superClass_.tp$name.includes('Template')) {\n          const item\
-    \ = [\"item\", PyDefUtils.unwrapOrRemapToPy(cell.getData())]\n          kwargs\
-    \ = kwargs.concat(item);\n        } else if (formatter instanceof Sk.builtin.method)\
-    \ {\n          row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];\n       \
-    \ } else if (formatter instanceof Sk.builtin.func) {\n          row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];\n\
+    \ PyDefUtils.unwrapOrRemapToPy(parameters));\n        const base = Sk.abstr.lookupSpecial(formatter,\
+    \ new Sk.builtin.str(\"__base__\"));\n      \tconst baseName = base && Sk.abstr.lookupSpecial(base,\
+    \ Sk.builtin.str.$name);\n        if (baseName && baseName.toString().includes('Template'))\
+    \ {\n          const item = [\"item\", PyDefUtils.unwrapOrRemapToPy(cell.getData())]\n\
+    \          kwargs = kwargs.concat(item);\n        } else if (formatter instanceof\
+    \ Sk.builtin.method) {\n          row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];\n\
+    \        } else if (formatter instanceof Sk.builtin.func) {\n          row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];\n\
     \        }\n        let component = Sk.misceval.callsimArray(formatter, row, kwargs);\n\
     \        if (!Sk.builtin.checkString(component)) {\n          anvil.call(table.element,\
     \ 'add_component', component);\n        }\n      return component;\n    }\n  \
