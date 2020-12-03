@@ -1,0 +1,19 @@
+is_package: true
+container:
+  type: HtmlTemplate
+  properties: {html: '@theme:standard-page.html'}
+components:
+- type: form:Tabulator
+  properties: {}
+  name: tabulator_1
+  layout_properties: {slot: default}
+- type: Button
+  properties: {text: button_1}
+  name: button_1
+  layout_properties: {slot: default}
+  event_bindings: {click: button_1_click}
+- type: Button
+  properties: {text: button_2}
+  name: button_2
+  layout_properties: {slot: default}
+  event_bindings: {click: button_2_click}
