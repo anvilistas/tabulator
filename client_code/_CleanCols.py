@@ -28,7 +28,7 @@ def _clean_cols(self, cols, checkbox_select):
         }] + cols
     
 
-def _clean_formatter(self, formatter, params):
+def _clean_formatter(self, formatter):
   if isintance(formatter, str):
     return formatter
   

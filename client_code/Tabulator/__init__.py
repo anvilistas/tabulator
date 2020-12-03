@@ -80,7 +80,7 @@ class Tabulator(TabulatorTemplate):
             {'field': 'columnB',},
             {'field': 'columnC',},
             {'field': 'columnD',},
-          ]),
+          ], True),
           'data': [{'id': 1, 'columnA':'columnA', 'columnB':'columnB', 'columnC':'columnC', 'columnD':'columnD'},
                    {'id': 4, 'columnA':'columnA', 'columnB':'columnB', 'columnC':'columnC', 'columnD':'columnD'}],
           'rowClick': self.row_click,
