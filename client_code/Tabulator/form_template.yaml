@@ -19,11 +19,28 @@ properties:
 - {name: visible, type: boolean, default_value: true}
 is_package: true
 events:
-- {name: row_click, default_event: true, description: when a row is clicked}
-- {name: row_selected, description: when a row is selected}
-- {name: row_selection_change}
-- {name: cell_click, description: when a cell is clicked - event_args include field and row}
-- {name: cell_edited, description: when a cell is edited - event_args include field and row}
+- name: row_click
+  default_event: true
+  description: when a row is clicked
+  parameters:
+  - {name: row, description: ''}
+- name: row_selected
+  description: when a row is selected
+  parameters:
+  - {name: row, description: ''}
+- name: row_selection_change
+  parameters:
+  - {name: rows}
+- name: cell_click
+  description: when a cell is clicked - event_args include field and row
+  parameters:
+  - {name: field}
+  - {name: row}
+- name: cell_edited
+  description: when a cell is edited - event_args include field and row
+  parameters:
+  - {name: field}
+  - {name: row}
 custom_component: true
 components: []
 container:

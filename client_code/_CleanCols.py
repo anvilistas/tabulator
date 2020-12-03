@@ -1,7 +1,8 @@
 from anvil.js import get_dom_node
 from anvil import Component
 
-def _clean_cols(self, cols, checkbox_select):
+def _clean_cols(self, cols):
+  add_check_box_col = self._row_selectable=='checkbox'
   cols = cols or []
 
   for col in cols:
@@ -12,11 +13,12 @@ def _clean_cols(self, cols, checkbox_select):
     editor = col.get('editor')
     if editor is not None:
       col['editor'] = self._clean_formatter(formatter)
-      
+
+    sorter = col.get('sorter')
     if sorter is not None:
       col['sorter'] = self._clean_sorter(sorter)
     
-  if checkbox_select:
+  if add_check_box_col:
     cols = [{
             'formatter': "rowSelectionDisplay",
             'titleFormatter': "rowSelectionDisplay",
@@ -27,12 +29,14 @@ def _clean_cols(self, cols, checkbox_select):
             'cellClick': lambda e, cell: cell.getRow().toggleSelect()
         }] + cols
     
+  return cols
+
 
 def _clean_formatter(self, formatter):
-  if isintance(formatter, str):
+  if isinstance(formatter, str):
     return formatter
   
-  if isintance(formatter, Component):
+  if isinstance(formatter, Component):
     is_template = formatter.__base__.__name__.endswith('Template')
     # then are we a Template?
     
@@ -51,17 +55,20 @@ def _clean_formatter(self, formatter):
     
     def loadFunctionCell(cell, formatterParams, onRendered):
       formatterParams = formatterParams or {}
+      print(cell.getData())
       row = dict(cell.getData())
       cell_component_or_str = formatter(row, **formatterParams)
       if isinstance(cell_component_or_str, str):
         return cell_component_or_str
-      elif isintance(cell_component_or_str, Component):
+      elif isinstance(cell_component_or_str, Component):
         self.add_component(cell_component_or_str)
         return get_dom_node(cell_component_or_str)
       else:
         # oops hope for the best
         return cell_component_or_str
-      
+   
+    return loadFunctionCell
+   
 def _clean_editor(self, formatter, params):
   if isintance(formatter, str):
     return formatter
