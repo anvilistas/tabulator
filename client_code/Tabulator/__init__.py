@@ -14,7 +14,7 @@
 
 from ._anvil_designer import TabulatorTemplate
 import anvil as _anvil
-from anvil.js.window import Tabulator as jsTabulator
+from anvil.js.window import Tabulator as jsTabulator, jQuery
 from anvil.js import get_dom_node
 from anvil import *
 from anvil.js import window
@@ -35,17 +35,29 @@ print(len(window.document.createElement('div').children))
 
 
 
+temp_scroll_top = None
+jquery_window = jQuery(window)
+
+def get_scroll_pos():
+  global temp_scroll_top
+  tempScrollTop = jquery_window.scrollTop()
+def set_scroll_pos():
+  jquery_window.scrollTop(tempScrollTop)
+
+    
 def maintain_scroll_position(func):
   def wrap(*args, **kwargs):
-    _anvil.js.call_js('getset_scrollposition')
+    get_scroll_pos()
     res = func(*args, **kwargs)
-    _anvil.js.call_js('getset_scrollposition', True)
+    set_scroll_pos()
     return res
   return wrap
 
-
+from .._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
 
 class Tabulator(TabulatorTemplate):
+    _clean_cols, _clean_editor, _clean_formatter, _clean_sorter = _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
+    
     def __init__(self, **properties):
         # allow Tabulator to be set in code with default values
         self._from_cache = False
@@ -57,17 +69,18 @@ class Tabulator(TabulatorTemplate):
           onRendered(lambda: print('hey'))
           return get_dom_node(Link(text=cell.getValue()))
         
+        
         self.table = jsTabulator(el, {
           'layout':"fitColumns",
           'pagination':"local",
           'paginationSize':6,
           'paginationSizeSelector':[3, 6, 10],
-          'columns': [
+          'columns': self._clean_cols([
             {'field': 'columnA','formatter': formatter},
             {'field': 'columnB',},
             {'field': 'columnC',},
             {'field': 'columnD',},
-          ],
+          ]),
           'data': [{'id': 1, 'columnA':'columnA', 'columnB':'columnB', 'columnC':'columnC', 'columnD':'columnD'},
                    {'id': 4, 'columnA':'columnA', 'columnB':'columnB', 'columnC':'columnC', 'columnD':'columnD'}],
           'rowClick': self.row_click,
@@ -146,8 +159,6 @@ class Tabulator(TabulatorTemplate):
         self._index = 'id'
 #         self.visible = self.visible
         
-        
-
 
 # Methods
     def add_row(self, row, top=True, pos=None):
@@ -173,7 +184,7 @@ class Tabulator(TabulatorTemplate):
         self.table.selectRow(index_or_indexes)
      
     def get_selected(self):
-        return self.table.getSelected()
+        return [dict(x) for x in self.table.getSelected()]
 
     def add_data(self, data, top=False, pos=None):
         self.table.addData(data, top, pos)
@@ -209,17 +220,19 @@ class Tabulator(TabulatorTemplate):
             sorters = column
             for sorter in sorters:
                 sorter['dir'] = 'asc' if sorter.pop('ascending') else 'desc'
-            _anvil.js.call_js('set_sort', self, sorters)
+            self.table.setSort(sorters)
         elif isinstance(column, str):
-            _anvil.js.call_js('set_sort', self, column, 'asc' if ascending else 'desc')
+            self.table.setSort(column, 'asc' if ascending else 'desc')
         else:
             raise TypeError('expected first argument to be a list of sorters or the column field name')
     
     def clear_sort(self):
-        _anvil.js.call_js('clear_sort', self)
+        self.table.clearSort()
+        # reset the table data
+        self.table.setData(self.table.getData())
         
     def set_group_by(self, field):
-        _anvil.js.call_js('set_group_by', self, field)
+        self.table.setGroupBy(field)
    
 
 # Events
@@ -227,30 +240,29 @@ class Tabulator(TabulatorTemplate):
         self.raise_event('row_selected', row=row)
 
     def row_click(self, e, row):
-        print(e, row)
         self.raise_event('row_click', row=row)     
         
     def row_selection_change(self, rows):
         self.raise_event('row_selection_change', rows=rows)
         
     def get_selected(self):
-        rows = _anvil.js.call_js('get_selected', self)
-        return rows
+        return [dict(row) for row in self.table.getSelectedData()]
       
     def cell_click(self, e, cell):
         field = cell.getField()
         row = dict(cell.getData())
         self.raise_event('cell_click', field=field, row=row)
         
-    def cell_edited(self, field, row):
-        self._data = _anvil.js.call_js('get_data', self)
+    def cell_edited(self, e, cell):
+        field = cell.getField()
+        row = dict(cell.getData())
         self.raise_event('cell_edited', field=field, row=row)
   
     @maintain_scroll_position
     def redraw(self, **event_args):
         """This method is called when the HTML panel is shown on the screen"""
         # redraw on show
-        _anvil.js.call_js('redraw', self)
+        self.table.redraw()
         
     def form_show(self, **event_args):
 #         if not self._from_cache:
@@ -267,7 +279,6 @@ class Tabulator(TabulatorTemplate):
     @data.setter
     def data(self, value):
         self.set_data(value)
-        self._data = self.get_data()
 
     @property
     def height(self):
@@ -279,7 +290,7 @@ class Tabulator(TabulatorTemplate):
         if value.isdigit():
             value = value+'px'
         if self.parent:
-            _anvil.js.call_js('set_height', self, value)
+            self.table.setHeight(value)
 
     @property
     def columns(self):
@@ -425,4 +436,8 @@ class Tabulator(TabulatorTemplate):
     def visible(self, value):
         self._visible = value    
         if self._table_init:
-            _anvil.js.call_js('change_visible', self, value)
+          self.table.element.classList.toggle('visible-false', bool(not value))
+
+
+          
+          

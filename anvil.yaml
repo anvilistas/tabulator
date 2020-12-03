@@ -1,5 +1,4 @@
 dependencies: []
-exported_table_schema: []
 services: []
 startup: {type: form, module: Form1}
 package_name: Tabulator
