@@ -68,7 +68,7 @@ class Tabulator(TabulatorTemplate):
             'rowClick': raiseEvent(el, 'row_click'),
             'cellEdited': raiseEvent(el, 'cell_edited'),
             'rowSelectionChanged': raiseEvent(el, 'row_selection_change'),
-            'cellClick': raiseEvent(el, 'cell_click'),
+            'cellClick': self.cell_click,
         })
         
         self.columns = properties.get('columns', [])
