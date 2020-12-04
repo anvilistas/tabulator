@@ -72,15 +72,24 @@ def _clean_formatter(self, formatter):
 
 
 def setup_editor_component(component, cancel, onRendered):
+    closed = {}
     def blur_cancel(e):
         # hack for datepicker
-        if (not e.target.parentElement.classList.contains('anvil-datepicker') or (e.relatedTarged and e.relatedTarget.tagName != 'SELECT')):
-            cancel()
+        relatedTarget = getattr(e, 'relatedTarget', None)
+        if not e.target.parentElement.classList.contains('anvil-datepicker') or (relatedTarget and relatedTarget.tagName != 'SELECT'):
+          if closed:
+            return
+          closed['x'] = True
+          cancel()
 
     el = get_dom_node(component)
     el.addEventListener('blur', blur_cancel, True)
     el.style.padding = '8px'
     def close_editor(**event_args):
+        if closed:
+          return
+        else:
+          closed['x'] = True
         cancel()
         component.remove_from_parent()
 
@@ -88,7 +97,6 @@ def setup_editor_component(component, cancel, onRendered):
     
     def set_focus(*args):
         to_focus = el.querySelector(':not(div)')
-        print(to_focus)
         to_focus = to_focus or el
         to_focus.focus()
     onRendered(set_focus)
@@ -96,22 +104,20 @@ def setup_editor_component(component, cancel, onRendered):
   
 
 def _clean_editor(self, editor):
-    print('here', editor)
     if isinstance(editor, str):
         return editor
     
     elif isinstance(editor, type) and issubclass(editor, Component):
         is_template = editor.__base__.__name__.endswith('Template')
-        print('component subclass', is_template)
         # then are we a Template?
         def loadEditor(cell, onRendered, success, cancel, editorParams):
-            print('editor loading')
             if is_template:
                 component = editor(item={**cell.getData()}, **editorParams)
             else:
                 component = editor(**editorParams)
             
             el = setup_editor_component(component, cancel, onRendered)
+            self.add_component(component)
 
             
             return el
@@ -123,6 +129,7 @@ def _clean_editor(self, editor):
             maybe_component = editor(dict(cell.getData()), **editorParams)
             if isinstance(maybe_component, Component):
                 el = setup_editor_component(maybe_component, cancel, onRendered)
+                self.add_component(maybe_component)
                 return el
             else:
                 return maybe_component
@@ -135,37 +142,14 @@ def _clean_sorter(self, sorter):
     if isinstance(sorter, str):
         return sorter
     if callable(sorter):
-        def sorterWrapper(a, b, aRow, bRow, column, asc, sorterParams): 
-            return sorter(a, b, dict(aRow), dict(bRow), asc == "asc", **sorterParams)
+        def sorterWrapper(a, b, aRow, bRow, column, asc, sorterParams):
+            sorterParams = sorterParams or {}
+            return sorter(a, b, dict(aRow.getData()), dict(bRow.getData()), asc == "asc", **sorterParams)
+        return sorterWrapper
     else:
         return sorter
   
   
   
-  
-#       const load_component = function (formatter, cell, parameters) {
-#         // get the row as a python dict
-#         let row;
-#         // get a kwargs array from the paramaters
-#         let kwargs = [];
-#         Sk.abstr.mappingUnpackIntoKeywordArray(kwargs, PyDefUtils.unwrapOrRemapToPy(parameters));
-#         const base = Sk.abstr.lookupSpecial(formatter, new Sk.builtin.str("__base__"));
-#         debugger
-#       	const baseName = base && Sk.abstr.lookupSpecial(base, Sk.builtin.str.$name);
-#         if (baseName && baseName.toString().includes('Template')) {
-#           const item = ["item", PyDefUtils.unwrapOrRemapToPy(cell.getData())]
-#           kwargs = kwargs.concat(item);
-#         } else if (formatter instanceof Sk.builtin.method) {
-#           row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];
-#         } else if (formatter instanceof Sk.builtin.func) {
-#           row = [PyDefUtils.unwrapOrRemapToPy(cell.getData())];
-#         }
-#         let component = Sk.misceval.callsimArray(formatter, row, kwargs);
-#         if (!Sk.builtin.checkString(component)) {
-#           anvil.call(table.element, 'add_component', component);
-#         }
-#       return component;
-#     }
-    
   
   

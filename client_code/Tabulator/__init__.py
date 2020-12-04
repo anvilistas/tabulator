@@ -80,6 +80,7 @@ class Tabulator(TabulatorTemplate):
     _clean_cols = _clean_cols 
     _clean_editor = _clean_editor
     _clean_formatter = _clean_formatter
+    _clean_sorter = _clean_sorter
 
     
 # Methods
@@ -93,10 +94,15 @@ class Tabulator(TabulatorTemplate):
         self._table.addRow(row, top, pos)
     
     def delete_row(self, index):
-          self._table.deleteRow(index)
+        print('delete row with index ', index)
+        self._table.deleteRow(index)
 
     def update_row(self, index, row):
-        self._table.updateRow(index, row)
+        try:
+          self._table.updateRow(index, row)
+        except Exception as e:
+          if 'NotFoundError' in repr(e):pass
+          else: raise e
         
     def get_row(self, index):
         row = self._table.getRow(index)
