@@ -13,10 +13,8 @@
 """
 
 from ._anvil_designer import TabulatorTemplate
-import anvil as _anvil
-from anvil import js
-from anvil.js.window import Tabulator as _Tabulator, raiseEvent
-from anvil.js import get_dom_node, window
+from anvil.js.window import Tabulator as _Tabulator
+from anvil.js import get_dom_node as _get_dom_node
 
 from ._Helpers import maintain_scroll_position
 from ._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
@@ -27,7 +25,7 @@ class Tabulator(TabulatorTemplate):
         # allow Tabulator to be set in code with default values
         self._from_cache = False
         self._table_init = False
-        el = self._el = get_dom_node(self)
+        el = self._el = _get_dom_node(self)
 
         properties = {'auto_columns': None,
                     'header_align': 'middle', 
@@ -64,10 +62,10 @@ class Tabulator(TabulatorTemplate):
             'paginationSizeSelector': self._pagination_size_selector,
             'resizableColumns': self._resizable_columns,
             'selectable': 'highlight' if row_selectable == 'checkbox' else row_selectable,
-            'rowSelected': raiseEvent(el, 'row_selected'),
-            'rowClick': raiseEvent(el, 'row_click'),
-            'cellEdited': raiseEvent(el, 'cell_edited'),
-            'rowSelectionChanged': raiseEvent(el, 'row_selection_change'),
+            'rowSelected': self.row_selected,
+            'rowClick': self.row_click,
+            'cellEdited': self.cell_edited,
+            'rowSelectionChanged': self.row_selection_change,
             'cellClick': self.cell_click,
         })
         
@@ -94,7 +92,6 @@ class Tabulator(TabulatorTemplate):
         self._table.addRow(row, top, pos)
     
     def delete_row(self, index):
-        print('delete row with index ', index)
         self._table.deleteRow(index)
 
     def update_row(self, index, row):
@@ -181,9 +178,7 @@ class Tabulator(TabulatorTemplate):
         return [dict(row) for row in self._table.getSelectedData()]
       
     def cell_click(self, e, cell):
-        print('here')
-        x = self.raise_event('cell_click', field=cell.getField(), row=dict(cell.getData()))
-        print(x)
+        self.raise_event('cell_click', field=cell.getField(), row=dict(cell.getData()))
         
     def cell_edited(self, cell):
         return self.raise_event('cell_edited', field=cell.getField(), row=dict(cell.getData()))

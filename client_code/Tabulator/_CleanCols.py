@@ -1,6 +1,10 @@
 from anvil.js import get_dom_node
 from anvil import Component
 
+"""
+allow various types of formatters - Components, or wrapped functions
+
+"""
 def _clean_cols(self, cols):
     add_check_box_col = self._row_selectable=='checkbox'
     cols = cols or []
@@ -144,7 +148,7 @@ def _clean_sorter(self, sorter):
     if callable(sorter):
         def sorterWrapper(a, b, aRow, bRow, column, asc, sorterParams):
             sorterParams = sorterParams or {}
-            return sorter(a, b, dict(aRow.getData()), dict(bRow.getData()), asc == "asc", **sorterParams)
+            return sorter(a, b, aRow.getData(), bRow.getData(), asc == "asc", **sorterParams)
         return sorterWrapper
     else:
         return sorter
