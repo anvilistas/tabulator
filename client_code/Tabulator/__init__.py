@@ -14,11 +14,11 @@
 
 from ._anvil_designer import TabulatorTemplate
 import anvil as _anvil
-from anvil.js.window import Tabulator as _Tabulator, jQuery, window
+from anvil.js.window import Tabulator as _Tabulator
 from anvil.js import get_dom_node
 
-from .._Helpers import maintain_scroll_position
-from .._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
+from ._Helpers import maintain_scroll_position
+from ._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
 
 
 class Tabulator(TabulatorTemplate):
@@ -121,20 +121,24 @@ class Tabulator(TabulatorTemplate):
 
     def set_filter(self, field, type=None, value=None):
         """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'"""
-        _anvil.js.call_js('set_filter', self, field, type, value)
+        if callable(field):
+          filter_func = field
+          field = lambda data, params: filter_func(dict(data), **params)
+        self._table.setFilter(field, type, value)
+        
         
     def add_filter(self, field, type, value):
-        _anvil.js.call_js('add_filter', self, field, type, value)
+        self._table.addFilter(field, type, value)
         
     def remove_filter(self, field=None, type=None, value=None):
-        _anvil.js.call_js('remove_filter', self, field, type, value)
+        self._table.removeFilter(field, type, value)
         
     def get_filters(self):
         return self._table.getFilters()
       
     def clear_filter(self, *args):
         """include an arg of True to clear header filters as well"""
-        self._table.clearFilters(*args)
+        self._table.clearFilter(*args)
         
     def set_sort(self, column, ascending=True):
         """first argument can also be a list of sorters [{'column':'name', 'ascending':True}]"""
@@ -171,13 +175,10 @@ class Tabulator(TabulatorTemplate):
         return [dict(row) for row in self._table.getSelectedData()]
       
     def cell_click(self, e, cell):
-        cell.getField()
         self.raise_event('cell_click', field=cell.getField(), row=dict(cell.getData()))
         
-    def cell_edited(self, e, cell):
-        field = cell.getField()
-        row = dict(cell.getData())
-        self.raise_event('cell_edited', field=field, row=row)
+    def cell_edited(self, cell):
+        self.raise_event('cell_edited', field=cell.getField(), row=dict(cell.getData()))
   
     @maintain_scroll_position
     def redraw(self, **event_args):
@@ -199,7 +200,6 @@ class Tabulator(TabulatorTemplate):
 
     @data.setter
     def data(self, value):
-        print('here', value)
         self._table.setData(value)
 
     @property

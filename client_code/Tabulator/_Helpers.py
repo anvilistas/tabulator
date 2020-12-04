@@ -1,4 +1,4 @@
-from anvil.js.window import jQuery, window
+from anvil.js.window import jQuery, window, Tabulator
 
 temp_scroll_top = None
 jquery_window = jQuery(window)
@@ -18,3 +18,10 @@ def maintain_scroll_position(func):
     set_scroll_pos()
     return res
   return wrap
+
+def redraw_tabulators(e):
+  tabulators = Tabulator.prototype.findTable('.tabulator')
+  for tabulator in tabulators:
+    tabulator.redraw()
+
+jquery_window.on('resize', redraw_tabulators)
