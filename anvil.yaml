@@ -34,7 +34,9 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.6.3/
     \ o in t){\n        null != t[o] && \"object\" === _typeof(t[o]) && t[o].v !==\
     \ undefined?\n        t[o] instanceof Date ?\n        (e[o] = new Date(t[o]))\
     \ :\n        (e[o] = this.deepClone(t[o])) :\n        (e[o] = t[o]); \n    }\n\
-    \    return e;\n};\n\n</script>\n\n\n<style>\n  .tabulator.anvil-spacing-below-none{margin-bottom\
+    \    return e;\n};\n\n</script>\n\n<script>\n// raise promises for events\nfunction\
+    \ raiseEvent(el, event) {\n  return function(...args){ \n    return anvil.call(el,\
+    \ event, ...args)\n  }\n}\n</script>\n\n\n<style>\n  .tabulator.anvil-spacing-below-none{margin-bottom\
     \ : 0px;}\n  .tabulator.anvil-spacing-below-small{margin-bottom : 4px;}\n  .tabulator.anvil-spacing-below-medium{margin-bottom\
     \ : 8px;}\n  .tabulator.anvil-spacing-below-large{margin-bottom : 16px;}\n  .tabulator-cell\
     \ .column-panel, .tabulator-cell input {margin: 0 !important;}\n  .tabulator-cell\

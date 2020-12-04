@@ -14,12 +14,12 @@
 
 from ._anvil_designer import TabulatorTemplate
 import anvil as _anvil
-from anvil.js.window import Tabulator as _Tabulator
-from anvil.js import get_dom_node
+from anvil import js
+from anvil.js.window import Tabulator as _Tabulator, raiseEvent
+from anvil.js import get_dom_node, window
 
 from ._Helpers import maintain_scroll_position
 from ._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
-
 
 class Tabulator(TabulatorTemplate):
     
@@ -64,11 +64,11 @@ class Tabulator(TabulatorTemplate):
             'paginationSizeSelector': self._pagination_size_selector,
             'resizableColumns': self._resizable_columns,
             'selectable': 'highlight' if row_selectable == 'checkbox' else row_selectable,
-            'rowSelected': self.row_selected,
-            'rowClick': self.row_click,
-            'cellEdited': self.cell_edited,
-            'rowSelectionChanged': self.row_selection_change,
-            'cellClick': self.cell_click,
+            'rowSelected': raiseEvent(el, 'row_selected'),
+            'rowClick': raiseEvent(el, 'row_click'),
+            'cellEdited': raiseEvent(el, 'cell_edited'),
+            'rowSelectionChanged': raiseEvent(el, 'row_selection_change'),
+            'cellClick': raiseEvent(el, 'cell_click'),
         })
         
         self.columns = properties.get('columns', [])
@@ -169,22 +169,24 @@ class Tabulator(TabulatorTemplate):
 
 # Events
     def row_selected(self, row):
-        self.raise_event('row_selected', row=dict(row.getData()))
+        return self.raise_event('row_selected', row=dict(row.getData()))
 
     def row_click(self, e, row):
-        self.raise_event('row_click', row=dict(row.getData()))
+        return self.raise_event('row_click', row=dict(row.getData()))
         
     def row_selection_change(self, e, rows):
-        self.raise_event('row_selection_change', rows=[dict(row.getData()) for row in rows])
+        return self.raise_event('row_selection_change', rows=[dict(row.getData()) for row in rows])
         
     def get_selected(self):
         return [dict(row) for row in self._table.getSelectedData()]
       
     def cell_click(self, e, cell):
-        self.raise_event('cell_click', field=cell.getField(), row=dict(cell.getData()))
+        print('here')
+        x = self.raise_event('cell_click', field=cell.getField(), row=dict(cell.getData()))
+        print(x)
         
     def cell_edited(self, cell):
-        self.raise_event('cell_edited', field=cell.getField(), row=dict(cell.getData()))
+        return self.raise_event('cell_edited', field=cell.getField(), row=dict(cell.getData()))
   
     @maintain_scroll_position
     def redraw(self, **event_args):
