@@ -6,7 +6,6 @@ allow_embedding: false
 name: Clone of Tabulator
 runtime_options: {version: 2, client_version: '3', server_version: python3-full}
 metadata: {}
-startup_form: Tabulator
 native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.6.3/dist/css/bootstrap/tabulator_bootstrap.min.css\"\
     \ rel=\"stylesheet\">\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.6.3/dist/js/tabulator.min.js\"\
     ></script>\n\n<script>\n// enhancements\n//rowSelectionDisplay column formatter\n\
@@ -28,18 +27,18 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.6.3/
     ,$(d).addClass(\"datepicker\"),d.value=moment(t.getValue(),\"DD/MM/YYYY\").format(\"\
     YYYY-MM-DD\"),e(function(){d.focus(),d.style.css=\"100%\"}),d.addEventListener(\"\
     blur\",function(){d.value?o(moment(d.value,\"YYYY-MM-DD\").format(\"DD/MM/YYYY\"\
-    )):n()}),d};\n\n</script>\n\n\n\n<script>\n// patch for deepCloning Skulpt elements\n\
-    \nTabulator.prototype.helpers.deepClone = function (t) {\n    var e = Array.isArray(t)\
-    \ ? [] : {};\n  \tif (t.$isPyWrapped) {\n      return t; // don't deep clone me\n\
-    \    }\n    for (var o in t){\n        null != t[o] && \"object\" === _typeof(t[o])\
-    \ && t[o].v !== undefined?\n        t[o] instanceof Date ?\n        (e[o] = new\
-    \ Date(t[o])) :\n        (e[o] = this.deepClone(t[o])) :\n        (e[o] = t[o]);\
-    \ \n    }\n    return e;\n};\n\n</script>\n\n\n<style>\n  .tabulator.anvil-spacing-below-none{margin-bottom\
+    )):n()}),d};\n// patch for deepCloning Skulpt elements\n\nTabulator.prototype.helpers.deepClone\
+    \ = function (t) {\n    var e = Array.isArray(t) ? [] : {};\n  \tif (t.$isPyWrapped)\
+    \ {\n      return t; // don't deep clone me\n    }\n    for (var o in t){\n  \
+    \      null != t[o] && \"object\" === _typeof(t[o]) && t[o].v !== undefined?\n\
+    \        t[o] instanceof Date ?\n        (e[o] = new Date(t[o])) :\n        (e[o]\
+    \ = this.deepClone(t[o])) :\n        (e[o] = t[o]); \n    }\n    return e;\n};\n\
+    \n</script>\n\n\n<style>\n  .tabulator.anvil-spacing-below-none{margin-bottom\
     \ : 0px;}\n  .tabulator.anvil-spacing-below-small{margin-bottom : 4px;}\n  .tabulator.anvil-spacing-below-medium{margin-bottom\
     \ : 8px;}\n  .tabulator.anvil-spacing-below-large{margin-bottom : 16px;}\n  .tabulator-cell\
     \ .column-panel, .tabulator-cell input {margin: 0 !important;}\n  .tabulator-cell\
-    \ .form-control {padding-top: 0 !important;}\n  .title-center{\n    text-align:\
-    \ center !important;\n  }\n  .tabulator-header {border-bottom: none !important}\n\
-    \  .tabulator-col-content {border-bottom: 2px solid #ddd}\n</style>"}
+    \ .form-control {padding-top: 0 !important;}\n  .title-center{ text-align: center\
+    \ !important }\n  .tabulator-header {border-bottom: none !important}\n  .tabulator-col-content\
+    \ {border-bottom: 2px solid #ddd}\n</style>"}
 db_schema: []
 renamed: true
