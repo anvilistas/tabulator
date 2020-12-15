@@ -24,7 +24,7 @@ def maintain_scroll_position(func):
 
 
 def redraw_tabulators(e):
-    tabulators = Tabulator.prototype.findTable(".tabulator")
+    tabulators = Tabulator.prototype.findTable(".tabulator") or []
     for tabulator in tabulators:
         tabulator.redraw()
 
