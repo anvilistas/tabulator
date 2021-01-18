@@ -46,6 +46,7 @@ class Tabulator(TabulatorTemplate):
             "spacing_below": "small",
             "visible": True,
         } | properties
+        
         self.init_components(**properties)
 
         row_selectable = self._row_selectable
