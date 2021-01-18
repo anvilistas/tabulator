@@ -113,8 +113,14 @@ class Tabulator(TabulatorTemplate):
     def select_row(self, index_or_indexes):
         self._table.selectRow(index_or_indexes)
 
+    def deselect_row(self, index_or_indexes=None):
+        if index_or_indexes is None:
+          self._table.deselectRow() # call it with an empty argument
+        else:
+          self._table.deselectRow(index_or_indexes)
+
     def get_selected(self):
-        return [dict(x) for x in self._table.getSelected()]
+        return [dict(row) for row in self._table.getSelectedData()]
 
     def add_data(self, data, top=False, pos=None):
         self._table.addData(data, top, pos)
@@ -176,9 +182,6 @@ class Tabulator(TabulatorTemplate):
 
     def row_selection_change(self, e, rows):
         return self.raise_event("row_selection_change", rows=[dict(row.getData()) for row in rows])
-
-    def get_selected(self):
-        return [dict(row) for row in self._table.getSelectedData()]
 
     def cell_click(self, e, cell):
         self.raise_event("cell_click", field=cell.getField(), row=dict(cell.getData()))
