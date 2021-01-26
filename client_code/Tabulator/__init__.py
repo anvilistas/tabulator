@@ -28,7 +28,6 @@ class Tabulator(TabulatorTemplate):
         self._table_init = False
 
         el = self._el = _get_dom_node(self)
-        
         properties = {
             "auto_columns": None,
             "header_align": "middle",
@@ -45,6 +44,7 @@ class Tabulator(TabulatorTemplate):
             "row_selectable": "checkbox",
             "spacing_above": "small",
             "spacing_below": "small",
+            "border": "",
             "visible": True,
         } | properties
         
@@ -89,6 +89,7 @@ class Tabulator(TabulatorTemplate):
 
     # Methods
     def add_row(self, row, top=True, pos=None):
+        """add a row - ensure the row has an index"""
         index = row.get(self._index)
         if index is None:
             raise KeyError(f"you should provide an index '{self._index}' for this row")
@@ -365,15 +366,3 @@ class Tabulator(TabulatorTemplate):
     
     border = _HtmlTemplate.border
     visible = _HtmlTemplate.visible
-
-
-
-#     @property
-#     def visible(self):
-#         return self._visible
-
-#     @visible.setter
-#     def visible(self, value):
-#         self._visible = value
-#         if self._table_init:
-#             self._table.element.classList.toggle("visible-false", bool(not value))
