@@ -17,6 +17,7 @@ properties:
 - {name: spacing_above, type: string, default_value: small}
 - {name: spacing_below, type: string, default_value: small}
 - {name: visible, type: boolean, default_value: true}
+- {name: border, type: string, default_value: ''}
 is_package: true
 events:
 - name: row_click
@@ -41,6 +42,10 @@ events:
   parameters:
   - {name: field}
   - {name: row}
+- name: page_loaded
+  description: when a page is loaded
+  parameters:
+  - {name: pageno}
 custom_component: true
 components: []
 container:

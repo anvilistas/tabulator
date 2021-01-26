@@ -19,6 +19,7 @@ from anvil.js import get_dom_node as _get_dom_node
 from ._Helpers import maintain_scroll_position
 from ._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
 
+from anvil import HtmlTemplate as _HtmlTemplate
 
 class Tabulator(TabulatorTemplate):
     def __init__(self, **properties):
@@ -72,6 +73,7 @@ class Tabulator(TabulatorTemplate):
                 "cellEdited": self.cell_edited,
                 "rowSelectionChanged": self.row_selection_change,
                 "cellClick": self.cell_click,
+                "pageLoaded": self.page_loaded,
             },
         )
 
@@ -187,6 +189,9 @@ class Tabulator(TabulatorTemplate):
     def cell_click(self, e, cell):
         self.raise_event("cell_click", field=cell.getField(), row=dict(cell.getData()))
 
+    def page_loaded(self, pageno):
+        self.raise_event("page_loaded", pageno=pageno)    
+    
     def cell_edited(self, cell):
         return self.raise_event("cell_edited", field=cell.getField(), row=dict(cell.getData()))
 
@@ -357,13 +362,18 @@ class Tabulator(TabulatorTemplate):
     def spacing_below(self, value):
         self._spacing_below = value
         self._el.classList.add("anvil-spacing-below-" + self._spacing_below)
+    
+    border = _HtmlTemplate.border
+    visible = _HtmlTemplate.visible
 
-    @property
-    def visible(self):
-        return self._visible
 
-    @visible.setter
-    def visible(self, value):
-        self._visible = value
-        if self._table_init:
-            self._table.element.classList.toggle("visible-false", bool(not value))
+
+#     @property
+#     def visible(self):
+#         return self._visible
+
+#     @visible.setter
+#     def visible(self, value):
+#         self._visible = value
+#         if self._table_init:
+#             self._table.element.classList.toggle("visible-false", bool(not value))
