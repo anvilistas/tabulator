@@ -188,13 +188,40 @@ class Tabulator(TabulatorTemplate):
         return self.raise_event("row_selection_change", rows=[dict(row.getData()) for row in rows])
 
     def cell_click(self, e, cell):
-        self.raise_event("cell_click", field=cell.getField(), row=dict(cell.getData()))
+        return self.raise_event("cell_click", field=cell.getField(), row=dict(cell.getData()))
 
     def page_loaded(self, pageno):
-        self.raise_event("page_loaded", pageno=pageno)    
+        return self.raise_event("page_loaded", pageno=pageno)    
     
     def cell_edited(self, cell):
         return self.raise_event("cell_edited", field=cell.getField(), row=dict(cell.getData()))
+      
+    #Lang options
+    def set_locale(self, lang):
+        """set the locale of the table - you must have included this lang option at runtime"""
+        return self._table.setLocale(lang)
+      
+    def get_locale(self):
+        """set the current locale of the table"""
+        return self._table.getLocale()
+    
+    def get_lang(self, lang=None):
+        if lang is None:
+            return self._table.getLang()
+        return self._table.getLang(lang)
+    
+    @property
+    def langs(self):
+        """lang_options is a dictionary of language options eg. {'fr': {...options}, 'de': {...options}}"""
+        raise AttributeError("cannot read the lang property use get_lang(lang) to get a specific language option")
+    
+    @langs.setter
+    def langs(self, lang_options):
+        if not self._table_init:
+            raise RuntimeError("lang property must be set at runtime not at initialization")
+        for locale, lang in lang_options.items():
+            self._table.modules.localize.installLang(locale, lang)
+
 
     @maintain_scroll_position
     def redraw(self, **event_args):

@@ -18,6 +18,7 @@ properties:
 - {name: spacing_below, type: string, default_value: small}
 - {name: visible, type: boolean, default_value: true}
 - {name: border, type: string, default_value: ''}
+- {name: langs, type: object, default_value: null, description: set lang options}
 is_package: true
 events:
 - name: row_click
