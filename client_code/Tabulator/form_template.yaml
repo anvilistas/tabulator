@@ -47,6 +47,10 @@ events:
   description: when a page is loaded
   parameters:
   - {name: pageno}
+- name: row_formatter
+  description: when the row is rendered - manipulate the tabulator row object
+  parameters:
+  - {name: row, description: the tabulator row object}
 custom_component: true
 components: []
 container:

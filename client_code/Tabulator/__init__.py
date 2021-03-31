@@ -74,6 +74,7 @@ class Tabulator(TabulatorTemplate):
                 "rowSelectionChanged": self.row_selection_change,
                 "cellClick": self.cell_click,
                 "pageLoaded": self.page_loaded,
+                "rowFormatter": self.row_formatter,
             },
         )
 
@@ -195,6 +196,9 @@ class Tabulator(TabulatorTemplate):
     
     def cell_edited(self, cell):
         return self.raise_event("cell_edited", field=cell.getField(), row=dict(cell.getData()))
+    
+    def row_formatter(self, row):
+        return self.raise_event("row_formatter", row=row)
       
     #Lang options
     def set_locale(self, lang):
