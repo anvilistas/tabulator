@@ -12,7 +12,12 @@ def _clean_cols(self, cols):
     for col in cols:
         formatter = col.get('formatter')
         if formatter is not None:
-            col['formatter'] = self._clean_formatter(formatter)
+            formatter = self._clean_formatter(formatter)
+        else:
+            formatter = col.get('cellFormatter')
+        if formatter is not None:
+            col['formatter'] = formatter
+            
     
         editor = col.get('editor')
         if editor is not None:
