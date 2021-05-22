@@ -37,46 +37,30 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.6.3/
     \ referencing!\n    var r = Array.isArray(e) ? [] : {};\n    for (var t in e)\n\
     \        null != e[t] && \"object\" == typeof e[t]\n            ? e[t] instanceof\
     \ Date\n                ? (r[t] = new Date(e[t]))\n                : (r[t] = this.deepClone(e[t]))\n\
-    \            : (r[t] = e[t]);\n    return r;\n};\n\n  Tabulator.prototype.moduleBindings.edit.prototype.editors.dateEditor\
-    \ = function (t, e, o, n, a) {\n    var d = document.createElement(\"input\");\n\
-    \    return (\n        d.setAttribute(\"type\", \"date\"),\n        (d.style.padding\
-    \ = \"3px\"),\n        (d.style.width = \"100%\"),\n        (d.style.boxSizing\
-    \ = \"border-box\"),\n        $(d).addClass(\"datepicker\"),\n        (d.value\
-    \ = moment(t.getValue(), \"DD/MM/YYYY\").format(\"YYYY-MM-DD\")),\n        e(function\
-    \ () {\n            d.focus(), (d.style.css = \"100%\");\n        }),\n      \
-    \  d.addEventListener(\"blur\", function () {\n            d.value ? o(moment(d.value,\
-    \ \"YYYY-MM-DD\").format(\"DD/MM/YYYY\")) : n();\n        }),\n        d\n   \
-    \ );\n};\n  \nconst pythonformatToMomentJS = {\n    \"%\": \"%%\",\n    A: \"\
-    %p\",\n    DDDD: \"%j\",\n    DD: \"%d\",\n    HH: \"%H\",\n    L: \"%x\",\n \
-    \   LT: \"%X\",\n    MMMM: \"%B\",\n    MMM: \"%b\",\n    MM: \"%m\",\n    WW:\
-    \ \"%W\",\n    YYYY: \"%Y\",\n    YY: \"%y\",\n    dddd: \"%A\",\n    ddd: \"\
-    %a\",\n    e: \"%w\",\n    hh: \"%I\",\n    llll: \"%c\",\n    mm: \"%M\",\n \
-    \   ss: \"%S\",\n    ww: \"%U\",\n};\n\nconst formatRegex = /dddd|ddd|MMMM|MMM|llll|DDDD|HH|hh|DD|MM|mm|A|ss|ww|e|WW|L|LT|YYYY|YY/g;\n\
-    const convertFormat = (f) => f.replace(formatRegex, (match) => pythonformatToMomentJS[match]);\n\
-    \nconst dt = Tabulator.prototype.moduleBindings.format.prototype.formatters.datetime;\n\
-    Tabulator.prototype.moduleBindings.format.prototype.formatters.datetime = function\
-    \ (\n    cell,\n    formatterParams,\n    onRendered\n) {\n    var inputFormat\
-    \ = formatterParams.inputFormat || \"YYYY-MM-DD hh:mm:ss\";\n    var outputFormat\
-    \ = formatterParams.outputFormat || \"DD/MM/YYYY hh:mm:ss\";\n    var invalid\
-    \ = typeof formatterParams.invalidPlaceholder !== \"undefined\" ? formatterParams.invalidPlaceholder\
-    \ : \"\";\n\n    const strftime = new Sk.builtin.str(\"strftime\");\n    var value\
-    \ = cell.getValue();\n  \tlet newDatetime;\n    if (typeof value === \"string\"\
-    \ || !value.$isPyWrapped) {\n          newDatetime = moment(value, inputFormat);\n\
-    \    } else if (value.$isPyWrapped) {\n      \tvalue = PyDefUtils.unwrapOrRemapToPy(value);\n\
-    \        value = PyDefUtils.pyCall(value.tp$getattr(strftime), [new Sk.builtin.str(convertFormat(outputFormat))]);\n\
-    \        value = value.toString();\n        newDatetime = moment(value, outputFormat);\
-    \ \n    }\n\n    if (newDatetime.isValid()) {\n        return formatterParams.timezone\n\
-    \            ? newDatetime.tz(formatterParams.timezone).format(outputFormat)\n\
-    \            : newDatetime.format(outputFormat);\n    } else {\n        if (invalid\
-    \ === true) {\n            return value;\n        } else if (typeof invalid ===\
-    \ \"function\") {\n            return invalid(value);\n        } else {\n    \
-    \        return invalid;\n        }\n    }\n};\n\n\n  \n</script>\n\n\n<style>\n\
-    \  .tabulator.anvil-spacing-below-none{margin-bottom : 0px;}\n  .tabulator.anvil-spacing-below-small{margin-bottom\
-    \ : 4px;}\n  .tabulator.anvil-spacing-below-medium{margin-bottom : 8px;}\n  .tabulator.anvil-spacing-below-large{margin-bottom\
-    \ : 16px;}\n  .tabulator-cell .column-panel, .tabulator-cell input {margin: 0\
-    \ !important;}\n  .tabulator-cell .form-control {padding-top: 0 !important;}\n\
-    \  .title-center{ text-align: center !important }\n  .tabulator-header {border-bottom:\
-    \ none !important}\n  .tabulator-col-content {border-bottom: 2px solid #ddd}\n\
-    </style>"}
+    \            : (r[t] = e[t]);\n    return r;\n};\n\n// Support datetime for datetime\
+    \ formatted column\nvar pythonformatToMomentJS={\"%a\":\"ddd\",\"%A\":\"dddd\"\
+    ,\"%b\":\"MMM\",\"%B\":\"MMMM\",\"%c\":\"llll\",\"%d\":\"DD\",\"%H\":\"HH\",\"\
+    %I\":\"hh\",\"%j\":\"DDDD\",\"%m\":\"MM\",\"%M\":\"mm\",\"%p\":\"A\",\"%S\":\"\
+    ss\",\"%U\":\"ww\",\"%w\":\"e\",\"%W\":\"WW\",\"%x\":\"L\",\"%X\":\"LT\",\"%y\"\
+    :\"YY\",\"%Y\":\"YYYY\",\"%Z\":\"\",\"%%\":\"%\"};\nvar formatRegex=/%[aAbBcdHIjmMpSUwWxXyYZ%]/g;var\
+    \ convertFormat=(f)=>f.replace(formatRegex,(match)=>pythonformatToMomentJS[match]);var\
+    \ _strftime,_dt_format;\nvar convertDTtoStr=(value)=>{_strftime||(_strftime=new\
+    \ Sk.builtin.str(\"strftime\"));_dt_format||(_dt_format=new Sk.builtin.str(\"\
+    %Y-%m-%d %I:%M:%S\"));value=PyDefUtils.unwrapOrRemapToPy(value);value=PyDefUtils.pyCall(value.tp$getattr(_strftime),[_dt_format]);return\
+    \ value.toString()}\nvar _TB_DT=Tabulator.prototype.moduleBindings.format.prototype.formatters.datetime;Tabulator.prototype.moduleBindings.format.prototype.formatters.datetime=function(cell,formatterParams,onRendered){var\
+    \ value=cell.getValue();if(!value.$isPyWrapped){return _TB_DT.call(this,cell,formatterParams,onRendered)}cell={getValue(){return\
+    \ convertDTtoStr(value)}};formatterParams.inputFormat=\"YYYY-MM-DD hh:mm:ss\"\
+    ;formatterParams.outputFormat=convertFormat(formatterParams.outputFormat||\"DD/MM/YYYY\
+    \ hh:mm:ss\");return _TB_DT.call(this,cell,formatterParams,onRendered)};\nvar\
+    \ _TB_DT_S=Tabulator.prototype.moduleBindings.sort.prototype.sorters.datetime;Tabulator.prototype.moduleBindings.sort.prototype.sorters.datetime=function(a,b,aRow,bRow,column,dir,params){if(!a.$isPyWrapped){return\
+    \ _TB_DT_S.call(this,a,b,aRow,bRow,column,dir,params)}a=convertDTtoStr(a);b=convertDTtoStr(b);params.format=\"\
+    YYYY-MM-DD hh:mm:ss\";return _TB_DT_S.call(this,a,b,aRow,bRow,column,dir,params)};\n\
+    \  \n</script>\n\n\n<style>\n  .tabulator.anvil-spacing-below-none{margin-bottom\
+    \ : 0px;}\n  .tabulator.anvil-spacing-below-small{margin-bottom : 4px;}\n  .tabulator.anvil-spacing-below-medium{margin-bottom\
+    \ : 8px;}\n  .tabulator.anvil-spacing-below-large{margin-bottom : 16px;}\n  .tabulator-cell\
+    \ .column-panel, .tabulator-cell input {margin: 0 !important;}\n  .tabulator-cell\
+    \ .form-control {padding-top: 0 !important;}\n  .title-center{ text-align: center\
+    \ !important }\n  .tabulator-header {border-bottom: none !important}\n  .tabulator-col-content\
+    \ {border-bottom: 2px solid #ddd}\n</style>"}
 db_schema: []
 renamed: true
