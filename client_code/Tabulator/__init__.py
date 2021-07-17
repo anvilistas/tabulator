@@ -144,7 +144,7 @@ class Tabulator(TabulatorTemplate):
             field = lambda data, params: filter_func(dict(data), **params)
         self._table.setFilter(field, type, value)
 
-    def add_filter(self, field, type, value):
+    def add_filter(self, field, type=None, value=None):
         if callable(field):
             filter_func = field
             field = lambda data, params: filter_func(dict(data), **params)
