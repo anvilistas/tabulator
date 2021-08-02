@@ -241,10 +241,11 @@ class Tabulator(TabulatorTemplate):
         self.redraw()
         self._from_cache = True
 
+    def get_data(self, active=False):
+        return [dict(row) for row in self._table.getData(active)]
+
     # properties
-    @property
-    def data(self):
-        return [dict(row) for row in self._table.getData()]
+    data = property(get_data)
 
     @data.setter
     def data(self, value):
