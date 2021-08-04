@@ -241,10 +241,15 @@ class Tabulator(TabulatorTemplate):
         self.redraw()
         self._from_cache = True
 
+    def get_data(self, active="all"):
+        """
+        Returns the table data based on a Tabulator range row lookup value.
+        :active: Range row lookup. Valid values are: "visible", "active", "selected", "all"
+        """
+        return [dict(row) for row in self._table.getData(active)]
+
     # properties
-    @property
-    def data(self):
-        return [dict(row) for row in self._table.getData()]
+    data = property(get_data)
 
     @data.setter
     def data(self, value):
