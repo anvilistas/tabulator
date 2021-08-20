@@ -80,7 +80,6 @@ class Tabulator(TabulatorTemplate):
 
         self.columns = properties.get("columns", [])
         self._table_init = True
-        self.visible = self.visible
 
     # helpers
     _clean_cols = _clean_cols
