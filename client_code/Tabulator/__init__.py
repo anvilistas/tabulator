@@ -231,14 +231,13 @@ class Tabulator(TabulatorTemplate):
 
 
     @maintain_scroll_position
-    def redraw(self, **event_args):
+    def redraw(self, full_render=False, **event_args):
         """This method is called when the HTML panel is shown on the screen"""
-        # redraw on show
-        self._table.redraw()
+        self._table.redraw(full_render)
 
     def form_show(self, **event_args):
-        #         if not self._from_cache:
-        self.redraw()
+        # redraw on show
+        self.redraw(full_render=not self._from_cache)
         self._from_cache = True
 
     def get_data(self, active="all"):
