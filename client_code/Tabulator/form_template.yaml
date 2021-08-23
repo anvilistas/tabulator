@@ -1,12 +1,12 @@
 properties:
 - {name: height, type: string, default_value: '', default_binding_prop: true, group: appearance,
   important: false}
-- {name: data, type: object, default_value: null, important: true}
+- {name: data, type: object, default_value: null, important: true, description: typically a list of dicts}
 - {name: layout, type: string, default_value: fitColumns, group: columns, important: false}
-- {name: columns, type: object, default_value: null, important: true}
+- {name: columns, type: object, default_value: null, important: true, description: column definitions should be a list of dicts. Each dict represents a column with options. See Tabulator.info for full documentation on available options}
 - {name: pagination_size_selector, type: string, default_value: 6 10 20, group: pagination,
   important: false}
-- {name: index, type: string, default_value: id, important: true}
+- {name: index, type: string, default_value: id, important: true, description: This should be a unique identifier for a row.}
 - {name: auto_columns, type: boolean, default_value: null, group: columns, important: false}
 - {name: resizable_columns, type: boolean, default_value: true, group: columns, important: false}
 - {name: movable_columns, type: boolean, default_value: false, group: columns, important: false}
