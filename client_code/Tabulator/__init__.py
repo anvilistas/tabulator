@@ -21,6 +21,27 @@ from ._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sor
 
 from anvil import HtmlTemplate as _HtmlTemplate
 
+_default_props = {
+    "auto_columns": None,
+    "header_align": "middle",
+    "header_visible": True,
+    "height": "",
+    "index": "id",
+    "layout": "fitColumns",
+    "movable_columns": False,
+    "pagination": True,
+    "pagination_button_count": 5,
+    "pagination_size": 10,
+    "pagination_size_selector": "6 10 20",
+    "resizable_columns": True,
+    "row_selectable": "checkbox",
+    "spacing_above": "small",
+    "spacing_below": "small",
+    "border": "",
+    "visible": True,
+}
+
+
 class Tabulator(TabulatorTemplate):
     def __init__(self, **properties):
         # allow Tabulator to be set in code with default values
@@ -28,30 +49,14 @@ class Tabulator(TabulatorTemplate):
         self._table_init = False
 
         el = self._el = _get_dom_node(self)
-        properties = {
-            "auto_columns": None,
-            "header_align": "middle",
-            "header_visible": True,
-            "height": "",
-            "index": "id",
-            "layout": "fitColumns",
-            "movable_columns": False,
-            "pagination": True,
-            "pagination_button_count": 5,
-            "pagination_size": 10,
-            "pagination_size_selector": "6 10 20",
-            "resizable_columns": True,
-            "row_selectable": "checkbox",
-            "spacing_above": "small",
-            "spacing_below": "small",
-            "border": "",
-            "visible": True,
-        } | properties
-        
+        properties = _default_props | properties
+
         self.init_components(**properties)
 
-        row_selectable = self._row_selectable
-        
+        selectable = (
+            "highlight" if self._row_selectable == "checkbox" else self._row_selectable
+        )
+
         self._table = _Tabulator(
             el,
             {
@@ -67,7 +72,7 @@ class Tabulator(TabulatorTemplate):
                 "paginationSize": self._pagination_size,
                 "paginationSizeSelector": self._pagination_size_selector,
                 "resizableColumns": self._resizable_columns,
-                "selectable": "highlight" if row_selectable == "checkbox" else row_selectable,
+                "selectable": selectable,
                 "rowSelected": self.row_selected,
                 "rowClick": self.row_click,
                 "cellEdited": self.cell_edited,
@@ -99,9 +104,11 @@ class Tabulator(TabulatorTemplate):
         self._table.addRow(row, top, pos)
 
     def delete_row(self, index):
+        """delete a row - the index of the row must be provided"""
         self._table.deleteRow(index)
 
     def update_row(self, index, row):
+        """update a row - the index of the row must be provided"""
         try:
             self._table.updateRow(index, row)
         except Exception as e:
@@ -111,6 +118,7 @@ class Tabulator(TabulatorTemplate):
                 raise e
 
     def get_row(self, index):
+        """get the row - the index of the row must be provided"""
         row = self._table.getRow(index)
         return dict(row.getData()) if row else None
 
@@ -118,23 +126,28 @@ class Tabulator(TabulatorTemplate):
         self._table.selectRow(index_or_indexes)
 
     def deselect_row(self, index_or_indexes=None):
+        """deselect a row (single index), rows (list of indexes) or all rows (no argument)"""
         if index_or_indexes is None:
-          self._table.deselectRow() # call it with an empty argument
+            self._table.deselectRow()  # call it with an empty argument
         else:
-          self._table.deselectRow(index_or_indexes)
+            self._table.deselectRow(index_or_indexes)
 
     def get_selected(self):
+        """returns a list of selected rows"""
         return [dict(row) for row in self._table.getSelectedData()]
 
     def add_data(self, data, top=False, pos=None):
+        """add data - use the keyword arguments to determine where in the table it gets added"""
         self._table.addData(data, top, pos)
 
     def update_or_add_data(self, data):
+        """checks each row and updates data if the row exists, otherwise creates a new row"""
         self._table.updateOrAddData(data)
 
     @maintain_scroll_position
     def replace_data(self, data):
         # useful to keep the datatable in the same place
+        """replace all data in the table"""
         self._table.replaceData(data)
 
     def set_filter(self, field, type=None, value=None):
@@ -170,7 +183,9 @@ class Tabulator(TabulatorTemplate):
         elif isinstance(column, str):
             self._table.setSort(column, "asc" if ascending else "desc")
         else:
-            raise TypeError("expected first argument to be a list of sorters or the column field name")
+            raise TypeError(
+                "expected first argument to be a list of sorters or the column field name"
+            )
 
     def clear_sort(self):
         self._table.clearSort()
@@ -188,46 +203,55 @@ class Tabulator(TabulatorTemplate):
         return self.raise_event("row_click", row=dict(row.getData()))
 
     def row_selection_change(self, e, rows):
-        return self.raise_event("row_selection_change", rows=[dict(row.getData()) for row in rows])
+        return self.raise_event(
+            "row_selection_change", rows=[dict(row.getData()) for row in rows]
+        )
 
     def cell_click(self, e, cell):
-        return self.raise_event("cell_click", field=cell.getField(), row=dict(cell.getData()))
+        return self.raise_event(
+            "cell_click", field=cell.getField(), row=dict(cell.getData())
+        )
 
     def page_loaded(self, pageno):
-        return self.raise_event("page_loaded", pageno=pageno)    
-    
+        return self.raise_event("page_loaded", pageno=pageno)
+
     def cell_edited(self, cell):
-        return self.raise_event("cell_edited", field=cell.getField(), row=dict(cell.getData()))
-    
+        return self.raise_event(
+            "cell_edited", field=cell.getField(), row=dict(cell.getData())
+        )
+
     def row_formatter(self, row):
         return self.raise_event("row_formatter", row=row)
-      
-    #Lang options
+
+    # Lang options
     def set_locale(self, lang):
         """set the locale of the table - you must have included this lang option at runtime"""
         return self._table.setLocale(lang)
-      
+
     def get_locale(self):
         """set the current locale of the table"""
         return self._table.getLocale()
-    
+
     def get_lang(self, lang=None):
         if lang is None:
             return self._table.getLang()
         return self._table.getLang(lang)
-    
+
     @property
     def langs(self):
         """lang_options is a dictionary of language options eg. {'fr': {...options}, 'de': {...options}}"""
-        raise AttributeError("cannot read the lang property use get_lang(lang) to get a specific language option")
-    
+        raise AttributeError(
+            "cannot read the lang property use get_lang(lang) to get a specific language option"
+        )
+
     @langs.setter
     def langs(self, lang_options):
         if not self._table_init:
-            raise RuntimeError("lang property must be set at runtime not at initialization")
+            raise RuntimeError(
+                "lang property must be set at runtime not at initialization"
+            )
         for locale, lang in lang_options.items():
             self._table.modules.localize.installLang(locale, lang)
-
 
     @maintain_scroll_position
     def redraw(self, full_render=False, **event_args):
@@ -400,6 +424,6 @@ class Tabulator(TabulatorTemplate):
     def spacing_below(self, value):
         self._spacing_below = value
         self._el.classList.add("anvil-spacing-below-" + self._spacing_below)
-    
+
     border = _HtmlTemplate.border
     visible = _HtmlTemplate.visible
