@@ -1,9 +1,11 @@
 properties:
-- {name: height, type: string, default_value: '', default_binding_prop: true, group: appearance, important: false}
+- {name: height, type: string, default_value: '', default_binding_prop: true, group: appearance,
+  important: false}
 - {name: data, type: object, default_value: null, important: true}
 - {name: layout, type: string, default_value: fitColumns, group: columns, important: false}
 - {name: columns, type: object, default_value: null, important: true}
-- {name: pagination_size_selector, type: string, default_value: 6 10 20, group: pagination, important: false}
+- {name: pagination_size_selector, type: string, default_value: 6 10 20, group: pagination,
+  important: false}
 - {name: index, type: string, default_value: id, important: true}
 - {name: auto_columns, type: boolean, default_value: null, group: columns, important: false}
 - {name: resizable_columns, type: boolean, default_value: true, group: columns, important: false}
@@ -12,13 +14,16 @@ properties:
 - {name: header_visible, type: boolean, default_value: true, group: header, important: true}
 - {name: pagination, type: boolean, default_value: true, group: pagination, important: true}
 - {name: pagination_size, type: number, default_value: 10, group: pagination, important: false}
-- {name: pagination_button_count, type: number, default_value: 5, group: pagination, important: false}
-- {name: row_selectable, type: string, default_value: checkbox, group: appearance, important: false}
+- {name: pagination_button_count, type: number, default_value: 5, group: pagination,
+  important: false}
+- {name: row_selectable, type: string, default_value: checkbox, group: appearance,
+  important: false}
 - {name: spacing_above, type: string, default_value: small, group: layout, important: false}
 - {name: spacing_below, type: string, default_value: small, group: layout, important: false}
 - {name: visible, type: boolean, default_value: true, group: appearance, important: true}
 - {name: border, type: string, default_value: '', group: appearance, important: false}
-- {name: langs, type: object, default_value: null, description: set lang options, important: false}
+- {name: langs, type: object, default_value: null, description: set lang options,
+  important: false}
 is_package: true
 events:
 - name: row_click
@@ -33,6 +38,7 @@ events:
 - name: row_selection_change
   parameters:
   - {name: rows}
+  description: when the row selection changes
 - name: cell_click
   description: when a cell is clicked - event_args include field and row
   parameters:
@@ -51,6 +57,8 @@ events:
   description: when the row is rendered - manipulate the tabulator row object
   parameters:
   - {name: row, description: the tabulator row object}
+- {name: show, description: when the tabulator is shown}
+- {name: hide, description: when the tabulator is hidden}
 custom_component: true
 components: []
 container:
