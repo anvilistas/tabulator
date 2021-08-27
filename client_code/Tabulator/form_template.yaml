@@ -24,7 +24,7 @@ properties:
 - {name: border, type: string, default_value: '', group: appearance, important: false}
 - {name: langs, type: object, default_value: null, description: set lang options,
   important: false}
-- {name: role, type: string, default_value: ''}
+- {name: role, type: string, default_value: '', group: appearance, important: false}
 is_package: true
 events:
 - name: row_click
