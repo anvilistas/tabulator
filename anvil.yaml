@@ -61,6 +61,6 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.6.3/
     \ .column-panel, .tabulator-cell input {margin: 0 !important;}\n  .tabulator-cell\
     \ .form-control {padding-top: 0 !important;}\n  .title-center{ text-align: center\
     \ !important }\n  .tabulator-header {border-bottom: none !important}\n  .tabulator-col-content\
-    \ {border-bottom: 2px solid #ddd}\n</style>"}
+    \ {border-bottom: 2px solid #ddd}\n  \n</style>"}
 db_schema: []
 renamed: true
