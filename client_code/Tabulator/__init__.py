@@ -427,3 +427,4 @@ class Tabulator(TabulatorTemplate):
 
     border = _HtmlTemplate.border
     visible = _HtmlTemplate.visible
+    role = _HtmlTemplate.role
