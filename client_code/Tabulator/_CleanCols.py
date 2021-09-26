@@ -9,7 +9,8 @@ allow various types of formatters - Components, or wrapped functions
 
 def _clean_cols(self, cols):
     add_check_box_col = self._row_selectable == "checkbox"
-    cols = cols or []
+    # make sure we do a shallow copy
+    cols = [dict(col) for col in (cols or [])]
 
     for col in cols:
         formatter = col.get("formatter")

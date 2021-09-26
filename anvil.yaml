@@ -1,5 +1,8 @@
 dependencies: []
-services: []
+services:
+- source: /runtime/services/tables.yml
+  client_config: {}
+  server_config: {}
 startup: {type: form, module: Tabulator.__StartupForm}
 package_name: Tabulator
 allow_embedding: false
@@ -64,5 +67,5 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.6.3/
     \ {border-bottom: 2px solid #ddd}\n  .tabulator .tabulator-header .tabulator-col\
     \ .tabulator-col-content .tabulator-col-title input[type=\"checkbox\"] {margin:\
     \ 0}\n</style>"}
-db_schema: []
+db_schema: {}
 renamed: true
