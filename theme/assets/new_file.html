@@ -1,0 +1,58 @@
+<link href="https://unpkg.com/tabulator-tables@4.6.3/dist/css/bootstrap/tabulator_bootstrap.min.css" rel="stylesheet">
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.6.3/dist/js/tabulator.min.js"></script>
+
+<script>
+// ignore harmless errors that will cause Anvil popups
+// see example issue https://github.com/souporserious/react-measure/issues/104
+window.addEventListener('error', function(e) {
+  // This covers both 
+  //   'ResizeObserver loop limit exceeded', and
+  //   'ResizeObserver loop ocmpleted with undelivered notifications'
+  if (e.message.indexOf("ResizeObserver loop") !== -1) {
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+  }
+});
+
+// enhancements
+//rowSelectionDisplay column formatter
+Tabulator.prototype.moduleBindings.format.prototype.formatters.rowSelectionDisplay=function(e){var t=this,o=document.createElement("input");if(o.type="checkbox",this.table.modExists("selectRow",!0))if(o.addEventListener("click",function(e){e.stopPropagation()}),"function"==typeof e.getRow){var l=e.getRow();o.addEventListener("change",function(e){l.toggleSelect()}),o.checked=l.isSelected(),this.table.modules.selectRow.registerRowSelectCheckbox(l,o)}else o.addEventListener("change",function(e){t.table.modules.selectRow.selectedRows.length?t.table.deselectRow():t.table.selectRow(t.table.rowManager.getDisplayRows())}),this.table.modules.selectRow.registerHeaderSelectCheckbox(o);return o};
+// link formatter remove href
+Tabulator.prototype.moduleBindings.format.prototype.formatters.link=function(t,e,a){var l=t.getValue(),r=(e.urlPrefix,e.download),i=l,n=document.createElement("a");if(e.labelField&&(i=t.getData()[e.labelField]),e.label)switch(typeof e.label){case"string":i=e.label;break;case"function":i=e.label(t)}if(i){if(e.urlField&&(l=t.getData()[e.urlField]),e.url)switch(typeof e.url){case"string":l=e.url;break;case"function":l=e.url(t)}return e.target&&n.setAttribute("target",e.target),e.download&&(r="function"==typeof r?r(t):!0===r?"":r,n.setAttribute("download",r)),n.innerHTML=this.emptyToSpace(this.sanitizeHTML(i)),n}return"&nbsp;"};
+// datepicker editor
+Tabulator.prototype.moduleBindings.edit.prototype.editors.dateEditor=function(t,e,o,n,a){var d=document.createElement("input");return d.setAttribute("type","date"),d.style.padding="3px",d.style.width="100%",d.style.boxSizing="border-box",$(d).addClass("datepicker"),d.value=moment(t.getValue(),"DD/MM/YYYY").format("YYYY-MM-DD"),e(function(){d.focus(),d.style.css="100%"}),d.addEventListener("blur",function(){d.value?o(moment(d.value,"YYYY-MM-DD").format("DD/MM/YYYY")):n()}),d};
+// patch for deepCloning Skulpt elements
+Tabulator.prototype.helpers.deepClone = function (e) {
+    if (e.$isPyWrapped) return e; // don't clone me i'm self referencing!
+    var r = Array.isArray(e) ? [] : {};
+    for (var t in e)
+        null != e[t] && "object" == typeof e[t]
+            ? e[t] instanceof Date
+                ? (r[t] = new Date(e[t]))
+                : (r[t] = this.deepClone(e[t]))
+            : (r[t] = e[t]);
+    return r;
+};
+
+// Support datetime for datetime formatted column
+var pythonformatToMomentJS={"%a":"ddd","%A":"dddd","%b":"MMM","%B":"MMMM","%c":"llll","%d":"DD","%H":"HH","%I":"hh","%j":"DDDD","%m":"MM","%M":"mm","%p":"A","%S":"ss","%U":"ww","%w":"e","%W":"WW","%x":"L","%X":"LT","%y":"YY","%Y":"YYYY","%Z":"","%%":"%"};
+var formatRegex=/%[aAbBcdHIjmMpSUwWxXyYZ%]/g;var convertFormat=(f)=>f.replace(formatRegex,(match)=>pythonformatToMomentJS[match]);var _strftime,_dt_format;
+var convertDTtoStr=(value)=>{_strftime||(_strftime=new Sk.builtin.str("strftime"));_dt_format||(_dt_format=new Sk.builtin.str("%Y-%m-%d %I:%M:%S"));value=PyDefUtils.unwrapOrRemapToPy(value);value=PyDefUtils.pyCall(value.tp$getattr(_strftime),[_dt_format]);return value.toString()}
+var _TB_DT=Tabulator.prototype.moduleBindings.format.prototype.formatters.datetime;Tabulator.prototype.moduleBindings.format.prototype.formatters.datetime=function(cell,formatterParams,onRendered){var value=cell.getValue();if(!value.$isPyWrapped){return _TB_DT.call(this,cell,formatterParams,onRendered)}cell={getValue(){return convertDTtoStr(value)}};formatterParams.inputFormat="YYYY-MM-DD hh:mm:ss";formatterParams.outputFormat=convertFormat(formatterParams.outputFormat||"DD/MM/YYYY hh:mm:ss");return _TB_DT.call(this,cell,formatterParams,onRendered)};
+var _TB_DT_S=Tabulator.prototype.moduleBindings.sort.prototype.sorters.datetime;Tabulator.prototype.moduleBindings.sort.prototype.sorters.datetime=function(a,b,aRow,bRow,column,dir,params){if(!a.$isPyWrapped){return _TB_DT_S.call(this,a,b,aRow,bRow,column,dir,params)}a=convertDTtoStr(a);b=convertDTtoStr(b);params.format="YYYY-MM-DD hh:mm:ss";return _TB_DT_S.call(this,a,b,aRow,bRow,column,dir,params)};
+  
+</script>
+
+
+<style>
+  .tabulator.anvil-spacing-below-none{margin-bottom : 0px;}
+  .tabulator.anvil-spacing-below-small{margin-bottom : 4px;}
+  .tabulator.anvil-spacing-below-medium{margin-bottom : 8px;}
+  .tabulator.anvil-spacing-below-large{margin-bottom : 16px;}
+  .tabulator-cell .column-panel, .tabulator-cell input {margin: 0 !important;}
+  .tabulator-cell .form-control {padding-top: 0 !important;}
+  .title-center{ text-align: center !important }
+  .tabulator-header {border-bottom: none !important}
+  .tabulator-col-content {border-bottom: 2px solid #ddd}
+  .tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-title input[type="checkbox"] {margin: 0}
+</style>
