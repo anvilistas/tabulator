@@ -14,9 +14,10 @@
 from ._anvil_designer import TabulatorTemplate
 # from anvil.js.window import Tabulator as _Tabulator
 from anvil.js import get_dom_node as _get_dom_node, import_from as _import_from
+from anvil.js.window import window
 
-_Tabulator = _import_from("https://cdn.skypack.dev/tabulator-tables@5.0.2")
-print(_Tabulator)
+_TabulatorModule = _import_from("https://cdn.skypack.dev/tabulator-tables@5.0.2")
+window.Tabulator = _Tabulator = _TabulatorModule.TabulatorFull
 
 from ._Helpers import maintain_scroll_position
 from ._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
