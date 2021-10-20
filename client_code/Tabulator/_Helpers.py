@@ -29,4 +29,4 @@ def redraw_tabulators(e):
         tabulator.redraw()
 
 
-jquery_window.on("resize", redraw_tabulators)
+# jquery_window.on("resize", redraw_tabulators)

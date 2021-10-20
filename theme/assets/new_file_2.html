@@ -1,0 +1,24 @@
+<div class='placeholder-table'></div>
+
+<script>
+  
+$('.placeholder-table').each(function() {
+    table = new Tabulator(this, {
+    layout:"fitColumns",
+    pagination:"local",
+    paginationSize:6,
+    paginationSizeSelector:[3, 6, 10],
+    autoColumns: true,
+  	data: [{columnA:'columnA', columnB:'columnB', columnC:'columnC', columnD:'columnD'},
+          {columnA:'columnA', columnB:'columnB', columnC:'columnC', columnD:'columnD'}],
+	});
+
+});
+</script>
+
+<style>
+  .tabulator-row .tabulator-cell {
+    font-style: italic;
+  }
+</style>
+

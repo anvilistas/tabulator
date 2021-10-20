@@ -85,8 +85,10 @@ class Tabulator(TabulatorTemplate):
                 "rowFormatter": self.row_formatter,
             },
         )
-
-        self.columns = properties.get("columns", [])
+        t = self._table
+        t.modules.layout.initialize()
+        self._columns = []
+#         self.columns = properties.get("columns", [])
         self._table_init = True
 
     # helpers
@@ -193,7 +195,9 @@ class Tabulator(TabulatorTemplate):
     def clear_sort(self):
         self._table.clearSort()
         # reset the table data
-        self._table.setData(self._table.getData())
+        debugger
+        data = self._table.getData()
+        self._table.setData(data)
 
     def set_group_by(self, field):
         self._table.setGroupBy(field)
@@ -263,7 +267,7 @@ class Tabulator(TabulatorTemplate):
 
     def form_show(self, **event_args):
         # redraw on show
-        self.redraw(full_render=not self._from_cache)
+#         self.redraw(full_render=not self._from_cache)
         self._from_cache = True
 
     def get_data(self, active="all"):
