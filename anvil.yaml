@@ -10,7 +10,7 @@ name: Tabulator
 runtime_options: {version: 2, client_version: '3', server_version: python3-full}
 metadata: {}
 startup_form: null
-native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@5.0.2/dist/css/tabulator_bootstrap3.min.css\"\
+native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@5.0.4/dist/css/tabulator_bootstrap3.min.css\"\
     \ rel=\"stylesheet\">\n<script>\n// ignore harmless errors that will cause Anvil\
     \ popups\n// see example issue https://github.com/souporserious/react-measure/issues/104\n\
     window.addEventListener('error', function(e) {\n  // This covers both \n  // \
