@@ -39,6 +39,7 @@ def _clean_cols(self, cols):
                 "headerSort": False,
                 "cssClass": "title-center",
                 "cellClick": lambda e, cell: cell.getRow().toggleSelect(),
+                "frozen": bool(cols) and cols[0].get("frozen", False)
             }
         ] + cols
 
