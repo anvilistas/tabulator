@@ -197,14 +197,14 @@ class Tabulator(TabulatorTemplate):
 
     # Events
     def row_selected(self, row):
-        return self.raise_event("row_selected", row=dict(row.getData()),_row=row)
+        return self.raise_event("row_selected", row=dict(row.getData()), _row=row)
 
     def row_click(self, e, row):
         return self.raise_event("row_click", row=dict(row.getData()), _row=row)
 
     def row_selection_change(self, e, rows):
         return self.raise_event(
-            "row_selection_change", rows=[dict(row.getData()) for row in rows,], _rows=rows
+            "row_selection_change", rows=[dict(row.getData()) for row in rows], _rows=rows
         )
 
     def cell_click(self, e, cell):
