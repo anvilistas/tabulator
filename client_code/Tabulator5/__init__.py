@@ -52,18 +52,23 @@ class Tabulator5(Tabulator5Template):
     def data(self):
         if self._t is None:
             return self._options.get("data")
-        return [self._t.getData()
+        return self._t.getData()
     
     @data.setter
     def data(self, value):
         if self._t is None:
             self._options["data"] = value
-        return self._t
+        return self._t.setData()
     
     @property
     def columns(self):
-        pass
+        if self._t is None:
+            return self._options.get("columns")
     
     @columns.setter
     def columns(self, value):
-        pass
+        if self._t is None:
+            self._options["columns"] = value
+        return self._t.getColumnDefinitions()
+    
+    
