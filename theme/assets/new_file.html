@@ -40,7 +40,7 @@ var formatRegex=/%[aAbBcdHIjmMpSUwWxXyYZ%]/g;var convertFormat=(f)=>f.replace(fo
 var convertDTtoStr=(value)=>{_strftime||(_strftime=new Sk.builtin.str("strftime"));_dt_format||(_dt_format=new Sk.builtin.str("%Y-%m-%d %I:%M:%S"));value=PyDefUtils.unwrapOrRemapToPy(value);value=PyDefUtils.pyCall(value.tp$getattr(_strftime),[_dt_format]);return value.toString()}
 var _TB_DT=Tabulator.prototype.moduleBindings.format.prototype.formatters.datetime;Tabulator.prototype.moduleBindings.format.prototype.formatters.datetime=function(cell,formatterParams,onRendered){var value=cell.getValue();if(!value.$isPyWrapped){return _TB_DT.call(this,cell,formatterParams,onRendered)}cell={getValue(){return convertDTtoStr(value)}};formatterParams.inputFormat="YYYY-MM-DD hh:mm:ss";formatterParams.outputFormat=convertFormat(formatterParams.outputFormat||"DD/MM/YYYY hh:mm:ss");return _TB_DT.call(this,cell,formatterParams,onRendered)};
 var _TB_DT_S=Tabulator.prototype.moduleBindings.sort.prototype.sorters.datetime;Tabulator.prototype.moduleBindings.sort.prototype.sorters.datetime=function(a,b,aRow,bRow,column,dir,params){if(!a.$isPyWrapped){return _TB_DT_S.call(this,a,b,aRow,bRow,column,dir,params)}a=convertDTtoStr(a);b=convertDTtoStr(b);params.format="YYYY-MM-DD hh:mm:ss";return _TB_DT_S.call(this,a,b,aRow,bRow,column,dir,params)};
-  
+
 </script>
 
 
