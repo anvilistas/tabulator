@@ -10,7 +10,7 @@ def _import(*attrs):
     attrs = attrs or ["default"]
     return attrgetter(*attrs)(module)
 
-Tabulator, Module, Accessor, Format = _import("Tabulator", "Module", "AccessorModule", "FormatModule")
+Tabulator, Module, Accessor, Format, Page = _import("Tabulator", "Module", "AccessorModule", "FormatModule", "PageModule")
 
 transformRow = Accessor.prototype.transformRow
 
@@ -55,18 +55,19 @@ class DataModule(AnvilTabulatorModule):
         self.mod.subscribe("data-load", self.data_load)
         self.mod.subscribe("row-data-retrieve", self.transform_row)
 
-    def data_loading(self, *args):
-        print("data-loading", *args, sep="\n", end="\n\n")
+    def data_loading(self, data, params, config, silent):
+        print("data-loading", data, params, config, silent, sep="\n", end="\n\n")
         return True
 
-    def data_params(self, *args):
-        print("data-params", *args, sep="\n", end="\n\n")
-        return {}
+    def data_params(self, data, config, silent, prev):
+        print("data-params", data, config, silent, prev,sep="\n", end="\n\n")
+        return prev
 
-    def data_load(self, data, *args):
-        print("data-load", *args, sep="\n", end="\n\n")
+    def data_load(self, data, params, config, silent, prev):
+        print("data-load", data, params, config, silent, prev, sep="\n", end="\n\n")
         self.data = data
-        return Promise(lambda resolve, reject: resolve(data))
+        page = params['page']
+        return Promise(lambda resolve, reject: resolve({'data':tabledata[page - 1: page], 'last_page': 5}))
     
     def transform_row(self, row, type, prev):
         print("transforming row", row, type, prev, sep="\n", end="\n\n")
@@ -86,6 +87,7 @@ class ComponentFormatter(AnvilTabulatorModule):
 
 Tabulator.registerModule(Accessor)
 Tabulator.registerModule(Format)
+Tabulator.registerModule(Page)
 Register(DataModule, "data")
 Register(ComponentFormatter, "anvilComponent")
 
@@ -98,22 +100,25 @@ document.body.appendChild(el)
 
 tabledata = [
  	{'id':1, 'name':"Oli Bob", 'age':"12", 'col':"red", 'dob':"14/05/1982"},
-#  	{'id':2, 'name':"Mary May", 'age':"1", 'col':"blue", 'dob':"14/05/1982"},
-#  	{'id':3, 'name':"Christine Lobowski", 'age':"42", 'col':"green", 'dob':"22/05/1982"},
-#  	{'id':4, 'name':"Brendon Philips", 'age':"125", 'col':"orange", 'dob':"01/08/1980"},
-#  	{'id':5, 'name':"Margret Marmajuke", 'age':"16", 'col':"yellow", 'dob':"31/01/1999"},
+ 	{'id':2, 'name':"Mary May", 'age':"1", 'col':"blue", 'dob':"14/05/1982"},
+ 	{'id':3, 'name':"Christine Lobowski", 'age':"42", 'col':"green", 'dob':"22/05/1982"},
+ 	{'id':4, 'name':"Brendon Philips", 'age':"125", 'col':"orange", 'dob':"01/08/1980"},
+ 	{'id':5, 'name':"Margret Marmajuke", 'age':"16", 'col':"yellow", 'dob':"31/01/1999"},
 ]
 
 
 table = Tabulator(el, {
     "anvilFoo": False,
-    'data':tabledata,
+    'data': 123,
    	'columns':[
 	 	{'title':"Name", 'field':"name", 'width':150, 'accessor': 'roundDown'},
 	 	{'title':"Age", 'field':"age", 'hozAlign':"left", 'formatter':"progress"},
 	 	{'title':"Favourite Color", 'field':"col"},
 	 	{'title':"Date Of Birth", 'field':"dob", 'sorter':"date", 'hozAlign':"center"},
  	],
+    'pagination': True,  # enable pagination
+    'paginationMode':"remote", # enable remote pagination
+    'paginationSize': 1,
 })
 
 
