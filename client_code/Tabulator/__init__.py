@@ -44,9 +44,47 @@ _default_props = {
     "visible": True,
 }
 
+def _camel_to_snake(s):
+    return s
+
+def _snake_to_camel(s):
+    return s
+
 
 class Tabulator(TabulatorTemplate):
     def __init__(self, **properties):
+        self._props = _default_props | properties
+        self._t = Tabulator()
+
+    @property
+    def columns(self):
+        pass
+
+    @column.setter
+    def columns(self, value):
+        pass
+
+    def get_data(self, active="all"):
+        """
+        Returns the table data based on a Tabulator range row lookup value.
+        :active: Range row lookup. Valid values are: "visible", "active", "selected", "all"
+        """
+        return [dict(row) for row in self._table.getData(active)]
+
+    # properties
+    data = property(get_data)
+
+    @data.setter
+    def data(self, value):
+        self._table.setData(value)
+
+
+    def __getattr__(self, attr):
+        try:
+            return getattr(self._t, _snake_to_camel(attr))
+        except AttributeError:
+            raise AttributeError(attr)
+        
         # allow Tabulator to be set in code with default values
         self._from_cache = False
         self._table_init = False
@@ -55,11 +93,6 @@ class Tabulator(TabulatorTemplate):
         properties = _default_props | properties
 
         self.init_components(**properties)
-
-        selectable = (
-            "highlight" if self._row_selectable == "checkbox" else self._row_selectable
-        )
-
         self._table = _Tabulator(
             el,
             {
