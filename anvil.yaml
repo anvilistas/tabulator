@@ -3,7 +3,7 @@ services:
 - source: /runtime/services/tables.yml
   client_config: {}
   server_config: {}
-startup: {type: module, module: Module1}
+startup: {type: module, module: Module2}
 package_name: Tabulator
 allow_embedding: false
 name: Tabulator
