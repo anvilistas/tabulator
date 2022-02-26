@@ -1,7 +1,7 @@
 from anvil.js.window import Function as _Function
 from .js_tabulator import Tabulator, Module
 
-_Register = _Function("Tabulator", "Module", "cls", "name", """
+_Register = _Function("Tabulator", "Module", "cls", "name", "kws", """
 class CustomModule extends Module {
     constructor(table) {
         super(table);
@@ -9,13 +9,16 @@ class CustomModule extends Module {
     }
 }
 CustomModule.moduleName = name;
+for (const key in kws) {
+    CustomModule[key] = kws[key];
+}
 Tabulator.registerModule(CustomModule);
 """).bind(None, Tabulator, Module)
 
 
-def register_module(name):
+def register_module(name, **kws):
     def wrapper(cls):
-        _Register(cls, name)
+        _Register(cls, name, kws)
         return cls
     return wrapper
         
