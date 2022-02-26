@@ -24,6 +24,10 @@ def register_module(name, **kws):
         
 
 class AbstractModule:
+#     @classmethod
+#     def __init_subclass__(cls, name, **kwargs):
+#         _Register(cls, name, kwargs)
+
     def __init__(self, mod, table):
         self.mod, self.table = mod, table
         mod.initialize = self.initialize
