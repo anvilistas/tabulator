@@ -209,7 +209,7 @@ class Tabulator(TabulatorTemplate):
 
     def cell_click(self, e, cell):
         return self.raise_event(
-            "cell_click", field=cell.getField(), row=dict(cell.getData(), _cell=cell)
+            "cell_click", field=cell.getField(), row=dict(cell.getData(), cell=cell)
         )
 
     def page_loaded(self, pageno):
@@ -217,7 +217,7 @@ class Tabulator(TabulatorTemplate):
 
     def cell_edited(self, cell):
         return self.raise_event(
-            "cell_edited", field=cell.getField(), row=dict(cell.getData(), _cell=cell)
+            "cell_edited", field=cell.getField(), row=dict(cell.getData(), cell=cell)
         )
 
     def row_formatter(self, row):
