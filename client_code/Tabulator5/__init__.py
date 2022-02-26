@@ -5,6 +5,7 @@ from anvil.js.window import String, RegExp
 _RE_SNAKE = RegExp("_[a-z]", "g")
 _replace = String.prototype.replace
 
+
 def _snake_to_camel(s):
     return _replace.call(s, _RE_SNAKE, lambda m, *_: m[1].upper())
 
@@ -46,8 +47,12 @@ class Tabulator5(Tabulator5Template):
 
     def define(self, **options):
         if self._init:
-            raise RuntimeError("define must be called before the Tabulator component is on the screen")
-        self._options |= map(lambda item: [_snake_to_camel(item[0]), item[1]], options.items())
+            raise RuntimeError(
+                "define must be called before the Tabulator component is on the screen"
+            )
+        self._options |= map(
+            lambda item: [_snake_to_camel(item[0]), item[1]], options.items()
+        )
 
     @property
     def data(self):

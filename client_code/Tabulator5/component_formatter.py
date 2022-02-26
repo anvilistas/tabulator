@@ -2,6 +2,7 @@ from anvil import Component
 from anvil.js import get_component
 from .js_tabulator import AbstractModule, register_module
 
+
 @register_module("componentFormatter")
 class ComponentFormatter(AbstractModule):
     def initialize(self):
@@ -48,6 +49,8 @@ class FormatterWrapper(AbstractModule):
         if not isinstance(f, type) or not issubclass(f, Component):
             return lambda cell, params, onRendered: f(cell, **params)
         elif hasattr(f, "init_components"):
-            return lambda cell, params, onRendered: f(item=dict(cell.getData()), **params)
+            return lambda cell, params, onRendered: f(
+                item=dict(cell.getData()), **params
+            )
         else:
             return lambda cell, params, onRendered: f(**params)

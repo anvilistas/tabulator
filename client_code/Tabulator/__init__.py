@@ -12,6 +12,7 @@
     Source code published at https://github.com/s-cork/Tabulator
 """
 from ._anvil_designer import TabulatorTemplate
+
 # from anvil.js.window import Tabulator as _Tabulator
 from anvil.js import get_dom_node as _get_dom_node, import_from as _import_from
 from anvil.js.window import window
@@ -88,7 +89,7 @@ class Tabulator(TabulatorTemplate):
         t = self._table
         t.modules.layout.initialize()
         self._columns = []
-#         self.columns = properties.get("columns", [])
+        #         self.columns = properties.get("columns", [])
         self._table_init = True
 
     # helpers
@@ -267,7 +268,7 @@ class Tabulator(TabulatorTemplate):
 
     def form_show(self, **event_args):
         # redraw on show
-#         self.redraw(full_render=not self._from_cache)
+        #         self.redraw(full_render=not self._from_cache)
         self._from_cache = True
 
     def get_data(self, active="all"):
