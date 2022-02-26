@@ -1,9 +1,6 @@
-import anvil.js
+from anvil.js import import_from
 
-TabulatorModule = anvil.js.import_from(
-    f"https://cdn.skypack.dev/tabulator-tables@5.1.2"
-)
-
+TabulatorModule = import_from("https://cdn.skypack.dev/tabulator-tables@5.1.2")
 
 def __getattr__(attr):
     global TabulatorModule
