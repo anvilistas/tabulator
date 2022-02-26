@@ -45,11 +45,13 @@ events:
   parameters:
   - {name: field}
   - {name: row}
+  - {name: cell, description: the tabulator cell object}
 - name: cell_edited
   description: when a cell is edited - event_args include field and row
   parameters:
   - {name: field}
   - {name: row}
+  - {name: cell, description: the tabulator cell object}
 - name: page_loaded
   description: when a page is loaded
   parameters:

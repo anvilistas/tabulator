@@ -197,19 +197,19 @@ class Tabulator(TabulatorTemplate):
 
     # Events
     def row_selected(self, row):
-        return self.raise_event("row_selected", row=dict(row.getData()))
+        return self.raise_event("row_selected", row=dict(row.getData()), _row=row)
 
     def row_click(self, e, row):
-        return self.raise_event("row_click", row=dict(row.getData()))
+        return self.raise_event("row_click", row=dict(row.getData()), _row=row)
 
     def row_selection_change(self, e, rows):
         return self.raise_event(
-            "row_selection_change", rows=[dict(row.getData()) for row in rows]
+            "row_selection_change", rows=[dict(row.getData()) for row in rows], _rows=rows
         )
 
     def cell_click(self, e, cell):
         return self.raise_event(
-            "cell_click", field=cell.getField(), row=dict(cell.getData())
+            "cell_click", field=cell.getField(), row=dict(cell.getData(), cell=cell)
         )
 
     def page_loaded(self, pageno):
@@ -217,7 +217,7 @@ class Tabulator(TabulatorTemplate):
 
     def cell_edited(self, cell):
         return self.raise_event(
-            "cell_edited", field=cell.getField(), row=dict(cell.getData())
+            "cell_edited", field=cell.getField(), row=dict(cell.getData(), cell=cell)
         )
 
     def row_formatter(self, row):
