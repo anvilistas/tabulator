@@ -64,17 +64,20 @@ class FormatterWrapper(AbstractModule):
         
     
     def setup_editor(self, component, cancel, onRendered):
-        closed = {}
+        check = {"closed": False}
+
+        if component.visible:
+            component.visible = None
 
         def blur_cancel(e):
             # hack for datepicker
             relatedTarget = getattr(e, "relatedTarget", None)
-            if not e.target.parentElement.classList.contains("anvil-datepicker") or (
+            if not e.target.closest(".anvil-datepicker") or (
                 relatedTarget and relatedTarget.tagName != "SELECT"
             ):
-                if closed:
+                if check["closed"]:
                     return
-                closed["x"] = True
+                check["closed"] = True
                 cancel()
 
         el = get_dom_node(component)
@@ -82,16 +85,18 @@ class FormatterWrapper(AbstractModule):
         el.style.padding = "8px"
 
         def close_editor(**event_args):
-            if closed:
+            if check["closed"]:
                 return
             else:
-                closed["x"] = True
+                check["closed"] = True
             cancel()
             component.remove_from_parent()
 
         component.set_event_handler("x-close-editor", close_editor)
 
         def set_focus(*args):
+            if component.visible is None:
+                component.visible = True
             to_focus = el.querySelector(":not(div)") or el
             to_focus.focus()
 
@@ -104,11 +109,7 @@ class FormatterWrapper(AbstractModule):
             component = f(cell, **params)
             if not isinstance(component, Component):
                 return
-            if component.visible:
-                component.visible = None
-            self.table.anvilForm.add_component(component)
-            return get_dom_node(component)
-            
+            return self.setup_editor(component, cancel, onRendered)
             
     @staticmethod
     def wrap(self, f):
