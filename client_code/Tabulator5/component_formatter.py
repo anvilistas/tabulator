@@ -34,55 +34,37 @@ class ComponentFormatter(AbstractModule):
 class FormatterWrapper(AbstractModule):
     def initialize(self):
         self.mod.subscribe("column-layout", self.update_definition)
-    
+
     def update_definition(self, column):
         definition = column.definition
         self.wrap_formatters(definition)
         self.wrap_editors(definition)
-    
+
     def wrap_formatters(self, definition):
         for suffix in "", "Print", "Clipboard", "HtmlOutput":
             option = "formatter" + suffix
             f = definition.get(option)
             if f is None or not callable(f):
                 continue
-            definition[option] = self.wrap(f)
-        
+            definition[option] = self.wrap_formatter(f)
+
     def wrap_editors(self, definition):
         f = definition.get("editor")
         if f is None or not callable(f):
             return
         definition["editor"] = self.wrap_editor(f)
-    
-    def get_call_signature(self, f):
+
+    def wrap_call_signature(self, f):
         if not isinstance(f, type) or not issubclass(f, Component):
             return lambda cell, **params: f(cell, **params)
         elif hasattr(f, "init_components"):
             return lambda cell, **params: f(item=dict(cell.getData()), **params)
         else:
             return lambda cell, **params: f(**params)
-        
-    
+
+
     def setup_editor(self, component, cancel, onRendered):
         check = {"closed": False}
-
-        if component.visible:
-            component.visible = None
-
-        def blur_cancel(e):
-            # hack for datepicker
-            relatedTarget = getattr(e, "relatedTarget", None)
-            if not e.target.closest(".anvil-datepicker") or (
-                relatedTarget and relatedTarget.tagName != "SELECT"
-            ):
-                if check["closed"]:
-                    return
-                check["closed"] = True
-                cancel()
-
-        el = get_dom_node(component)
-        el.addEventListener("blur", blur_cancel, True)
-        el.style.padding = "8px"
 
         def close_editor(**event_args):
             if check["closed"]:
@@ -92,7 +74,12 @@ class FormatterWrapper(AbstractModule):
             cancel()
             component.remove_from_parent()
 
-        component.set_event_handler("x-close-editor", close_editor)
+        def blur_cancel(e):
+            # hack for datepicker
+            rt = getattr(e, "relatedTarget", None)
+            dp = e.target.closest(".anvil-datepicker")
+            if not dp or (rt and rt.tagName != "SELECT"):
+                close_editor()
 
         def set_focus(*args):
             if component.visible is None:
@@ -100,18 +87,28 @@ class FormatterWrapper(AbstractModule):
             to_focus = el.querySelector(":not(div)") or el
             to_focus.focus()
 
+        component.set_event_handler("x-close-editor", close_editor)
+        if component.visible:
+            component.visible = None
+
+        el = get_dom_node(component)
+        el.addEventListener("blur", blur_cancel, True)
+        el.style.padding = "8px"
+
         onRendered(set_focus)
+
         return el
 
     def wrap_editor(self, f):
-        f = self.get_call_signature(f)
+        f = self.wrap_call_signature(f)
         def editor_wrapper(cell, onRendered, success, cancel, params):
             component = f(cell, **params)
             if not isinstance(component, Component):
                 return
             return self.setup_editor(component, cancel, onRendered)
-            
+        return editor_wrapper
+
     @staticmethod
-    def wrap(self, f):
-        f = self.get_call_signature(f)
+    def wrap_formatter(self, f):
+        f = self.wrap_call_signature(f)
         return lambda cell, params, onRendered: f(cell, **params)
