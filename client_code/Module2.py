@@ -6,7 +6,7 @@ from operator import attrgetter
 
 
 def _import(*attrs):
-    module = import_from(f"https://cdn.skypack.dev/tabulator-tables@5.1.2")
+    from .Tabulator5.js_tabulator import TabulatorModule as module
     print(dir(module))
     attrs = attrs or ["default"]
     return attrgetter(*attrs)(module)
@@ -95,7 +95,7 @@ class ComponentFormatter(AnvilTabulatorModule):
         self.mod.subscribe("cell-format", self.cell_format)
 
     def cell_format(self, cell, prev):
-        print("cell-format", cell, prev, sep="\n", end="\n\n")
+        print("cell-format", cell, prev, cell.getComponent().get_value(), sep="\n", end="\n\n")
         if isinstance(prev, anvil.Component):
             return get_dom_node(prev)
         return prev
@@ -147,7 +147,7 @@ table = Tabulator(
     el,
     {
         "anvilFoo": False,
-        "data": 123,
+#         "data": 123,
         "columns": [
             {"title": "Name", "field": "name", "width": 150, "accessor": "roundDown"},
             {

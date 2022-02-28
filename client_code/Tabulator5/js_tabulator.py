@@ -55,32 +55,20 @@ def __dir__():
     ]
 
 
-from anvil.js.window import RegExp, String, Object, Function
-_replace = String.prototype.replace
-_RE_CAMEL = RegExp("[a-z][A-Z]", "g")
+from anvil.js.window import Function
 
-def _camel_to_snake(s):
-    return _replace.call(s, _RE_CAMEL, lambda m, *_: m[0] + "_" + m[1].lower())
+support_snake = Function("Component", """
+const RE_SNAKE = new RegExp("_[a-z]", "g")
+const to_camel = (s) => s.replace(RE_SNAKE, (m) => m[1].toUpperCase());
 
-CellComponent = TabulatorModule.CellComponent
-
-support_snake = Function("ProxyComponent", """
-const contr
+Object.setPrototypeOf(Component.prototype, new Proxy({}, {
+    get(target, name, receiver) {
+        const camel = to_camel(name)
+        if (name === camel) return;
+        return receiver[camel];
+    }
+}));
 """)
 
-
-# for obj in ["Tabulator", "CellComponent", "RowComponent"]:
-
-# 	constructor (cell){
-# 		this._cell = cell;
-
-# 		return new Proxy(this, {
-# 			get: function(target, name, receiver) {
-# 				if (typeof target[name] !== "undefined") {
-# 					return target[name];
-# 				}else{
-# 					return target._cell.table.componentFunctionBinder.handle("cell", target._cell, name)
-# 				}
-# 			}
-# 		})
-# 	}
+support_snake(TabulatorModule.CellComponent)
+support_snake(TabulatorModule.RowComponent)
