@@ -1,23 +1,23 @@
 from .js_tabulator import Tabulator
 from datetime import date, datetime
+from anvil import DatePicker
 
 def dt_formatter(dt_type, name, default_format):
-    def formatter(cell, formatterParams, onRendered):
+    def formatter(cell, params, onRendered):
         val = cell.getValue()
         if val is None:
             return ""
         if not isinstance(val, dt_type):
             raise TypeError(f"A {name} formatter expects a {name} object")
-        out = formatterParams.get("format") or formatterParams.get("outputFormat", "%x")
-        if dt_type is datetime:
-            tz = formatterParams.get("tz") or formatterParams.get("timezone")
-        else:
-            tz = None
-        if tz is True:
-            val = val.astimezone()
-        elif tz is not None:
-            val = val.astimezone(tz)
 
+        if dt_type is datetime:
+            tz = params.get("tz", False)
+            if tz is False:
+                 tz = params.get("timezone", False)
+            if tz is not False:
+                val = val.astimezone(tz)
+
+        out = params.get("format") or params.get("outputFormat", "%x")
         if out == "iso" or out == "isoformat":
             return val.isoformat()
         else:
@@ -53,42 +53,28 @@ Tabulator.extendModule("sort", "sorters", {
 })
 
 
-
-def dt_editor(x):
+def dt_editor(pick_time):
+    from .component_wrappers import EditorWrapper
+    params = {
+        "pick_time": pick_time,
+        "spacing_above": "none",
+        "spacing_below": "none",
+    }
+    
     def editor(cell, **properties):
+        properties = params | properties
         value = cell.getValue()
-        
+        properties["date"] = value
+        dp = DatePicker(**properties)
+        def change(**event_args):
+            dp.raise_event('x-close-editor', value=dp.date)
+        dp.add_event_handler("change", change)
+        return dp
+    
+    return EditorWrapper.wrap(editor)
 
+Tabulator.extendModule("edit", "editors", {
+    "datetime": dt_editor(True),
+    "date": dt_editor(False),
+})
 
-"""
-//sort datetime
-export default function(a, b, aRow, bRow, column, dir, params){
-	var DT = window.DateTime || luxon.DateTime;
-	var format = params.format || "dd/MM/yyyy HH:mm:ss",
-	alignEmptyValues = params.alignEmptyValues,
-	emptyAlign = 0;
-
-	if(typeof DT != "undefined"){
-		a = format === "iso" ? DT.fromISO(String(a)) : DT.fromFormat(String(a), format);
-		b = format === "iso" ? DT.fromISO(String(b)) : DT.fromFormat(String(b), format);
-
-		if(!a.isValid){
-			emptyAlign = !b.isValid ? 0 : -1;
-		}else if(!b.isValid){
-			emptyAlign =  1;
-		}else{
-			//compare valid values
-			return a - b;
-		}
-
-		//fix empty values in position
-		if((alignEmptyValues === "top" && dir === "desc") || (alignEmptyValues === "bottom" && dir === "asc")){
-			emptyAlign *= -1;
-		}
-
-		return emptyAlign;
-
-	}else{
-		console.error("Sort Error - 'datetime' sorter is dependant on luxon.js");
-	}
-};"""

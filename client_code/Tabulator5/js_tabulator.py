@@ -63,12 +63,12 @@ const to_camel = (s) => s.replace(RE_SNAKE, (m) => m[1].toUpperCase());
 
 Object.setPrototypeOf(Component.prototype, new Proxy({}, {
     get(target, name, receiver) {
-        const camel = to_camel(name)
+        const camel = to_camel(name);
         if (name === camel) return;
         return receiver[camel];
     }
 }));
 """)
 
-support_snake(TabulatorModule.CellComponent)
-support_snake(TabulatorModule.RowComponent)
+for Component in "ColumnComponent", "CellComponent", "RowComponent":
+    support_snake(TabulatorModule[Component])

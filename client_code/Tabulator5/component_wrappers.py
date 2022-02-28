@@ -67,15 +67,19 @@ class FormatterWrapper(AbstractCallableWrapper):
         return lambda cell, params, onRendered: f(cell, **params)
 
 
-def setup_editor(component, cancel, onRendered):
+def setup_editor(component, onRendered, success, cancel):
     check = {"closed": False}
+    sentinel = object()
 
-    def close_editor(**event_args):
+    def close_editor(value=sentinel, **event_args):
         if check["closed"]:
             return
         else:
             check["closed"] = True
-        cancel()
+        if value is not sentinel:
+            success(value)
+        else:
+            cancel()
         component.remove_from_parent()
 
     def blur_cancel(e):
@@ -111,7 +115,7 @@ class EditorWrapper(AbstractCallableWrapper):
         if f is None or not callable(f):
             return
         definition["editor"] = self.wrap(f)
-    
+
     @staticmethod
     def wrap(f):
         f = cell_wrapper(f)
@@ -119,7 +123,7 @@ class EditorWrapper(AbstractCallableWrapper):
             component = f(cell, **params)
             if not isinstance(component, Component):
                 return
-            return setup_editor(component, cancel, onRendered)
+            return setup_editor(component, onRendered, success, cancel)
         return editor_wrapper
 
 
