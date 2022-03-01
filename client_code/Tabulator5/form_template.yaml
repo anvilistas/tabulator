@@ -1,6 +1,39 @@
+properties:
+- {name: auto_columns, type: boolean, default_value: false, default_binding_prop: true}
+- {name: header_visible, type: boolean, default_value: true, default_binding_prop: false}
+- {name: height, type: string, default_value: '', default_binding_prop: false}
+- {name: index, type: string, default_value: id, default_binding_prop: false}
+- {name: pagination, type: boolean, default_value: true, default_binding_prop: false}
+- {name: pagination_size, type: number, default_value: 5, default_binding_prop: false}
+- {name: border, type: string, default_value: '', default_binding_prop: false}
+- {name: spacing_above, type: string, default_value: '', default_binding_prop: false}
+- {name: spacing_below, type: string, default_value: '', default_binding_prop: false}
+- {name: visible, type: boolean, default_value: true, default_binding_prop: false}
+- {name: layout, type: string, default_value: fitColumns, default_binding_prop: false}
+is_package: true
+events:
+- {name: row_click, description: '', default_event: true}
+- {name: cell_click, description: '', default_event: false}
+- {name: row_tap, description: '', default_event: false}
+- {name: cell_tap, description: '', default_event: false}
+- {name: row_selected, description: '', default_event: false}
+- {name: row_deselected, description: '', default_event: false}
+- {name: row_selection_change, description: '', default_event: false}
+- {name: row_formatter, description: '', default_event: false}
+- {name: page_loaded, description: '', default_event: false}
+- {name: show, description: '', default_event: false}
+- {name: hide, description: '', default_event: false}
+custom_component: true
+components: []
 container:
   type: HtmlTemplate
-  properties: {html: "<center style=\"font-style:italic; color:#888; margin: 3em;\"\
-      >\n  (Insert your custom HTML here)\n</center>"}
-components: []
-is_package: true
+  properties: {tooltip: '', background: '', foreground: '', border: '', visible: true,
+    role: null, html: "<div class='placeholder-table'></div>\n\n<script type=\"module\"\
+      >\nimport {TabulatorFull as Tabulator} from \"https://cdn.skypack.dev/tabulator-tables@5.1.2\"\
+      ;\n\n$('.placeholder-table').each(function() {\n    new Tabulator(this, {\n\
+      \          autoColumns: true,\n          layout:\"fitColumns\",\n          pagination:\
+      \ true,\n          paginationSize:2,\n          data: new Array(6).fill({columnA:'columnA',\
+      \ columnB:'columnB', columnC:'columnC', columnD:'columnD'})\n    });\n});\n\
+      </script>\n\n<style>\n.tabulator-row .tabulator-cell {\n    font-style: italic;\n\
+      }\n</style>\n\n"}
+  event_bindings: {show: _show}

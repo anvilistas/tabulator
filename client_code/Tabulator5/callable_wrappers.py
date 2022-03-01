@@ -1,7 +1,6 @@
 from anvil import Component
 from anvil.js import get_dom_node
-from .js_tabulator import AbstractModule, register_module
-
+from .module_helpers import AbstractModule, register_module
 
 @register_module("componentFormatter")
 class ComponentFormatter(AbstractModule):
@@ -13,19 +12,19 @@ class ComponentFormatter(AbstractModule):
     def cell_format(self, cell, component):
         if not isinstance(component, Component):
             return component
-        cell.modules.format.anvilComponent = component
+        cell.modules.anvilComponent = component
         if component.visible:
             component.visible = None
-        self.table.anvil_form.add_component(component, slot="hidden")
+        self.table.anvil_form.add_component(component)
         return get_dom_node(component)
 
     def cell_render(self, cell):
-        component = cell.modules.format.get("anvilComponent")
+        component = cell.modules.get("anvilComponent")
         if component is not None and component.visible is None:
             component.visible = True
 
     def cell_delete(self, cell):
-        component = cell.modules.format.get("anvilComponent")
+        component = cell.modules.get("anvilComponent")
         if component is not None:
             component.remove_from_parent()
 
@@ -40,26 +39,25 @@ def cell_wrapper(f):
 
 
 class AbstractCallableWrapper(AbstractModule):
+    options = []
     def initialize(self):
         self.mod.subscribe("column-layout", self.update_definition)
 
     def update_definition(self, column):
         definition = column.definition
-        self.wrap_handler(definition)
-
-    def wrap_handler(self, definition):
-        raise NotImplemented
-
-@register_module("formatterWrapper", moduleInitOrder=1)
-class FormatterWrapper(AbstractCallableWrapper):
-
-    def wrap_handler(self, definition):
-        for suffix in "", "Print", "Clipboard", "HtmlOutput":
-            option = "formatter" + suffix
+        for option in self.options:
             f = definition.get(option)
             if f is None or not callable(f):
                 continue
             definition[option] = self.wrap(f)
+    
+    @staticmethod
+    def wrap(f):
+        raise NotImplemented
+
+@register_module("formatterWrapper", moduleInitOrder=1)
+class FormatterWrapper(AbstractCallableWrapper):
+    options = ["formatter" + suffix for suffix in ("", "Print", "Clipboard", "HtmlOutput")]
 
     @staticmethod
     def wrap(f):
@@ -67,7 +65,17 @@ class FormatterWrapper(AbstractCallableWrapper):
         return lambda cell, params, onRendered: f(cell, **params)
 
 
-def setup_editor(component, onRendered, success, cancel):
+@register_module("sorterWrapper", moduleInitOrder=1)
+class SorterWrapper(AbstractCallableWrapper):
+    options = ["sorter"]
+
+    @staticmethod
+    def wrap(f):
+        def sorter_wrapper(a, b, aRow, bRow, column, dir, params):
+            return f(a, b, **params)
+        return sorter_wrapper
+
+def setup_editor(component, cell, onRendered, success, cancel):
     check = {"closed": False}
     sentinel = object()
 
@@ -85,8 +93,7 @@ def setup_editor(component, onRendered, success, cancel):
     def blur_cancel(e):
         # hack for datepicker
         rt = getattr(e, "relatedTarget", None)
-        dp = e.target.closest(".anvil-datepicker")
-        if not dp or (rt and rt.tagName != "SELECT"):
+        if rt is None or rt.closest(".daterangepicker") is None:
             close_editor()
 
     def set_focus(*args):
@@ -100,21 +107,27 @@ def setup_editor(component, onRendered, success, cancel):
         component.visible = None
 
     el = get_dom_node(component)
+    el.style.padding = "4px"
     el.addEventListener("blur", blur_cancel, True)
-    el.style.padding = "8px"
 
     onRendered(set_focus)
-
     return el
 
 
 @register_module("editorWrapper", moduleInitOrder=1)
 class EditorWrapper(AbstractCallableWrapper):
-    def wrap_handler(self, definition):
-        f = definition.get("editor")
-        if f is None or not callable(f):
+    options = ["editor"]
+
+    def initialize(self):
+        super().initialize()
+        self.mod.subscribe("edit-cancelled", self.edit_cancelled)
+
+    def edit_cancelled(self, cell):
+        component = cell.modules.get("anvilEditComponent")
+        if component is None:
             return
-        definition["editor"] = self.wrap(f)
+        component.remove_from_parent()
+        cell.modules.anvilEditComponent = None
 
     @staticmethod
     def wrap(f):
@@ -123,10 +136,7 @@ class EditorWrapper(AbstractCallableWrapper):
             component = f(cell, **params)
             if not isinstance(component, Component):
                 return
-            return setup_editor(component, onRendered, success, cancel)
+            cell.getTable().anvil_form.add_component(component)
+            cell._cell.modules.anvilEditComponent = component
+            return setup_editor(component, cell, onRendered, success, cancel)
         return editor_wrapper
-
-
-@register_module("sorterWrapper", moduleInitOrder=1)
-class SorterWrapper(AbstractModule):
-    pass

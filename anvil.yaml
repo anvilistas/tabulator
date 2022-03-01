@@ -3,7 +3,7 @@ services:
 - source: /runtime/services/tables.yml
   client_config: {}
   server_config: {}
-startup: {type: module, module: Module2}
+startup: {type: form, module: Form1}
 package_name: Tabulator5
 allow_embedding: false
 name: Tabulator
@@ -17,6 +17,8 @@ native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@5.1.2/
     \  'ResizeObserver loop limit exceeded', and\n  //   'ResizeObserver loop ocmpleted\
     \ with undelivered notifications'\n  if (e.message.indexOf(\"ResizeObserver loop\"\
     ) !== -1) {\n    e.stopPropagation();\n    e.stopImmediatePropagation();\n  }\n\
-    });\n</script>"}
+    });\n</script>\n\n<style>\n  .tabulator-cell .column-panel, .tabulator-cell input\
+    \ {margin: 0 !important;}\n  .tabulator-cell .form-control {padding-top: 0 !important;}\n\
+    </style>"}
 db_schema: {}
 renamed: true

@@ -60,9 +60,13 @@ from anvil.js.window import Function
 support_snake = Function("Component", """
 const RE_SNAKE = new RegExp("_[a-z]", "g")
 const to_camel = (s) => s.replace(RE_SNAKE, (m) => m[1].toUpperCase());
+const target = {sk$object: null, $isPyWrapped: false};
 
-Object.setPrototypeOf(Component.prototype, new Proxy({}, {
+Object.setPrototypeOf(Component.prototype, new Proxy(target, {
     get(target, name, receiver) {
+        if (!(typeof name === "string")) return;
+        const targetVal = target[name];
+        if (typeof targetVal !== "undefined") return targetVal;
         const camel = to_camel(name);
         if (name === camel) return;
         return receiver[camel];

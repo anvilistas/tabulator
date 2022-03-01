@@ -14,7 +14,7 @@ for (const key in kws) {
 }
 Tabulator.registerModule(CustomModule);
 """
-_Register = _Function("Tabulator", "Module", "cls", "name", "kws", body)
+_Register = _Function("Tabulator", "Module", "cls", "name", "kws", _body)
 _Register = _Register.bind(None, Tabulator, Module)
 
 def register_module(name, **kws):

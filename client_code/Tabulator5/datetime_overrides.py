@@ -13,7 +13,7 @@ def dt_formatter(dt_type, name, default_format):
         if dt_type is datetime:
             tz = params.get("tz", False)
             if tz is False:
-                 tz = params.get("timezone", False)
+                tz = params.get("timezone", False)
             if tz is not False:
                 val = val.astimezone(tz)
 
@@ -54,13 +54,13 @@ Tabulator.extendModule("sort", "sorters", {
 
 
 def dt_editor(pick_time):
-    from .component_wrappers import EditorWrapper
+    from .callable_wrappers import EditorWrapper
     params = {
         "pick_time": pick_time,
         "spacing_above": "none",
         "spacing_below": "none",
     }
-    
+
     def editor(cell, **properties):
         properties = params | properties
         value = cell.getValue()
@@ -69,12 +69,14 @@ def dt_editor(pick_time):
         def change(**event_args):
             dp.raise_event('x-close-editor', value=dp.date)
         dp.add_event_handler("change", change)
+        def hide(**event_args):
+            dp.date = dp.date # force the calendar picker to close
+        dp.add_event_handler("hide", hide)
         return dp
-    
+
     return EditorWrapper.wrap(editor)
 
 Tabulator.extendModule("edit", "editors", {
     "datetime": dt_editor(True),
     "date": dt_editor(False),
 })
-
