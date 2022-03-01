@@ -59,6 +59,7 @@ def dt_editor(pick_time):
         "pick_time": pick_time,
         "spacing_above": "none",
         "spacing_below": "none",
+        "font": "inherit"
     }
 
     def editor(cell, **properties):

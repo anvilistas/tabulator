@@ -93,8 +93,8 @@ def setup_editor(component, cell, onRendered, success, cancel):
     def blur_cancel(e):
         # hack for datepicker
         rt = getattr(e, "relatedTarget", None)
-        if rt is None or rt.closest(".daterangepicker") is None:
-            close_editor()
+#         if rt is None or rt.closest(".daterangepicker") is None:
+#             close_editor()
 
     def set_focus(*args):
         if component.visible is None:
