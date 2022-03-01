@@ -11,3 +11,8 @@ components:
   name: tabulator5_1
   layout_properties: {slot: default}
   event_bindings: {cell_click: tabulator5_1_cell_click}
+- type: Button
+  properties: {text: button_1}
+  name: button_1
+  layout_properties: {slot: default}
+  event_bindings: {click: button_1_click}

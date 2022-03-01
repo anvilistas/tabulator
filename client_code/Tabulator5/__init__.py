@@ -1,19 +1,20 @@
 from ._anvil_designer import Tabulator5Template
 from anvil.js import get_dom_node as _get_dom_node
-from .utils import snake_to_camel as _toCamel
-from . import setup
+from .utils import _toCamel, _merge_from_default
+from . import setup as _setup
 from .js_tabulator import Tabulator as _Tabulator
+from anvil import HtmlTemplate as _HtmlTemplate
 
 _event_call_signatures = {
-    "rowClick": ("event", "row"),
-    "cellClick": ("event", "cell"),
-    "rowTap": ("event", "row"),
-    "cellTap": ("event", "cell"),
-    "cellEdited": ("cell",),
-    "pageLoaded": ("pageno",),
-    "rowSelected": ("row",),
-    "rowDeselected": ("row",),
-    "rowSelectetionChange": ("data", "rows"),
+    "row_click": ("event", "row"),
+    "cell_click": ("event", "cell"),
+    "row_tap": ("event", "row"),
+    "cell_tap": ("event", "cell"),
+    "cell_edited": ("cell",),
+    "page_loaded": ("pageno",),
+    "row_selected": ("row",),
+    "row_deselected": ("row",),
+    "row_selectetion_change": ("data", "rows"),
 }
 
 _default_options = {
@@ -43,28 +44,26 @@ row_selection_column = {
     "cellClick": lambda e, cell: cell.getRow().toggleSelect(),
 }
 
+
 class Tabulator5(Tabulator5Template):
 
     def __init__(self, **properties):
         self._t = None
         self._options = {}
-        self._props = {}
         self._el = el = _get_dom_node(self)
         self._queued = []
         self._handlers = {}
 
         el.replaceChildren()
 
-        for prop, val in _default_props.items():
-            self._props[prop] = properties.pop(prop, val)
+        props = _merge_from_default(_default_props, properties)
+        options = _merge_from_default(_default_options, properties)
+        self.init_components(**props)
+        self.define(row_formatter=self._row_formatter, **options)
 
-        options = {}
-        for option, val in _default_options.items():
-            options[option] = properties.pop(option, val)
-        
+    def _row_formatter(self):
         # because row_formatter is not a tabulator event but it is an anvil tabulator event
-        row_formatter = lambda row: self.raise_event("row_formatter", row=row)
-        self.define(row_formatter=row_formatter, **options)
+        self.raise_event("row_formatter", row=row)
 
     def _initialize(self):
         data = self._options.pop("data")
@@ -90,17 +89,15 @@ class Tabulator5(Tabulator5Template):
         return getattr(self._t, attr)
 
     def add_event_handler(self, event, handler):
-        print(event)
         super().add_event_handler(event, handler)
-        camel = _toCamel(event)
-        call_sig = _event_call_signatures.get(camel)
+        call_sig = _event_call_signatures.get(event)
         if call_sig is None:
             return
         def raiser(*args):
             kws = dict(zip(call_sig, args))
             return self.raise_event(event, **kws)
         self._handlers[handler] = raiser
-        self.on(camel, raiser)
+        self.on(_toCamel(event), raiser)
 
     set_event_handler = add_event_handler
 
@@ -138,3 +135,10 @@ class Tabulator5(Tabulator5Template):
         self._options["columns"] = value
         if self._t is not None:
             return self._t.setColumns(value)
+
+    border = _HtmlTemplate.border
+    visible = _HtmlTemplate.visible
+    role = _HtmlTemplate.role
+    
+    #### for the autocomplete
+    

@@ -9,3 +9,16 @@ from . import datetime_overrides
 
 Tabulator.defaultOptions.layout = "fitColumns";
 Tabulator.defaultOptions.selectable = False;
+
+
+from anvil.js import window
+
+def ignore_resize_observer_error(e):
+    if "ResizeObserver loop" in e.get("message", ""):
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+
+onerror = window.onerror 
+window.onerror = None
+window.addEventListener("error", ignore_resize_observer_error)
+window.onerror = onerror

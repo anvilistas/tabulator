@@ -3,6 +3,10 @@ from anvil import *
 from datetime import date
 from ..Tabulator5 import row_selection_column
 
+def c(cell):
+    debugger;
+    print("huh")
+
 columns = [
     row_selection_column,
     {"title": "Name", "field": "name", "width": 150, "accessor": "roundDown"},
@@ -21,6 +25,7 @@ columns = [
         "hozAlign": "center",
         "formatterParams": {"format": "%d/%m/%Y"},
         "editor": "date",
+        "cellEditCancelled": c,
     },
 ]
 
@@ -75,6 +80,14 @@ class Form1(Form1Template):
         from time import sleep
         sleep(2)
         print(self.tabulator5_1.columns)
+
+    def button_1_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        if self.tabulator5_1.parent is None:
+            self.add_component(self.tabulator5_1)
+        else:
+            self.tabulator5_1.remove_from_parent()
+
 
 
 

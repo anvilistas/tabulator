@@ -10,6 +10,7 @@ properties:
 - {name: spacing_below, type: string, default_value: '', default_binding_prop: false}
 - {name: visible, type: boolean, default_value: true, default_binding_prop: false}
 - {name: layout, type: string, default_value: fitColumns, default_binding_prop: false}
+- {name: role, type: string, default_value: '', default_binding_prop: false}
 is_package: true
 events:
 - {name: row_click, description: '', default_event: true}
