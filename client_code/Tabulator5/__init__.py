@@ -61,7 +61,7 @@ class Tabulator5(Tabulator5Template):
         self.init_components(**props)
         self.define(row_formatter=self._row_formatter, **options)
 
-    def _row_formatter(self):
+    def _row_formatter(self, row):
         # because row_formatter is not a tabulator event but it is an anvil tabulator event
         self.raise_event("row_formatter", row=row)
 

@@ -10,5 +10,5 @@ def _toCamel(s):
 def _merge_from_default(default, properties):
     merged = {}
     for key, val in default.items():
-        merged = properties.get(key, val)
+        merged[key] = properties.get(key, val)
     return merged

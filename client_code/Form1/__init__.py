@@ -83,12 +83,6 @@ class Form1(Form1Template):
 
     def button_1_click(self, **event_args):
         """This method is called when the button is clicked"""
-        if self.tabulator5_1.parent is None:
-            self.add_component(self.tabulator5_1)
-        else:
-            self.tabulator5_1.remove_from_parent()
-
-
 
 
 
