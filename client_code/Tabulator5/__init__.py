@@ -200,10 +200,10 @@ class Tabulator5(Tabulator5Template):
         """clear the sorters"""
         
 
-methods = (
-    "add_row", "delete_row", "update_row", "get_row", "select_row", "deselect_row", "get_selected_data", "add_data", "get_data", 
-    "update_or_add_data", "replace_data", "set_filter", "add_filter", "remove_filter", "get_filters", "clear_filter", "set_sort", "clear_sort"
-)
+# methods = (
+#     "add_row", "delete_row", "update_row", "get_row", "select_row", "deselect_row", "get_selected_data", "add_data", "get_data", 
+#     "update_or_add_data", "replace_data", "set_filter", "add_filter", "remove_filter", "get_filters", "clear_filter", "set_sort", "clear_sort"
+# )
 
-for method in methods:
-    delattr(Tabulator5, method)
+# for method in methods:
+#     delattr(Tabulator5, method)
