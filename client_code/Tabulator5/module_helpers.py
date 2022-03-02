@@ -12,16 +12,15 @@ CustomModule.moduleName = name;
 for (const key in kws) {
     CustomModule[key] = kws[key];
 }
-Tabulator.registerModule(CustomModule);
+return CustomModule;
 """
-_Register = _Function("Tabulator", "Module", "cls", "name", "kws", _body)
-_Register = _Register.bind(None, Tabulator, Module)
+_mkJsModule = _Function("Tabulator", "Module", "cls", "name", "kws", _body)
+_mkJsModule = _mkJsModule.bind(None, Tabulator, Module)
 
-def register_module(name, **kws):
+def tabulator_module(name, **kws):
     def wrapper(cls):
-        _Register(cls, name, kws)
+        cls.Module = _mkJsModule(cls, name, kws)
         return cls
-
     return wrapper
 
 
@@ -30,7 +29,7 @@ class AbstractModule:
     #     def __init_subclass__(cls, name, **kwargs):
     #         _Register(cls, name, kwargs)
 
-    def __init__(self, mod, table):
+    def __init__(self, mod, table=None):
         self.mod, self.table = mod, table
         mod.initialize = self.initialize
 

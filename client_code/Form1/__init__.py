@@ -55,6 +55,8 @@ tabledata = [
     },
 ]
 
+from random import randint
+
 
 class Form1(Form1Template):
     def __init__(self, **properties):
@@ -63,6 +65,7 @@ class Form1(Form1Template):
         self.tabulator5_1.data = tabledata
         self.tabulator5_1.columns = columns
         self.tabulator5_1.define(pagination_size_selector = [1, 2, 5, 10])
+
         # Any code you write here will run when the form opens.
 
     def tabulator5_1_row_click(self, **event_args):
@@ -83,7 +86,14 @@ class Form1(Form1Template):
 
     def button_1_click(self, **event_args):
         """This method is called when the button is clicked"""
-
+        r = self.tabulator5_1.add_data({
+            "id": randint(10, 10000000),
+            "name": "Me My",
+            "age": "190",
+            "col": "blue",
+            "dob": date(1988, 8, 1),
+        }, True)
+        print(r)
 
 
 

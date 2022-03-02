@@ -1,8 +1,8 @@
 from anvil import Component
 from anvil.js import get_dom_node
-from .module_helpers import AbstractModule, register_module
+from .module_helpers import AbstractModule, tabulator_module
 
-@register_module("componentFormatter")
+@tabulator_module("componentFormatter")
 class ComponentFormatter(AbstractModule):
     def initialize(self):
         self.mod.subscribe("cell-format", self.cell_format)
@@ -55,7 +55,7 @@ class AbstractCallableWrapper(AbstractModule):
     def wrap(f):
         raise NotImplemented
 
-@register_module("formatterWrapper", moduleInitOrder=1)
+@tabulator_module("formatterWrapper", moduleInitOrder=1)
 class FormatterWrapper(AbstractCallableWrapper):
     options = ["formatter" + suffix for suffix in ("", "Print", "Clipboard", "HtmlOutput")]
 
@@ -65,7 +65,7 @@ class FormatterWrapper(AbstractCallableWrapper):
         return lambda cell, params, onRendered: f(cell, **params)
 
 
-@register_module("sorterWrapper", moduleInitOrder=1)
+@tabulator_module("sorterWrapper", moduleInitOrder=1)
 class SorterWrapper(AbstractCallableWrapper):
     options = ["sorter"]
 
@@ -114,7 +114,7 @@ def setup_editor(component, cell, onRendered, success, cancel):
     return el
 
 
-@register_module("editorWrapper", moduleInitOrder=1)
+@tabulator_module("editorWrapper", moduleInitOrder=1)
 class EditorWrapper(AbstractCallableWrapper):
     options = ["editor"]
 
@@ -144,23 +144,3 @@ class EditorWrapper(AbstractCallableWrapper):
         return editor_wrapper
 
     
-
-from .js_tabulator import FilterModule
-from anvil.js.window import Function
-
-def filter_wrapper(f, params):
-    params = params or {}
-    def wrapped(data):
-        return f(data, **params)
-    return wrapped
-
-Function("FilterModule", "wrapper", """
-const findFilter = FilterModule.prototype.findFilter;
-
-FilterModule.prototype.findFilter = function(filter) {
-    if (typeof filter.field === 'function') {
-        Object.defineProperty(filter, "func", {value: wrapper(filer.field, filter.type)});
-    }
-    return findFilter.call(this, filter);
-}
-""")(FilterModule, filter_wrapper)

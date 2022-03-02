@@ -1,8 +1,7 @@
 from ._anvil_designer import Tabulator5Template
 from anvil.js import get_dom_node as _get_dom_node
-from .utils import _toCamel, _merge_from_default
-from . import setup as _setup
-from .js_tabulator import Tabulator as _Tabulator
+from .utils import _toCamel, _merge_from_default, _ignore_resize_observer_error
+from .js_tabulator import Tabulator as _Tabulator, TabulatorModule as _TabulatorModule
 from anvil import HtmlTemplate as _HtmlTemplate
 
 _event_call_signatures = {
@@ -44,8 +43,42 @@ row_selection_column = {
     "cellClick": lambda e, cell: cell.getRow().toggleSelect(),
 }
 
+_modules = ("Format", "Page", "Interaction", "Sort", "Edit", "Filter", "Menu", "SelectRow", "FrozenColumns", "FrozenRows", "ResizeColumns")
 
 class Tabulator5(Tabulator5Template):
+    modules = _modules
+    default_options = {"layout": "fitColumns", "selectable": False, "movable": False}
+    _registered = False
+
+    @classmethod
+    def _setup(cls):
+        if cls._registered:
+            return
+        for module in cls.modules:
+            cls.register_module(module)
+        from .callable_wrappers import SorterWrapper, ComponentFormatter, EditorWrapper, FormatterWrapper
+        for custom in SorterWrapper, ComponentFormatter, EditorWrapper, FormatterWrapper:
+            cls.register_module(custom.Module)
+        from . import datetime_overrides
+        for key, val in cls.default_options.items():
+            _Tabulator.defaultOptions[key] = val
+        cls._registered = True
+        _ignore_resize_observer_error()
+
+
+    @staticmethod
+    def register_module(module_name):
+        if isinstance(module_name, str):
+            if not module_name.endswith("Module"):
+                module_name += "Module"
+            module = _TabulatorModule[module_name]
+        else:
+            module = module_name
+        _Tabulator.registerModule(module)
+
+    def __new__(cls, **properties):
+        cls._setup()
+        return Tabulator5Template.__new__(cls, **properties)
 
     def __init__(self, **properties):
         self._t = None
@@ -139,7 +172,7 @@ class Tabulator5(Tabulator5Template):
     border = _HtmlTemplate.border
     visible = _HtmlTemplate.visible
     role = _HtmlTemplate.role
-    
+
     #### for the autocomplete
     def add_row(self, row, top=True, pos=None):
         """add a row - ensure the row has an index"""
@@ -164,7 +197,7 @@ class Tabulator5(Tabulator5Template):
 
     def add_data(self, data, top=False, pos=None):
         """add data - use the keyword arguments to determine where in the table it gets added"""
-        
+
     def get_data(self, active="all"):
         """
         Returns the table data based on a Tabulator range row lookup value.
@@ -190,7 +223,7 @@ class Tabulator5(Tabulator5Template):
     def get_filters(self):
         """get a list of the current filters"""
 
-    def clear_filter(self, *args):
+    def clear_filter(self, clear_header=False):
         """include an arg of True to clear header filters as well"""
 
     def set_sort(self, column, dir):
@@ -198,12 +231,12 @@ class Tabulator5(Tabulator5Template):
 
     def clear_sort(self):
         """clear the sorters"""
-        
 
-# methods = (
-#     "add_row", "delete_row", "update_row", "get_row", "select_row", "deselect_row", "get_selected_data", "add_data", "get_data", 
-#     "update_or_add_data", "replace_data", "set_filter", "add_filter", "remove_filter", "get_filters", "clear_filter", "set_sort", "clear_sort"
-# )
 
-# for method in methods:
-#     delattr(Tabulator5, method)
+methods = (
+    "add_row", "delete_row", "update_row", "get_row", "select_row", "deselect_row", "get_selected_data", "add_data", "get_data",
+    "update_or_add_data", "replace_data", "set_filter", "add_filter", "remove_filter", "get_filters", "clear_filter", "set_sort", "clear_sort"
+)
+
+for method in methods:
+    delattr(Tabulator5, method)

@@ -76,3 +76,21 @@ Object.setPrototypeOf(Component.prototype, new Proxy(target, {
 
 for Component in "ColumnComponent", "CellComponent", "RowComponent":
     support_snake(TabulatorModule[Component])
+
+
+def filter_wrapper(f, params):
+    params = params or {}
+    def wrapped(data):
+        return f(data, **params)
+    return wrapped
+
+Function("FilterModule", "wrapper", """
+const findFilter = FilterModule.prototype.findFilter;
+
+FilterModule.prototype.findFilter = function(filter) {
+    if (typeof filter.field === 'function') {
+        Object.defineProperty(filter, "func", {value: wrapper(filer.field, filter.type)});
+    }
+    return findFilter.call(this, filter);
+}
+""")(TabulatorModule.FilterModule, filter_wrapper)
