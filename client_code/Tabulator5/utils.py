@@ -6,9 +6,11 @@ _replace = String.prototype.replace
 def _toCamel(s):
     return _replace.call(s, _RE_SNAKE, lambda m, *_: m[1].upper())
 
+def _camelKeys(d):
+    return {_toCamel(key): val for key, val in d.items()}
 
-def _merge_from_default(default, properties):
-    merged = {}
+def _merge_from_default(default, properties, **overrides):
+    merged = overrides
     for key, val in default.items():
         merged[key] = properties.get(key, val)
     return merged

@@ -1,6 +1,6 @@
 from ._anvil_designer import Tabulator5Template
 from anvil.js import get_dom_node as _get_dom_node
-from .utils import _toCamel, _merge_from_default, _ignore_resize_observer_error
+from .utils import _toCamel, _merge_from_default, _ignore_resize_observer_error, _camelKeys
 from .js_tabulator import Tabulator as _Tabulator, TabulatorModule as _TabulatorModule
 from anvil import HtmlTemplate as _HtmlTemplate
 
@@ -24,6 +24,9 @@ _default_options = {
     "layout": "fitColumns",
     "pagination": True,
     "pagination_size": 10,
+    "data": None,
+    "columns": [],
+    "column_defaults": {},
 }
 
 _default_props = {
@@ -58,6 +61,12 @@ def _options_property(key, getMethod=None, setMethod=None):
     return property(option_getter, option_setter)
 
 _modules = ("Format", "Page", "Interaction", "Sort", "Edit", "Filter", "Menu", "SelectRow", "FrozenColumns", "FrozenRows", "ResizeColumns")
+
+class _DummyTabulator:
+    def __init__(self):
+        self.queued = []
+    
+    def __getattr__(self)
 
 class Tabulator5(Tabulator5Template):
     modules = _modules
@@ -100,20 +109,25 @@ class Tabulator5(Tabulator5Template):
         self._el = el = _get_dom_node(self)
         self._queued = []
         self._handlers = {}
+        self.options = {}
 
         el.replaceChildren()
 
         props = _merge_from_default(_default_props, properties)
-        options = _merge_from_default(_default_options, properties)
+        self._options = _merge_from_default(_default_options, properties, row_formatter=self._row_formatter)
         self.init_components(**props)
-        self.define(row_formatter=self._row_formatter, **options)
 
     def _row_formatter(self, row):
         # because row_formatter is not a tabulator event but it is an anvil tabulator event
         self.raise_event("row_formatter", row=row)
 
     def _initialize(self):
-        data = self._options.pop("data")
+        options = _camelKeys(self._options)
+        data = options.pop("data", None)
+        options["columns"] = [_camelKeys(defn) for defn in options["columns"]]
+        options["columnDefaults"] = _camelKeys(options["columnDefaults"])
+        options.update(_camelKeys(self.options))
+
         t = _Tabulator(self._el, self._options)
         t.anvil_form = self
         for attr, args, kws in self._queued:
