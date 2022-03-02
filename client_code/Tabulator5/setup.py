@@ -1,6 +1,6 @@
 from .js_tabulator import Tabulator, TabulatorModule
 
-for module in ["Format", "Page", "Interaction", "Sort", "Edit", "Menu", "MoveColumns", "MoveRows", "SelectRow"]:
+for module in ["Format", "Page", "Interaction", "Sort", "Edit", "Filter", "Menu", "MoveColumns", "MoveRows", "SelectRow"]:
     module = getattr(TabulatorModule, module + "Module")
     Tabulator.registerModule(module)
 
@@ -18,6 +18,7 @@ def ignore_resize_observer_error(e):
         e.stopPropagation()
         e.stopImmediatePropagation()
 
+# we need this error handler to fire first so we can stopImmediatePropagation
 onerror = window.onerror 
 window.onerror = None
 window.addEventListener("error", ignore_resize_observer_error)

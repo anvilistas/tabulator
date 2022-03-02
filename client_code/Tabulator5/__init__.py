@@ -175,7 +175,7 @@ class Tabulator5(Tabulator5Template):
         """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'"""
         if callable(field):
             filter_func = field
-            field = lambda data, params: filter_func(dict(data), **params)
+            field = lambda data, params: filter_func(data, **params)
         self._table.setFilter(field, type, value)
 
     def add_filter(self, field, type=None, value=None):
