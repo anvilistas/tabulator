@@ -142,3 +142,25 @@ class EditorWrapper(AbstractCallableWrapper):
             cell._cell.modules.anvilEditComponent = component
             return setup_editor(component, cell, onRendered, success, cancel)
         return editor_wrapper
+
+    
+
+from .js_tabulator import FilterModule
+from anvil.js.window import Function
+
+def filter_wrapper(f, params):
+    params = params or {}
+    def wrapped(data):
+        return f(data, **params)
+    return wrapped
+
+Function("FilterModule", "wrapper", """
+const findFilter = FilterModule.prototype.findFilter;
+
+FilterModule.prototype.findFilter = function(filter) {
+    if (typeof filter.field === 'function') {
+        Object.defineProperty(filter, "func", {value: wrapper(filer.field, filter.type)});
+    }
+    return findFilter.call(this, filter);
+}
+""")(FilterModule, filter_wrapper)

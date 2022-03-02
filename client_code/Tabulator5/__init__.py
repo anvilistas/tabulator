@@ -164,6 +164,12 @@ class Tabulator5(Tabulator5Template):
 
     def add_data(self, data, top=False, pos=None):
         """add data - use the keyword arguments to determine where in the table it gets added"""
+        
+    def get_data(self, active="all"):
+        """
+        Returns the table data based on a Tabulator range row lookup value.
+        :active: Range row lookup. Valid values are: "visible", "active", "selected", "all"
+        """
 
     def update_or_add_data(self, data):
         """checks each row and updates data if the row exists, otherwise creates a new row"""
@@ -172,45 +178,32 @@ class Tabulator5(Tabulator5Template):
         """replace all data in the table"""
 
     def set_filter(self, field, type=None, value=None):
-        """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'"""
-        if callable(field):
-            filter_func = field
-            field = lambda data, params: filter_func(data, **params)
-        self._table.setFilter(field, type, value)
+        """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'
+        Can also pass in a function and dictionary of keyword arguments to pass to that function"""
 
     def add_filter(self, field, type=None, value=None):
-        if callable(field):
-            filter_func = field
-            field = lambda data, params: filter_func(dict(data), **params)
-        self._table.addFilter(field, type, value)
+        """Add a filter to"""
 
     def remove_filter(self, field=None, type=None, value=None):
-        self._table.removeFilter(field, type, value)
+        """remove a filter"""
 
     def get_filters(self):
-        return self._table.getFilters()
+        """get a list of the current filters"""
 
     def clear_filter(self, *args):
         """include an arg of True to clear header filters as well"""
-        self._table.clearFilter(*args)
 
-    def set_sort(self, column, ascending=True):
-        """first argument can also be a list of sorters [{'column':'name', 'ascending':True}]"""
-        if isinstance(column, list):
-            sorters = column
-            for sorter in sorters:
-                sorter["dir"] = "asc" if sorter.pop("ascending") else "desc"
-            self._table.setSort(sorters)
-        elif isinstance(column, str):
-            self._table.setSort(column, "asc" if ascending else "desc")
-        else:
-            raise TypeError(
-                "expected first argument to be a list of sorters or the column field name"
-            )
+    def set_sort(self, column, dir):
+        """first argument can also be a list of sorters [{'column': field, 'dir':'asc' | 'desc'}, ...]"""
 
     def clear_sort(self):
-        self._table.clearSort()
-        # reset the table data
-        debugger
-        data = self._table.getData()
-        self._table.setData(data)
+        """clear the sorters"""
+        
+
+methods = (
+    "add_row", "delete_row", "update_row", "get_row", "select_row", "deselect_row", "get_selected_data", "add_data", "get_data", 
+    "update_or_add_data", "replace_data", "set_filter", "add_filter", "remove_filter", "get_filters", "clear_filter", "set_sort", "clear_sort"
+)
+
+for method in methods:
+    delattr(Tabulator5, method)
