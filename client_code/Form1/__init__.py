@@ -64,6 +64,7 @@ class Form1(Form1Template):
         self.init_components(**properties)
         self.tabulator5_1.data = tabledata
         self.tabulator5_1.columns = columns
+        self.tabulator5_1.column_defaults = {"resizable": False}
         self.tabulator5_1.define(pagination_size_selector = [1, 2, 5, 10])
 
         # Any code you write here will run when the form opens.

@@ -43,11 +43,25 @@ row_selection_column = {
     "cellClick": lambda e, cell: cell.getRow().toggleSelect(),
 }
 
+def _options_property(key, getMethod=None, setMethod=None):
+    def option_getter(self):
+        if getMethod is None or self._t is None:
+            return self._options.get(key)
+        else:
+            return self._t[getMethod]()
+    
+    def option_setter(self, value):
+        self._options[key] = value
+        if setMethod is not None and self._t is not None:
+            return self._t[setMethod](value)
+    
+    return property(option_getter, option_setter)
+
 _modules = ("Format", "Page", "Interaction", "Sort", "Edit", "Filter", "Menu", "SelectRow", "FrozenColumns", "FrozenRows", "ResizeColumns")
 
 class Tabulator5(Tabulator5Template):
     modules = _modules
-    default_options = {"layout": "fitColumns", "selectable": False, "movable": False}
+    default_options = {"layout": "fitColumns", "selectable": False}
     _registered = False
 
     @classmethod
@@ -145,29 +159,9 @@ class Tabulator5(Tabulator5Template):
         options = map(lambda item: [_toCamel(item[0]), item[1]], options.items())
         self._options |= options
 
-    @property
-    def data(self):
-        if self._t is None:
-            return self._options.get("data")
-        return self._t.getData()
-
-    @data.setter
-    def data(self, value):
-        # check the type of the value
-        if self._t is None:
-            self._options["data"] = value
-        else:
-            return self._t.setData(value)
-
-    @property
-    def columns(self):
-        return self._options.get("columns")
-
-    @columns.setter
-    def columns(self, value):
-        self._options["columns"] = value
-        if self._t is not None:
-            return self._t.setColumns(value)
+    data = _options_property("data", "getData", "setData")
+    columns = _options_property("columns", None, "setColumns")
+    column_defaults = _options_property("columnDefaults")
 
     border = _HtmlTemplate.border
     visible = _HtmlTemplate.visible
