@@ -2,7 +2,7 @@
 # Copyright (c) 2022 Stu Cork
 
 import anvil.js
-from anvil.js.window import RegExp, String, document, window, Promise
+from anvil.js.window import Promise, RegExp, String, document, window
 
 from ._js_tabulator import TabulatorModule
 
@@ -71,7 +71,7 @@ def _options_property(key, getMethod=None, setMethod=None):
 
 
 _themes = {
-    "standard", 
+    "standard",
     "simple",
     "midnight",
     "modern",
@@ -94,13 +94,14 @@ def _inject_theme(theme):
         theme = f"https://cdn.skypack.dev/tabulator-tables@5.1.2/dist/css/tabulator{theme}.min.css"
     link.href = theme
     link.rel = "stylesheet"
+
     def do_wait(res, rej):
         link.onload = res
         link.onerror = lambda e: rej(Exception(f"{theme} was not loaded"))
+
     document.body.appendChild(link)
     p = Promise(do_wait)
     anvil.js.await_promise(p)
-
 
 
 def _to_module(modname):
