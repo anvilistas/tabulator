@@ -21,6 +21,7 @@ from ._helpers import (
     _inject_theme,
     _merge,
     _options_property,
+    _spacing_property,
     _to_module,
     _toCamel,
 )
@@ -148,6 +149,8 @@ class Tabulator5(Tabulator5Template):
     border = _HtmlTemplate.border
     visible = _HtmlTemplate.visible
     role = _HtmlTemplate.role
+    spacing_above = _spacing_property("above")
+    spacing_below = _spacing_property("below")
 
     #### for the autocomplete
     def on(self, tabulator_event, handler):

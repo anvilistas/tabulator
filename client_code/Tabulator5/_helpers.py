@@ -110,3 +110,17 @@ def _to_module(modname):
     if not modname.endswith("Module"):
         modname += "Module"
     return TabulatorModule[modname]
+
+# from anvil-extras
+def _spacing_property(a_b):
+    def getter(self):
+        return getattr(self, "_spacing_" + a_b)
+
+    def setter(self, value):
+        self._dom_node.classList.remove(
+            f"anvil-spacing-{a_b}-{getattr(self, '_spacing_' + a_b, '')}"
+        )
+        self._dom_node.classList.add(f"anvil-spacing-{a_b}-{value}")
+        setattr(self, "_spacing_" + a_b, value)
+
+    return property(getter, setter, None, a_b)
