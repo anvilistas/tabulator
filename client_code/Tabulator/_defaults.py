@@ -10,7 +10,7 @@ _event_call_signatures = {
     "page_loaded": ("pageno",),
     "row_selected": ("row",),
     "row_deselected": ("row",),
-    "row_selectetion_changed": ("data", "rows"),
+    "row_selection_changed": ("data", "rows"),
 }
 
 _default_options = {
