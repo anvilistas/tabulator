@@ -1,10 +1,17 @@
-from ._anvil_designer import Tabulator5Template
-from anvil.js import get_dom_node as _get_dom_node
-from ._helpers import _toCamel, _merge, _ignore_resize_observer_error, _camelKeys
-from ._js_tabulator import Tabulator as _Tabulator, TabulatorModule as _TabulatorModule
-from ._custom_modules import custom_modules
-from . import _datetime_overrides
 from anvil import HtmlTemplate as _HtmlTemplate
+from anvil.js import get_dom_node as _get_dom_node
+
+from . import _datetime_overrides
+from ._anvil_designer import Tabulator5Template
+from ._custom_modules import custom_modules
+from ._helpers import (
+    _camelKeys,
+    _ignore_resize_observer_error,
+    _merge,
+    _toCamel,
+)
+from ._js_tabulator import Tabulator as _Tabulator
+from ._js_tabulator import TabulatorModule as _TabulatorModule
 
 _event_call_signatures = {
     "row_click": ("event", "row"),
@@ -48,7 +55,8 @@ row_selection_column = {
     "cellClick": lambda e, cell: cell.getRow().toggleSelect(),
 }
 
-_warings = {}
+_warnings = {}
+
 
 def _options_property(key, getMethod=None, setMethod=None):
     def option_getter(self):
@@ -66,23 +74,26 @@ def _options_property(key, getMethod=None, setMethod=None):
         elif _warnings.get("post_init") is not None:
             return
         _warnings["post_init"] = True
-        print(f"Warning: chaning the option {key!r} after the table has been built has no effect")
+        print(
+            f"Warning: chaning the option {key!r} after the table has been built has no effect"
+        )
 
     return property(option_getter, option_setter)
 
+
 _default_modules = {
-    'Edit',
-    'Filter',
-    'Format',
-    'FrozenColumns',
-    'FrozenRows',
-    'Interaction',
-    'Menu',
-    'Page',
-    'ResizeColumns',
-    'ResizeTable',
-    'SelectRow',
-    'Sort'
+    "Edit",
+    "Filter",
+    "Format",
+    "FrozenColumns",
+    "FrozenRows",
+    "Interaction",
+    "Menu",
+    "Page",
+    "ResizeColumns",
+    "ResizeTable",
+    "SelectRow",
+    "Sort",
 }
 
 _default_options = {"layout": "fitColumns", "selectable": False}
@@ -129,7 +140,9 @@ class Tabulator5(Tabulator5Template):
         self._el = el = _get_dom_node(self)
         self._queued = []
         self._handlers = {}
-        self._options = _merge(_default_options, properties, row_formatter=self._row_formatter)
+        self._options = _merge(
+            _default_options, properties, row_formatter=self._row_formatter
+        )
 
         # public
         self.options = {}
@@ -157,6 +170,7 @@ class Tabulator5(Tabulator5Template):
         def built():
             t.setData(data)
             self._t = t
+
         t.on("tableBuilt", built)
 
     def _show(self, **event_args):
@@ -174,9 +188,11 @@ class Tabulator5(Tabulator5Template):
         call_sig = _event_call_signatures.get(event)
         if call_sig is None:
             return
+
         def raiser(*args):
             kws = dict(zip(call_sig, args))
             return self.raise_event(event, **kws)
+
         self._handlers[(event, handler)] = raiser
         self.on(_toCamel(event), raiser)
 
@@ -194,7 +210,9 @@ class Tabulator5(Tabulator5Template):
     index = _options_property("index")
     layout = _options_property("layout")
     pagination = _options_property("pagination")
-    pagination_size = _options_property("pagination_size", "getPageSize", "setPageSize")
+    pagination_size = _options_property(
+        "pagination_size", "getPageSize", "setPageSize"
+    )
 
     border = _HtmlTemplate.border
     visible = _HtmlTemplate.visible
@@ -264,8 +282,25 @@ class Tabulator5(Tabulator5Template):
 
 
 methods = (
-    "on", "add_row", "delete_row", "update_row", "get_row", "select_row", "deselect_row", "get_selected_data", "add_data", "get_data",
-    "update_or_add_data", "replace_data", "set_filter", "add_filter", "remove_filter", "get_filters", "clear_filter", "set_sort", "clear_sort"
+    "on",
+    "add_row",
+    "delete_row",
+    "update_row",
+    "get_row",
+    "select_row",
+    "deselect_row",
+    "get_selected_data",
+    "add_data",
+    "get_data",
+    "update_or_add_data",
+    "replace_data",
+    "set_filter",
+    "add_filter",
+    "remove_filter",
+    "get_filters",
+    "clear_filter",
+    "set_sort",
+    "clear_sort",
 )
 
 for method in methods:

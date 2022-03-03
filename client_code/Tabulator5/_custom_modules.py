@@ -1,6 +1,8 @@
 from anvil import Component
 from anvil.js import get_dom_node
+
 from ._module_helpers import AbstractModule, tabulator_module
+
 
 @tabulator_module("componentFormatter")
 class ComponentFormatter(AbstractModule):
@@ -40,6 +42,7 @@ def cell_wrapper(f):
 
 class AbstractCallableWrapper(AbstractModule):
     options = []
+
     def initialize(self):
         self.mod.subscribe("column-layout", self.update_definition)
 
@@ -50,14 +53,18 @@ class AbstractCallableWrapper(AbstractModule):
             if f is None or not callable(f):
                 continue
             definition[option] = self.wrap(f)
-    
+
     @staticmethod
     def wrap(f):
         raise NotImplemented
 
+
 @tabulator_module("formatterWrapper", moduleInitOrder=1)
 class FormatterWrapper(AbstractCallableWrapper):
-    options = ["formatter" + suffix for suffix in ("", "Print", "Clipboard", "HtmlOutput")]
+    options = [
+        "formatter" + suffix
+        for suffix in ("", "Print", "Clipboard", "HtmlOutput")
+    ]
 
     @staticmethod
     def wrap(f):
@@ -73,7 +80,9 @@ class SorterWrapper(AbstractCallableWrapper):
     def wrap(f):
         def sorter_wrapper(a, b, aRow, bRow, column, dir, params):
             return f(a, b, **params)
+
         return sorter_wrapper
+
 
 def setup_editor(component, cell, onRendered, success, cancel):
     check = {"closed": False}
@@ -133,6 +142,7 @@ class EditorWrapper(AbstractCallableWrapper):
     @staticmethod
     def wrap(f):
         f = cell_wrapper(f)
+
         def editor_wrapper(cell, onRendered, success, cancel, params):
             component = f(cell, **params)
             if not isinstance(component, Component):
@@ -140,7 +150,16 @@ class EditorWrapper(AbstractCallableWrapper):
             cell.getTable().anvil_form.add_component(component)
             cell._cell.modules.anvilEditComponent = component
             return setup_editor(component, cell, onRendered, success, cancel)
+
         return editor_wrapper
 
-    
-custom_modules = [cls.Module for cls in (ComponentFormatter, EditorWrapper, FormatterWrapper, SorterWrapper)]
+
+custom_modules = [
+    cls.Module
+    for cls in (
+        ComponentFormatter,
+        EditorWrapper,
+        FormatterWrapper,
+        SorterWrapper,
+    )
+]

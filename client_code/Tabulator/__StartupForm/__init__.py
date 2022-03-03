@@ -1,5 +1,6 @@
-from ._anvil_designer import __StartupFormTemplate
 from anvil import *
+
+from ._anvil_designer import __StartupFormTemplate
 
 
 class __StartupForm(__StartupFormTemplate):

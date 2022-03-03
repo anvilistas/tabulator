@@ -11,19 +11,27 @@
 
     Source code published at https://github.com/s-cork/Tabulator
 """
-from ._anvil_designer import TabulatorTemplate
-
 # from anvil.js.window import Tabulator as _Tabulator
-from anvil.js import get_dom_node as _get_dom_node, import_from as _import_from
+from anvil.js import get_dom_node as _get_dom_node
+from anvil.js import import_from as _import_from
 from anvil.js.window import window
 
-_TabulatorModule = _import_from("https://cdn.skypack.dev/tabulator-tables@5.0.4")
+from ._anvil_designer import TabulatorTemplate
+
+_TabulatorModule = _import_from(
+    "https://cdn.skypack.dev/tabulator-tables@5.0.4"
+)
 window.Tabulator = _Tabulator = _TabulatorModule.TabulatorFull
 
-from ._Helpers import maintain_scroll_position
-from ._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
-
 from anvil import HtmlTemplate as _HtmlTemplate
+
+from ._CleanCols import (
+    _clean_cols,
+    _clean_editor,
+    _clean_formatter,
+    _clean_sorter,
+)
+from ._Helpers import maintain_scroll_position
 
 _default_props = {
     "auto_columns": None,
@@ -58,7 +66,9 @@ class Tabulator(TabulatorTemplate):
         self.init_components(**properties)
 
         selectable = (
-            "highlight" if self._row_selectable == "checkbox" else self._row_selectable
+            "highlight"
+            if self._row_selectable == "checkbox"
+            else self._row_selectable
         )
 
         self._table = _Tabulator(
@@ -103,7 +113,9 @@ class Tabulator(TabulatorTemplate):
         """add a row - ensure the row has an index"""
         index = row.get(self._index)
         if index is None:
-            raise KeyError(f"you should provide an index '{self._index}' for this row")
+            raise KeyError(
+                f"you should provide an index '{self._index}' for this row"
+            )
         if self.get_row(index):
             raise KeyError(f"The index '{self._index}' should be unique")
 

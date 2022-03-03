@@ -1,12 +1,14 @@
-import anvil
-from anvil.js import import_from, get_dom_node
-from anvil.js.window import Function as _Function, document, Promise
-
 from operator import attrgetter
+
+import anvil
+from anvil.js import get_dom_node, import_from
+from anvil.js.window import Function as _Function
+from anvil.js.window import Promise, document
 
 
 def _import(*attrs):
     from .Tabulator5.js_tabulator import TabulatorModule as module
+
     print(dir(module))
     attrs = attrs or ["default"]
     return attrgetter(*attrs)(module)
@@ -68,7 +70,9 @@ class DataModule(AnvilTabulatorModule):
         self.mod.subscribe("row-data-retrieve", self.transform_row)
 
     def data_loading(self, data, params, config, silent):
-        print("data-loading", data, params, config, silent, sep="\n", end="\n\n")
+        print(
+            "data-loading", data, params, config, silent, sep="\n", end="\n\n"
+        )
         return True
 
     def data_params(self, data, config, silent, prev):
@@ -76,7 +80,16 @@ class DataModule(AnvilTabulatorModule):
         return prev
 
     def data_load(self, data, params, config, silent, prev):
-        print("data-load", data, params, config, silent, prev, sep="\n", end="\n\n")
+        print(
+            "data-load",
+            data,
+            params,
+            config,
+            silent,
+            prev,
+            sep="\n",
+            end="\n\n",
+        )
         self.data = data
         page = params["page"]
         return Promise(
@@ -95,7 +108,14 @@ class ComponentFormatter(AnvilTabulatorModule):
         self.mod.subscribe("cell-format", self.cell_format)
 
     def cell_format(self, cell, prev):
-        print("cell-format", cell, prev, cell.getComponent().get_value(), sep="\n", end="\n\n")
+        print(
+            "cell-format",
+            cell,
+            prev,
+            cell.getComponent().get_value(),
+            sep="\n",
+            end="\n\n",
+        )
         if isinstance(prev, anvil.Component):
             return get_dom_node(prev)
         return prev
@@ -117,8 +137,20 @@ el = document.createElement("div")
 document.body.appendChild(el)
 
 tabledata = [
-    {"id": 1, "name": "Oli Bob", "age": "12", "col": "red", "dob": "14/05/1982"},
-    {"id": 2, "name": "Mary May", "age": "1", "col": "blue", "dob": "14/05/1982"},
+    {
+        "id": 1,
+        "name": "Oli Bob",
+        "age": "12",
+        "col": "red",
+        "dob": "14/05/1982",
+    },
+    {
+        "id": 2,
+        "name": "Mary May",
+        "age": "1",
+        "col": "blue",
+        "dob": "14/05/1982",
+    },
     {
         "id": 3,
         "name": "Christine Lobowski",
@@ -147,9 +179,14 @@ table = Tabulator(
     el,
     {
         "anvilFoo": False,
-#         "data": 123,
+        #         "data": 123,
         "columns": [
-            {"title": "Name", "field": "name", "width": 150, "accessor": "roundDown"},
+            {
+                "title": "Name",
+                "field": "name",
+                "width": 150,
+                "accessor": "roundDown",
+            },
             {
                 "title": "Age",
                 "field": "age",
@@ -174,6 +211,11 @@ table = Tabulator(
 table.on(
     "dataProcessed",
     lambda data, *args: print(
-        "data", data is table.getData(), data, table.getData(), sep="\n", end="\n\n"
+        "data",
+        data is table.getData(),
+        data,
+        table.getData(),
+        sep="\n",
+        end="\n\n",
     ),
 )

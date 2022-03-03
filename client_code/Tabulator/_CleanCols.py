@@ -1,5 +1,5 @@
-from anvil.js import get_dom_node
 from anvil import Component
+from anvil.js import get_dom_node
 
 """
 allow various types of formatters - Components, or wrapped functions
@@ -57,7 +57,9 @@ def _clean_formatter(self, formatter):
         def loadComponentCell(cell, formatterParams, onRendered):
             formatterParams = formatterParams or {}
             if is_template:
-                component = formatter(item={**cell.getData()}, **formatterParams)
+                component = formatter(
+                    item={**cell.getData()}, **formatterParams
+                )
             else:
                 component = formatter(**formatterParams)
             self.add_component(component)  # make sure we have a parent
@@ -89,9 +91,9 @@ def setup_editor_component(component, cancel, onRendered):
     def blur_cancel(e):
         # hack for datepicker
         relatedTarget = getattr(e, "relatedTarget", None)
-        if not e.target.parentElement.classList.contains("anvil-datepicker") or (
-            relatedTarget and relatedTarget.tagName != "SELECT"
-        ):
+        if not e.target.parentElement.classList.contains(
+            "anvil-datepicker"
+        ) or (relatedTarget and relatedTarget.tagName != "SELECT"):
             if closed:
                 return
             closed["x"] = True
@@ -167,7 +169,12 @@ def _clean_sorter(self, sorter):
         def sorterWrapper(a, b, aRow, bRow, column, asc, sorterParams):
             sorterParams = sorterParams or {}
             return sorter(
-                a, b, aRow.getData(), bRow.getData(), asc == "asc", **sorterParams
+                a,
+                b,
+                aRow.getData(),
+                bRow.getData(),
+                asc == "asc",
+                **sorterParams
             )
 
         return sorterWrapper

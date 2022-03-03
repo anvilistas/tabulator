@@ -1,5 +1,7 @@
-from ._anvil_designer import Form2Template
 from anvil import *
+
+from ._anvil_designer import Form2Template
+
 
 class Form2(Form2Template):
     def __init__(self, **properties):
@@ -10,4 +12,3 @@ class Form2(Form2Template):
 
     def button_1_click(self, **event_args):
         """This method is called when the button is clicked"""
-

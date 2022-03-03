@@ -1,8 +1,10 @@
-from ._js_tabulator import Tabulator
-
 from datetime import date, datetime
+
 from anvil import DatePicker
 from anvil.js import get_dom_node
+
+from ._js_tabulator import Tabulator
+
 
 def dt_formatter(dt_type, name, default_format):
     def formatter(cell, params, onRendered):
@@ -24,12 +26,15 @@ def dt_formatter(dt_type, name, default_format):
             return val.isoformat()
         else:
             return val.strftime(out)
+
     return formatter
 
 
 def dt_sorter(compare):
     def sorter(a, b, a_row, b_row, column, dir, params):
-        align_empty_values = params.get("align_empty_values") or params.get("alignEmptyValues")
+        align_empty_values = params.get("align_empty_values") or params.get(
+            "alignEmptyValues"
+        )
         empty_align = ""
         if a is None:
             empty_align = 0 if b is None else -1
@@ -37,9 +42,15 @@ def dt_sorter(compare):
             empty_align = 1
         else:
             return compare(a, b)
-        if align_empty_values == "top" and dir == "desc" or align_empty_values == "bottom" and dir == "asc":
+        if (
+            align_empty_values == "top"
+            and dir == "desc"
+            or align_empty_values == "bottom"
+            and dir == "asc"
+        ):
             empty_align *= -1
         return empty_align
+
     return sorter
 
 
@@ -50,7 +61,7 @@ def dt_editor(pick_time):
         "pick_time": pick_time,
         "spacing_above": "none",
         "spacing_below": "none",
-        "font": "inherit"
+        "font": "inherit",
     }
 
     def editor(cell, **properties):
@@ -66,30 +77,49 @@ def dt_editor(pick_time):
         dom_node.style.height = "100%"
         dom_node.style.width = "100%"
         dom_node.style.padding = "0 16px"
+
         def show(**event_args):
             pass
-#             dom_node.parentElement.style.padding = "8px"
+
+        #             dom_node.parentElement.style.padding = "8px"
         dp.add_event_handler("show", show)
+
         def change(**event_args):
-            dp.raise_event('x-close-editor', value=dp.date)
+            dp.raise_event("x-close-editor", value=dp.date)
+
         dp.add_event_handler("change", change)
+
         def hide(**event_args):
-            dp.date = dp.date # force the calendar picker to close
+            dp.date = dp.date  # force the calendar picker to close
+
         dp.add_event_handler("hide", hide)
         return dp
 
     return EditorWrapper.wrap(editor)
 
+
 def init_overrides():
-    Tabulator.extendModule("format", "formatters", {
-        "datetime": dt_formatter(datetime, "datetime", "%x"),
-        "date": dt_formatter(date, "date", "%c"),
-    })
-    Tabulator.extendModule("sort", "sorters", {
-        "datetime": dt_sorter(lambda a, b: a.timestamp() - b.timestamp()),
-        "date": dt_sorter(lambda a, b: a.toordinal() - b.toordinal()),
-    })
-    Tabulator.extendModule("edit", "editors", {
-        "datetime": dt_editor(True),
-        "date": dt_editor(False),
-    })
+    Tabulator.extendModule(
+        "format",
+        "formatters",
+        {
+            "datetime": dt_formatter(datetime, "datetime", "%x"),
+            "date": dt_formatter(date, "date", "%c"),
+        },
+    )
+    Tabulator.extendModule(
+        "sort",
+        "sorters",
+        {
+            "datetime": dt_sorter(lambda a, b: a.timestamp() - b.timestamp()),
+            "date": dt_sorter(lambda a, b: a.toordinal() - b.toordinal()),
+        },
+    )
+    Tabulator.extendModule(
+        "edit",
+        "editors",
+        {
+            "datetime": dt_editor(True),
+            "date": dt_editor(False),
+        },
+    )

@@ -2,6 +2,7 @@ from anvil.js import import_from
 
 TabulatorModule = import_from("https://cdn.skypack.dev/tabulator-tables@5.1.2")
 
+
 def __getattr__(attr):
     global TabulatorModule
     return getattr(TabulatorModule, attr)
@@ -57,7 +58,9 @@ def __dir__():
 
 from anvil.js.window import Function
 
-support_snake = Function("Component", """
+support_snake = Function(
+    "Component",
+    """
 const RE_SNAKE = new RegExp("_[a-z]", "g")
 const to_camel = (s) => s.replace(RE_SNAKE, (m) => m[1].toUpperCase());
 const target = {sk$object: null, $isPyWrapped: false};
@@ -72,7 +75,8 @@ Object.setPrototypeOf(Component.prototype, new Proxy(target, {
         return receiver[camel];
     }
 }));
-""")
+""",
+)
 
 for Component in "ColumnComponent", "CellComponent", "RowComponent":
     support_snake(TabulatorModule[Component])
@@ -80,11 +84,17 @@ for Component in "ColumnComponent", "CellComponent", "RowComponent":
 
 def filter_wrapper(f, params):
     params = params or {}
+
     def wrapped(data):
         return f(data, **params)
+
     return wrapped
 
-Function("FilterModule", "wrapper", """
+
+Function(
+    "FilterModule",
+    "wrapper",
+    """
 const findFilter = FilterModule.prototype.findFilter;
 
 FilterModule.prototype.findFilter = function(filter) {
@@ -94,4 +104,5 @@ FilterModule.prototype.findFilter = function(filter) {
     }
     return findFilter.call(this, filter);
 }
-""")(TabulatorModule.FilterModule, filter_wrapper)
+""",
+)(TabulatorModule.FilterModule, filter_wrapper)

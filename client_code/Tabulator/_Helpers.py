@@ -1,4 +1,4 @@
-from anvil.js.window import jQuery, window, Tabulator
+from anvil.js.window import Tabulator, jQuery, window
 
 temp_scroll_top = None
 jquery_window = jQuery(window)
