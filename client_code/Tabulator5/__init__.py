@@ -7,41 +7,24 @@ from anvil.js import get_dom_node as _get_dom_node
 from . import _datetime_overrides
 from ._anvil_designer import Tabulator5Template
 from ._custom_modules import custom_modules
-from ._helpers import _camelKeys, _ignore_resize_observer_error, _merge, _toCamel
+from ._defaults import (
+    _default_modules,
+    _default_options,
+    _default_props,
+    _default_theme,
+    _event_call_signatures,
+    _methods,
+)
+from ._helpers import (
+    _camelKeys,
+    _ignore_resize_observer_error,
+    _inject_theme,
+    _merge,
+    _options_property,
+    _to_module,
+    _toCamel,
+)
 from ._js_tabulator import Tabulator as _Tabulator
-from ._js_tabulator import TabulatorModule as _TabulatorModule
-
-_event_call_signatures = {
-    "row_click": ("event", "row"),
-    "cell_click": ("event", "cell"),
-    "row_tap": ("event", "row"),
-    "cell_tap": ("event", "cell"),
-    "cell_edited": ("cell",),
-    "page_loaded": ("pageno",),
-    "row_selected": ("row",),
-    "row_deselected": ("row",),
-    "row_selectetion_change": ("data", "rows"),
-}
-
-_default_options = {
-    "auto_columns": False,
-    "header_visible": True,
-    "height": "",
-    "index": "id",
-    "layout": "fitColumns",
-    "pagination": True,
-    "pagination_size": 10,
-    "data": None,
-    "columns": [],
-    "column_defaults": {},
-}
-
-_default_props = {
-    "spacing_above": "small",
-    "spacing_below": "small",
-    "border": "",
-    "visible": True,
-}
 
 row_selection_column = {
     "formatter": "rowSelection",
@@ -53,81 +36,12 @@ row_selection_column = {
     "cellClick": lambda e, cell: cell.getRow().toggleSelect(),
 }
 
-_warnings = {}
-
-
-def _options_property(key, getMethod=None, setMethod=None):
-    def option_getter(self):
-        if getMethod is None or self._t is None:
-            return self._options.get(key)
-        else:
-            return self._t[getMethod]()
-
-    def option_setter(self, value):
-        self._options[key] = value
-        if self._t is None:
-            return
-        elif setMethod is not None:
-            return self._t[setMethod](value)
-        elif _warnings.get("post_init") is not None:
-            return
-        _warnings["post_init"] = True
-        print(
-            f"Warning: chaning the option {key!r} after the table has been built has no effect"
-        )
-
-    return property(option_getter, option_setter)
-
-
-_default_modules = {
-    "Edit",
-    "Filter",
-    "Format",
-    "FrozenColumns",
-    "FrozenRows",
-    "Interaction",
-    "Menu",
-    "Page",
-    "ResizeColumns",
-    "ResizeTable",
-    "SelectRow",
-    "Sort",
-}
-
-_default_options = {"layout": "fitColumns", "selectable": False}
-
 
 class Tabulator5(Tabulator5Template):
+    theme = _default_theme
     modules = _default_modules
     default_options = _default_options
     _registered = False
-
-    @classmethod
-    def _setup(cls):
-        if cls._registered:
-            return
-        cls.register_module(cls.modules)
-        cls.register_module(custom_modules)
-        _datetime_overrides.init_overrides()
-        for key, val in cls.default_options.items():
-            _Tabulator.defaultOptions[key] = val
-        cls._registered = True
-        _ignore_resize_observer_error()
-
-    @staticmethod
-    def register_module(modules):
-        if type(modules) not in (set, tuple, list):
-            modules = [modules]
-
-        def name_to_module(modname):
-            if not isinstance(modname, str):
-                return modname
-            if not modname.endswith("Module"):
-                modname += "Module"
-            return _TabulatorModule[modname]
-
-        modules = [name_to_module(mod) for mod in modules]
-        _Tabulator.registerModule(modules)
 
     def __new__(cls, **properties):
         cls._setup()
@@ -148,8 +62,28 @@ class Tabulator5(Tabulator5Template):
         el.replaceChildren()
         self.init_components(**_merge(_default_props, properties))
 
+    @classmethod
+    def _setup(cls):
+        if cls._registered:
+            return
+        cls.register_module(cls.modules)
+        cls.register_module(custom_modules)
+        _datetime_overrides.init_overrides()
+        _inject_theme()
+        _ignore_resize_observer_error()
+        for key, val in cls.default_options.items():
+            _Tabulator.defaultOptions[key] = val
+        cls._registered = True
+
+    @staticmethod
+    def register_module(modules):
+        if type(modules) not in (set, tuple, list):
+            modules = [modules]
+        modules = [_to_module(m) for m in modules]
+        _Tabulator.registerModule(modules)
+
+    # because row_formatter is not a tabulator event but it is an anvil tabulator event
     def _row_formatter(self, row):
-        # because row_formatter is not a tabulator event but it is an anvil tabulator event
         self.raise_event("row_formatter", row=row)
 
     def _initialize(self):
@@ -278,27 +212,5 @@ class Tabulator5(Tabulator5Template):
         """clear the sorters"""
 
 
-methods = (
-    "on",
-    "add_row",
-    "delete_row",
-    "update_row",
-    "get_row",
-    "select_row",
-    "deselect_row",
-    "get_selected_data",
-    "add_data",
-    "get_data",
-    "update_or_add_data",
-    "replace_data",
-    "set_filter",
-    "add_filter",
-    "remove_filter",
-    "get_filters",
-    "clear_filter",
-    "set_sort",
-    "clear_sort",
-)
-
-for method in methods:
+for method in _methods:
     delattr(Tabulator5, method)

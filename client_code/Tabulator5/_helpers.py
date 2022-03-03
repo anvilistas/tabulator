@@ -1,7 +1,9 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2022 Stu Cork
 
-from anvil.js.window import RegExp, String, window
+from anvil.js.window import RegExp, String, document, window
+
+from ._js_tabulator import TabulatorModule
 
 _RE_SNAKE = RegExp("_[a-z]", "g")
 _replace = String.prototype.replace
@@ -22,7 +24,12 @@ def _merge(default, properties, **overrides):
     return merged
 
 
+# ignore harmless errors that will cause Anvil popups
+# see example issue https://github.com/souporserious/react-measure/issues/104
 def _ignore_resize_observer_error_handler(e):
+    # This covers both
+    # - 'ResizeObserver loop limit exceeded', and
+    # - 'ResizeObserver loop ocmpleted with undelivered notifications'
     if "ResizeObserver loop" in e.get("message", ""):
         e.stopPropagation()
         e.stopImmediatePropagation()
@@ -34,3 +41,61 @@ def _ignore_resize_observer_error():
     window.onerror = None
     window.addEventListener("error", _ignore_resize_observer_error)
     window.onerror = onerror
+
+
+_warnings = {}
+
+
+def _options_property(key, getMethod=None, setMethod=None):
+    def option_getter(self):
+        if getMethod is None or self._t is None:
+            return self._options.get(key)
+        else:
+            return self._t[getMethod]()
+
+    def option_setter(self, value):
+        self._options[key] = value
+        if self._t is None:
+            return
+        elif setMethod is not None:
+            return self._t[setMethod](value)
+        elif _warnings.get("post_init") is not None:
+            return
+        _warnings["post_init"] = True
+        print(
+            f"Warning: chaning the option {key!r} after the table has been built has no effect"
+        )
+
+    return property(option_getter, option_setter)
+
+
+_themes = {
+    "standard",  # make this empty string
+    "simple",
+    "midnight",
+    "bootstrap3",
+}
+
+
+def _inject_theme(theme):
+    link = document.createElement("link")
+    if theme in _themes:
+        theme = "_" + theme if theme != "standard" else ""
+        theme = f"https://cdn.skypack.dev/tabulator-tables@5.1.2/dist/css/tabulator{theme}.min.css"
+    link.href = theme
+    link.rel = "stylesheet"
+    document.body.appendChild(link)
+    style = document.createElement("style")
+    style.textContent = """
+    .tabulator-cell .column-panel, .tabulator-cell input {margin: 0 !important;}
+    .tabulator-cell .form-control {padding-top: 0 !important;}
+    """
+    document.body.appendChild(style)
+
+
+def _to_module(modname):
+    if not isinstance(modname, str):
+        return modname
+    if not modname.endswith("Module"):
+        modname += "Module"
+    return TabulatorModule[modname]
