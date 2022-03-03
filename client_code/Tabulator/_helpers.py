@@ -115,7 +115,7 @@ def _to_module(modname):
 # from anvil-extras
 def _spacing_property(a_b):
     def getter(self):
-        return getattr(self, "_spacing_" + a_b)
+        return getattr(self, "_spacing_" + a_b, "")
 
     def setter(self, value):
         self._dom_node.classList.remove(

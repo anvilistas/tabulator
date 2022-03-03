@@ -50,7 +50,7 @@ class Tabulator(TabulatorTemplate):
 
     def __init__(self, **properties):
         self._t = None
-        self._el = el = _get_dom_node(self)
+        self._dom_node = dom_node = _get_dom_node(self)
         self._queued = []
         self._handlers = {}
         self._options = _merge(
@@ -60,7 +60,7 @@ class Tabulator(TabulatorTemplate):
         # public
         self.options = {}
 
-        el.replaceChildren()
+        dom_node.replaceChildren()
         self.init_components(**_merge(_default_props, properties))
 
     @classmethod
@@ -94,7 +94,7 @@ class Tabulator(TabulatorTemplate):
         options.update(_camelKeys(self.options))
         data = options.pop("data")
 
-        t = _Tabulator(self._el, options)
+        t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
         for attr, args, kws in self._queued:
             getattr(t, attr)(*args, **kws)
@@ -112,9 +112,13 @@ class Tabulator(TabulatorTemplate):
             self._initialize()
 
     def __getattr__(self, attr):
+        if attr[0] == "_":
+            raise AttributeError(attr)
         attr = _toCamel(attr)
         if self._t is None:
-            return lambda *args, **kws: self._queued.append([attr, args, kws])
+            def queued_call(*args, **kws):
+                self._queued.append([attr, args, kws])
+            return queued_call
         return getattr(self._t, attr)
 
     def add_event_handler(self, event, handler):
