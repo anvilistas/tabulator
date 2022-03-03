@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 from anvil.js import import_from
 
 TabulatorModule = import_from("https://cdn.skypack.dev/tabulator-tables@5.1.2")

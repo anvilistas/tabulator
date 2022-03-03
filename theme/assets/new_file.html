@@ -5,7 +5,7 @@
 // ignore harmless errors that will cause Anvil popups
 // see example issue https://github.com/souporserious/react-measure/issues/104
 window.addEventListener('error', function(e) {
-  // This covers both 
+  // This covers both
   //   'ResizeObserver loop limit exceeded', and
   //   'ResizeObserver loop ocmpleted with undelivered notifications'
   if (e.message.indexOf("ResizeObserver loop") !== -1) {

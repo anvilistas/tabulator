@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 # This is a package.
 # You can define variables and functions here, and use them from any form. For example, in a top-level form:
 #

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 """
     Tabulator for Anvil
     an anvil wrapper for tabulator: https://github.com/olifolkerd/tabulator
@@ -18,19 +21,12 @@ from anvil.js.window import window
 
 from ._anvil_designer import TabulatorTemplate
 
-_TabulatorModule = _import_from(
-    "https://cdn.skypack.dev/tabulator-tables@5.0.4"
-)
+_TabulatorModule = _import_from("https://cdn.skypack.dev/tabulator-tables@5.0.4")
 window.Tabulator = _Tabulator = _TabulatorModule.TabulatorFull
 
 from anvil import HtmlTemplate as _HtmlTemplate
 
-from ._CleanCols import (
-    _clean_cols,
-    _clean_editor,
-    _clean_formatter,
-    _clean_sorter,
-)
+from ._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
 from ._Helpers import maintain_scroll_position
 
 _default_props = {
@@ -66,9 +62,7 @@ class Tabulator(TabulatorTemplate):
         self.init_components(**properties)
 
         selectable = (
-            "highlight"
-            if self._row_selectable == "checkbox"
-            else self._row_selectable
+            "highlight" if self._row_selectable == "checkbox" else self._row_selectable
         )
 
         self._table = _Tabulator(
@@ -113,9 +107,7 @@ class Tabulator(TabulatorTemplate):
         """add a row - ensure the row has an index"""
         index = row.get(self._index)
         if index is None:
-            raise KeyError(
-                f"you should provide an index '{self._index}' for this row"
-            )
+            raise KeyError(f"you should provide an index '{self._index}' for this row")
         if self.get_row(index):
             raise KeyError(f"The index '{self._index}' should be unique")
 
@@ -172,13 +164,19 @@ class Tabulator(TabulatorTemplate):
         """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'"""
         if callable(field):
             filter_func = field
-            field = lambda data, params: filter_func(dict(data), **params)
+
+            def field(data, params):
+                return filter_func(dict(data), **params)
+
         self._table.setFilter(field, type, value)
 
     def add_filter(self, field, type=None, value=None):
         if callable(field):
             filter_func = field
-            field = lambda data, params: filter_func(dict(data), **params)
+
+            def field(data, params):
+                return filter_func(dict(data), **params)
+
         self._table.addFilter(field, type, value)
 
     def remove_filter(self, field=None, type=None, value=None):
@@ -208,7 +206,6 @@ class Tabulator(TabulatorTemplate):
     def clear_sort(self):
         self._table.clearSort()
         # reset the table data
-        debugger
         data = self._table.getData()
         self._table.setData(data)
 

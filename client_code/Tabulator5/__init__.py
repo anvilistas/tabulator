@@ -1,15 +1,13 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 from anvil import HtmlTemplate as _HtmlTemplate
 from anvil.js import get_dom_node as _get_dom_node
 
 from . import _datetime_overrides
 from ._anvil_designer import Tabulator5Template
 from ._custom_modules import custom_modules
-from ._helpers import (
-    _camelKeys,
-    _ignore_resize_observer_error,
-    _merge,
-    _toCamel,
-)
+from ._helpers import _camelKeys, _ignore_resize_observer_error, _merge, _toCamel
 from ._js_tabulator import Tabulator as _Tabulator
 from ._js_tabulator import TabulatorModule as _TabulatorModule
 
@@ -167,6 +165,7 @@ class Tabulator5(Tabulator5Template):
             getattr(t, attr)(*args, **kws)
         self._queued.clear()
         # use setData - initiating data with anything other than list[dict] breaks tabulator
+
         def built():
             t.setData(data)
             self._t = t
@@ -210,9 +209,7 @@ class Tabulator5(Tabulator5Template):
     index = _options_property("index")
     layout = _options_property("layout")
     pagination = _options_property("pagination")
-    pagination_size = _options_property(
-        "pagination_size", "getPageSize", "setPageSize"
-    )
+    pagination_size = _options_property("pagination_size", "getPageSize", "setPageSize")
 
     border = _HtmlTemplate.border
     visible = _HtmlTemplate.visible

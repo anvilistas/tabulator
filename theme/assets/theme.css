@@ -64,31 +64,31 @@ a>.anvil-component-icon.right_edge-icon,
 .column-panel.col-padding-huge > .anvil-panel-section > .anvil-panel-section-container > .anvil-panel-section-gutter { margin: 0 -20px; }
 
 .flow-panel.flow-spacing-tiny > .flow-panel-gutter { margin: 0 -2px; }
-.flow-panel.flow-spacing-tiny > .flow-panel-gutter > .flow-panel-item { 
+.flow-panel.flow-spacing-tiny > .flow-panel-gutter > .flow-panel-item {
   margin-left: 2px;
   margin-right: 2px;
 }
 
 .flow-panel.flow-spacing-small > .flow-panel-gutter { margin: 0 -4px; }
-.flow-panel.flow-spacing-small > .flow-panel-gutter > .flow-panel-item { 
+.flow-panel.flow-spacing-small > .flow-panel-gutter > .flow-panel-item {
   margin-left: 4px;
   margin-right: 4px;
 }
 
 .flow-panel.flow-spacing-medium > .flow-panel-gutter { margin: 0 -8px; }
-.flow-panel.flow-spacing-medium > .flow-panel-gutter > .flow-panel-item { 
+.flow-panel.flow-spacing-medium > .flow-panel-gutter > .flow-panel-item {
   margin-left: 8px;
   margin-right: 8px;
 }
 
 .flow-panel.flow-spacing-large > .flow-panel-gutter { margin: 0 -12px; }
-.flow-panel.flow-spacing-large > .flow-panel-gutter > .flow-panel-item { 
+.flow-panel.flow-spacing-large > .flow-panel-gutter > .flow-panel-item {
   margin-left: 12px;
   margin-right: 12px;
 }
 
 .flow-panel.flow-spacing-huge > .flow-panel-gutter { margin: 0 -20px; }
-.flow-panel.flow-spacing-huge > .flow-panel-gutter > .flow-panel-item{ 
+.flow-panel.flow-spacing-huge > .flow-panel-gutter > .flow-panel-item{
   margin-left: 20px;
   margin-right: 20px;
 }
@@ -242,7 +242,7 @@ a:hover, a:active {
     display: none;
     transition: right 0.5s;
   }
-  
+
   html:not(.designer) .nav-holder .left-nav.shown {
     display: block;
   }
@@ -315,7 +315,7 @@ a:hover, a:active {
   width: 0;
   margin-right: 56px;
   position: relative;
-  top: 0.15em;  
+  top: 0.15em;
 }
 
 .left-nav .anvil-component-icon.left_edge-icon, .left-nav .anvil-component-icon.right_edge-icon {
@@ -378,9 +378,9 @@ a:hover, a:active {
   font-weight: 500;
   color: white;
   background-color: %color:Primary 500%;
-  
+
   z-index: 1;
-  /* 4dp */ box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.2);  
+  /* 4dp */ box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
 }
 
 .app-bar .anvil-component {
@@ -438,7 +438,7 @@ a:hover, a:active {
   padding: 5px 8px;
 }
 
-.anvil-highlight .app-bar-nav > .anvil-container:not(.has-components):not(a)::after {  
+.anvil-highlight .app-bar-nav > .anvil-container:not(.has-components):not(a)::after {
   content: "Drop Links here"
 }
 
@@ -517,7 +517,7 @@ body>div[data-notify="container"]>span[data-notify="message"] {
   display: block;
   padding: 20px 0 0;
   font-size: 16px;
-  color: #747474;  
+  color: #747474;
 }
 
 body>div[data-notify="container"].alert-success{
@@ -562,7 +562,7 @@ body>div[data-notify="container"].alert-warning>span[data-notify="title"]{
   text-shadow: none;
   box-shadow: none;
   -webkit-box-shadow: none;
-  
+
   position: relative;
 }
 
@@ -596,7 +596,7 @@ body>div[data-notify="container"].alert-warning>span[data-notify="title"]{
 
 .anvil-role-raised > .btn:active, .anvil-role-primary-color > .btn:active, .anvil-role-secondary-color > .btn:active, .btn-primary:active,
 .btn-primary:active, .btn-success:active, .btn-info:active, .btn-warning:active, .btn-danger:active {
-  /* 8dp */ box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.2);  
+  /* 8dp */ box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.2);
   top: -1px;
 }
 
@@ -661,7 +661,7 @@ input.anvil-component, textarea.anvil-component, .anvil-component select, .anvil
   border-radius: 0;
   background-color: transparent;
   color: rgba(0,0,0,0.87);
-  
+
   box-shadow: none;
 }
 
@@ -690,11 +690,11 @@ textarea.anvil-component {
 }
 
 .anvil-dropdown select.form-control {
-  
+
   -webkit-appearance: none;
   -moz-appearance: none;
   padding: 8px 2em 4px 0;
-  
+
   /* ew ew ew - select elements are weird and don't obey line-height, so we just
      set the height explicitly. Ugh. */
   height: calc(1.5em + 13px); /* 8px + 4px padding + 1px border = 13px */
@@ -794,7 +794,7 @@ textarea.anvil-component[disabled] {
   font-size: 16px;
 }
 
-/* Shadow values taken from 
+/* Shadow values taken from
 https://stackoverflow.com/questions/30533055/calculating-shadow-values-for-all-material-design-elevations
 */
 

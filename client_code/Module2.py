@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 from operator import attrgetter
 
 import anvil
@@ -70,9 +73,7 @@ class DataModule(AnvilTabulatorModule):
         self.mod.subscribe("row-data-retrieve", self.transform_row)
 
     def data_loading(self, data, params, config, silent):
-        print(
-            "data-loading", data, params, config, silent, sep="\n", end="\n\n"
-        )
+        print("data-loading", data, params, config, silent, sep="\n", end="\n\n")
         return True
 
     def data_params(self, data, config, silent, prev):

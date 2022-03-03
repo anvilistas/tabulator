@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 from anvil.js.window import RegExp, String, window
 
 _RE_SNAKE = RegExp("_[a-z]", "g")

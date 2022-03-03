@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 from anvil import *
 
 from ._anvil_designer import Form2Template

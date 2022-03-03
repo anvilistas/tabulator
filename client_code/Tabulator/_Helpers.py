@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 from anvil.js.window import Tabulator, jQuery, window
 
 temp_scroll_top = None

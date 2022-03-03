@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 from anvil import Component
 from anvil.js import get_dom_node
 
@@ -56,14 +59,13 @@ class AbstractCallableWrapper(AbstractModule):
 
     @staticmethod
     def wrap(f):
-        raise NotImplemented
+        raise NotImplementedError
 
 
 @tabulator_module("formatterWrapper", moduleInitOrder=1)
 class FormatterWrapper(AbstractCallableWrapper):
     options = [
-        "formatter" + suffix
-        for suffix in ("", "Print", "Clipboard", "HtmlOutput")
+        "formatter" + suffix for suffix in ("", "Print", "Clipboard", "HtmlOutput")
     ]
 
     @staticmethod

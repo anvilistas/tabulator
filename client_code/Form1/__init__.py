@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 from datetime import date
 
 from anvil import *
@@ -7,7 +10,6 @@ from ._anvil_designer import Form1Template
 
 
 def c(cell):
-    debugger
     print("huh")
 
 

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 from anvil import Component
 from anvil.js import get_dom_node
 
@@ -57,9 +60,7 @@ def _clean_formatter(self, formatter):
         def loadComponentCell(cell, formatterParams, onRendered):
             formatterParams = formatterParams or {}
             if is_template:
-                component = formatter(
-                    item={**cell.getData()}, **formatterParams
-                )
+                component = formatter(item={**cell.getData()}, **formatterParams)
             else:
                 component = formatter(**formatterParams)
             self.add_component(component)  # make sure we have a parent
@@ -91,9 +92,9 @@ def setup_editor_component(component, cancel, onRendered):
     def blur_cancel(e):
         # hack for datepicker
         relatedTarget = getattr(e, "relatedTarget", None)
-        if not e.target.parentElement.classList.contains(
-            "anvil-datepicker"
-        ) or (relatedTarget and relatedTarget.tagName != "SELECT"):
+        if not e.target.parentElement.classList.contains("anvil-datepicker") or (
+            relatedTarget and relatedTarget.tagName != "SELECT"
+        ):
             if closed:
                 return
             closed["x"] = True
@@ -131,6 +132,7 @@ def _clean_editor(self, editor):
     elif isinstance(editor, type) and issubclass(editor, Component):
         is_template = editor.__base__.__name__.endswith("Template")
         # then are we a Template?
+
         def loadEditor(cell, onRendered, success, cancel, editorParams):
             if is_template:
                 component = editor(item={**cell.getData()}, **editorParams)
@@ -169,12 +171,7 @@ def _clean_sorter(self, sorter):
         def sorterWrapper(a, b, aRow, bRow, column, asc, sorterParams):
             sorterParams = sorterParams or {}
             return sorter(
-                a,
-                b,
-                aRow.getData(),
-                bRow.getData(),
-                asc == "asc",
-                **sorterParams
+                a, b, aRow.getData(), bRow.getData(), asc == "asc", **sorterParams
             )
 
         return sorterWrapper
