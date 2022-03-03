@@ -27,6 +27,7 @@ columns = [
         "editor": "date",
         "cellEditCancelled": c,
     },
+    {'title': 'FOO', 'width': 40}
 ]
 
 tabledata = [
@@ -62,17 +63,18 @@ class Form1(Form1Template):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
-        self.tabulator5_1.data = tabledata
-        self.tabulator5_1.columns = columns
-        self.tabulator5_1.column_defaults = {"resizable": False}
-        self.tabulator5_1.define(pagination_size_selector = [1, 2, 5, 10])
+        self.tabulator.data = tabledata
+        self.tabulator.columns = columns
+        self.tabulator.column_defaults = {"resizable": False}
+        self.tabulator.options.update(selectable = "highlight",
+                                         pagination_size_selector = [1, 2, 5, 10])
 
         # Any code you write here will run when the form opens.
 
-    def tabulator5_1_row_click(self, **event_args):
+    def tabulator_row_click(self, **event_args):
         print("click", event_args)
 
-    def tabulator5_1_cell_click(self, **event_args):
+    def tabulator_cell_click(self, **event_args):
         print("cell click", event_args)
 
     def form_refreshing_data_bindings(self, **event_args):
@@ -83,18 +85,22 @@ class Form1(Form1Template):
         """This method is called when the HTML panel is shown on the screen"""
         from time import sleep
         sleep(2)
-        print(self.tabulator5_1.columns)
+        print(self.tabulator.columns)
 
     def button_1_click(self, **event_args):
         """This method is called when the button is clicked"""
-        r = self.tabulator5_1.add_data({
-            "id": randint(10, 10000000),
-            "name": "Me My",
-            "age": "190",
-            "col": "blue",
-            "dob": date(1988, 8, 1),
-        }, True)
-        print(r)
+        if self.tabulator.get_filters():
+            self.tabulator.clear_filter()
+        else:
+            self.tabulator.set_filter(lambda data: data["col"] == "blue")
+#         r = self.tabulator.add_data({
+#             "id": randint(10, 10000000),
+#             "name": "Me My",
+#             "age": "190",
+#             "col": "blue",
+#             "dob": date(1988, 8, 1),
+#         }, True)
+#         print(r)
 
 
 

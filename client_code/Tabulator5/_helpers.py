@@ -9,7 +9,7 @@ def _toCamel(s):
 def _camelKeys(d):
     return {_toCamel(key): val for key, val in d.items()}
 
-def _merge_from_default(default, properties, **overrides):
+def _merge(default, properties, **overrides):
     merged = overrides
     for key, val in default.items():
         merged[key] = properties.get(key, val)

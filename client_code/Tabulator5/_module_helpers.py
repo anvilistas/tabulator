@@ -1,5 +1,5 @@
 from anvil.js.window import Function as _Function
-from .js_tabulator import Tabulator, Module
+from ._js_tabulator import Tabulator, Module
 
 _body = """
 class CustomModule extends Module {

@@ -89,7 +89,8 @@ const findFilter = FilterModule.prototype.findFilter;
 
 FilterModule.prototype.findFilter = function(filter) {
     if (typeof filter.field === 'function') {
-        Object.defineProperty(filter, "func", {value: wrapper(filer.field, filter.type)});
+        const wrapped = wrapper(filter.field, filter.type);
+        Object.defineProperty(filter, "func", {get: () => wrapped, set: () => true });
     }
     return findFilter.call(this, filter);
 }

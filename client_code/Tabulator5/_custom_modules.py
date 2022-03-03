@@ -1,6 +1,6 @@
 from anvil import Component
 from anvil.js import get_dom_node
-from .module_helpers import AbstractModule, tabulator_module
+from ._module_helpers import AbstractModule, tabulator_module
 
 @tabulator_module("componentFormatter")
 class ComponentFormatter(AbstractModule):
@@ -107,7 +107,6 @@ def setup_editor(component, cell, onRendered, success, cancel):
         component.visible = None
 
     el = get_dom_node(component)
-    el.style.padding = "4px"
     el.addEventListener("blur", blur_cancel, True)
 
     onRendered(set_focus)
@@ -144,3 +143,4 @@ class EditorWrapper(AbstractCallableWrapper):
         return editor_wrapper
 
     
+custom_modules = [cls.Module for cls in (ComponentFormatter, EditorWrapper, FormatterWrapper, SorterWrapper)]
