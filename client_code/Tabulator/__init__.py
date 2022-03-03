@@ -66,9 +66,9 @@ class Tabulator(TabulatorTemplate):
 
     @classmethod
     def _setup(cls):
-        _inject_theme(cls.theme)
         if cls._registered:
             return
+        _inject_theme(cls.theme)
         cls.register_module(cls.modules)
         cls.register_module(custom_modules)
         _datetime_overrides.init_overrides()
