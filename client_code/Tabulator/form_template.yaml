@@ -37,6 +37,10 @@ events:
   description: when a cell is tapped on a mobile device
   parameters:
   - {name: cell, description: the tabulator cell object}
+- name: cell_edited
+  description: when a cell is edited
+  parameters:
+  - {name: cell, description: the tabulator cell object}
 - name: row_selected
   description: when a row is selected
   parameters:
