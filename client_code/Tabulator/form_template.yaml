@@ -45,7 +45,7 @@ events:
   description: when a row is selected
   parameters:
   - {name: row, description: the tabulator row object}
-- name: row_selection_change
+- name: row_selection_changed
   parameters:
   - {name: rows}
   - {name: data}
