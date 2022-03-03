@@ -11,8 +11,8 @@ from ._defaults import (
     _default_modules,
     _default_options,
     _default_props,
-    _default_theme,
     _default_table_options,
+    _default_theme,
     _event_call_signatures,
     _methods,
 )
@@ -117,8 +117,10 @@ class Tabulator(TabulatorTemplate):
             raise AttributeError(attr)
         attr = _toCamel(attr)
         if self._t is None:
+
             def queued_call(*args, **kws):
                 self._queued.append([attr, args, kws])
+
             return queued_call
         return getattr(self._t, attr)
 
