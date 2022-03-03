@@ -64,12 +64,12 @@ class Tabulator5(Tabulator5Template):
 
     @classmethod
     def _setup(cls):
+        _inject_theme(cls.theme)
         if cls._registered:
             return
         cls.register_module(cls.modules)
         cls.register_module(custom_modules)
         _datetime_overrides.init_overrides()
-        _inject_theme()
         _ignore_resize_observer_error()
         for key, val in cls.default_options.items():
             _Tabulator.defaultOptions[key] = val

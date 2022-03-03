@@ -75,7 +75,8 @@ tabledata = [
 ]
 
 from random import randint
-
+from ..Tabulator5 import Tabulator5
+Tabulator5.theme = "modern"
 
 class Form1(Form1Template):
     def __init__(self, **properties):

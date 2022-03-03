@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2022 Stu Cork
 
-from anvil.js.window import RegExp, String, document, window
+import anvil.js
+from anvil.js.window import RegExp, String, document, window, Promise
 
 from ._js_tabulator import TabulatorModule
 
@@ -70,27 +71,36 @@ def _options_property(key, getMethod=None, setMethod=None):
 
 
 _themes = {
-    "standard",  # make this empty string
+    "standard", 
     "simple",
     "midnight",
+    "modern",
     "bootstrap3",
 }
 
 
 def _inject_theme(theme):
-    link = document.createElement("link")
-    if theme in _themes:
-        theme = "_" + theme if theme != "standard" else ""
-        theme = f"https://cdn.skypack.dev/tabulator-tables@5.1.2/dist/css/tabulator{theme}.min.css"
-    link.href = theme
-    link.rel = "stylesheet"
-    document.body.appendChild(link)
     style = document.createElement("style")
     style.textContent = """
     .tabulator-cell .column-panel, .tabulator-cell input {margin: 0 !important;}
     .tabulator-cell .form-control {padding-top: 0 !important;}
     """
     document.body.appendChild(style)
+    if not theme:
+        return
+    link = document.createElement("link")
+    if theme in _themes:
+        theme = "_" + theme if theme != "standard" else ""
+        theme = f"https://cdn.skypack.dev/tabulator-tables@5.1.2/dist/css/tabulator{theme}.min.css"
+    link.href = theme
+    link.rel = "stylesheet"
+    def do_wait(res, rej):
+        link.onload = res
+        link.onerror = lambda e: rej(Exception(f"{theme} was not loaded"))
+    document.body.appendChild(link)
+    p = Promise(do_wait)
+    anvil.js.await_promise(p)
+
 
 
 def _to_module(modname):

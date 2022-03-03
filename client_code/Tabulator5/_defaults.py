@@ -51,7 +51,7 @@ _default_modules = {
 _default_options = {"layout": "fitColumns", "selectable": False}
 
 
-_default_theme = "bootstrap-3"
+_default_theme = "bootstrap3"
 
 _methods = (
     "on",
