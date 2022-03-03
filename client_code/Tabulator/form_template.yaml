@@ -67,9 +67,12 @@ container:
   properties: {tooltip: '', background: '', foreground: '', border: '', visible: true,
     role: null, html: "<div class='placeholder-table'></div>\n\n<script type=\"module\"\
       >\nimport {TabulatorFull as Tabulator} from \"https://cdn.skypack.dev/tabulator-tables@5.1.2\"\
-      ;\n\n$('.placeholder-table').each(function() {\n    new Tabulator(this, {\n\
-      \          autoColumns: true,\n          layout:\"fitColumns\",\n          pagination:\
-      \ true,\n          paginationSize:2,\n          data: new Array(6).fill({columnA:'columnA',\
+      ;\n\nif (!window.anvilTabulatorLoaded) {\n  const l = document.createElement(\"\
+      link\");\n  l.href = \"https://cdn.skypack.dev/tabulator-tables@5.1.2/dist/css/tabulator_bootstrap3.min.css\"\
+      ;\n  l.rel = \"stylesheet\";\n  document.body.appendChild(l);\n  window.anvilTabulatorLoaded\
+      \ = true;\n}\n\n$('.placeholder-table').each(function() {\n    new Tabulator(this,\
+      \ {\n          autoColumns: true,\n          layout:\"fitColumns\",\n      \
+      \    pagination: true,\n          paginationSize:2,\n          data: new Array(6).fill({columnA:'columnA',\
       \ columnB:'columnB', columnC:'columnC', columnD:'columnD'})\n    });\n});\n\
       </script>\n\n<style>\n.tabulator-row .tabulator-cell {\n    font-style: italic;\n\
       }\n</style>\n\n"}
