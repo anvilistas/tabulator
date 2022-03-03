@@ -3,13 +3,12 @@ services:
 - source: /runtime/services/tables.yml
   client_config: {}
   server_config: {}
-startup: {type: form, module: Tabulator}
-package_name: Tabulator5
+startup: {type: form, module: Tabulator.__StartupForm}
+package_name: Tabulator
 allow_embedding: false
 name: Tabulator
 runtime_options: {version: 2, client_version: '3', server_version: python3-full}
 metadata: {}
-startup_form: null
 native_deps: {head_html: "<link href=\"https://unpkg.com/tabulator-tables@4.6.3/dist/css/bootstrap/tabulator_bootstrap.min.css\"\
     \ rel=\"stylesheet\">\n<script type=\"text/javascript\" src=\"https://unpkg.com/tabulator-tables@4.6.3/dist/js/tabulator.min.js\"\
     ></script>\n\n<script>\n// ignore harmless errors that will cause Anvil popups\n\
