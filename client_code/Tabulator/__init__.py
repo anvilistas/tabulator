@@ -12,6 +12,7 @@ from ._defaults import (
     _default_options,
     _default_props,
     _default_theme,
+    _default_table_options,
     _event_call_signatures,
     _methods,
 )
@@ -41,7 +42,7 @@ row_selection_column = {
 class Tabulator(TabulatorTemplate):
     theme = _default_theme
     modules = _default_modules
-    default_options = _default_options
+    default_options = _default_table_options
     _registered = False
 
     def __new__(cls, **properties):

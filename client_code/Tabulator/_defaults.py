@@ -48,7 +48,7 @@ _default_modules = {
     "Sort",
 }
 
-_default_options = {"layout": "fitColumns", "selectable": False}
+_default_table_options = {"layout": "fitColumns", "selectable": False}
 
 
 _default_theme = "bootstrap3"
