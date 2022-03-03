@@ -2,16 +2,8 @@ unique_ids:
   forms:
     Tabulator: QVEF2I7ACU32S3FQZZAVWRVYJ2F76DNF
     Tabulator.__StartupForm: DBYX6M2F2RVHN3FP2Z53JBLKKZYEGX2R
-    Tabulator5: '1645771241283442623763029.2611'
   modules:
-    Tabulator5._custom_modules: '1645869750133848540968852.1912'
-    Tabulator5._js_tabulator: '1645869744118987541091556.5768'
-    Tabulator5._data_loader: '1645869752284952117359960.9108'
     Tabulator._CleanCols: SSWGHIACH3VUEVYQ57FYI2DGRAXWP23O
     Tabulator._Helpers: FLYABIDNXG2OADML2KNLPAAWJAM7KWK4
-    Tabulator5._module_helpers: '1645869754931273445775973.5429'
-    Tabulator5._datetime_overrides: '1646037334662331275837685.1208'
-    Tabulator5._helpers: '164605145270527440545497.389614'
-    Tabulator5._defaults: LBWRM47M4HLBIW2BRPUYQABIIVFDKZAO
   server_modules: {}
   assets: {}
