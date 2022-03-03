@@ -46,7 +46,7 @@ class Tabulator(TabulatorTemplate):
 
     def __new__(cls, **properties):
         cls._setup()
-        return Tabulator.__new__(cls, **properties)
+        return TabulatorTemplate.__new__(cls, **properties)
 
     def __init__(self, **properties):
         self._t = None
