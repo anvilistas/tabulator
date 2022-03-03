@@ -1,5 +1,8 @@
-from anvil.js import get_dom_node
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 from anvil import Component
+from anvil.js import get_dom_node
 
 """
 allow various types of formatters - Components, or wrapped functions
@@ -39,7 +42,7 @@ def _clean_cols(self, cols):
                 "headerSort": False,
                 "cssClass": "title-center",
                 "cellClick": lambda e, cell: cell.getRow().toggleSelect(),
-                "frozen": bool(cols) and cols[0].get("frozen", False)
+                "frozen": bool(cols) and cols[0].get("frozen", False),
             }
         ] + cols
 
@@ -127,6 +130,7 @@ def _clean_editor(self, editor):
     elif isinstance(editor, type) and issubclass(editor, Component):
         is_template = editor.__base__.__name__.endswith("Template")
         # then are we a Template?
+
         def loadEditor(cell, onRendered, success, cancel, editorParams):
             if is_template:
                 component = editor(item={**cell.getData()}, **editorParams)

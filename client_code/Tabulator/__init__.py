@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Stu Cork
+
 """
     Tabulator for Anvil
     an anvil wrapper for tabulator: https://github.com/olifolkerd/tabulator
@@ -12,14 +15,13 @@
     Source code published at https://github.com/s-cork/Tabulator
 """
 
-from ._anvil_designer import TabulatorTemplate
-from anvil.js.window import Tabulator as _Tabulator
-from anvil.js import get_dom_node as _get_dom_node
-
-from ._Helpers import maintain_scroll_position
-from ._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
-
 from anvil import HtmlTemplate as _HtmlTemplate
+from anvil.js import get_dom_node as _get_dom_node
+from anvil.js.window import Tabulator as _Tabulator
+
+from ._anvil_designer import TabulatorTemplate
+from ._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
+from ._Helpers import maintain_scroll_position
 
 _default_props = {
     "auto_columns": None,
@@ -154,13 +156,19 @@ class Tabulator(TabulatorTemplate):
         """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'"""
         if callable(field):
             filter_func = field
-            field = lambda data, params: filter_func(dict(data), **params)
+
+            def field(data, params):
+                return filter_func(dict(data), **params)
+
         self._table.setFilter(field, type, value)
 
     def add_filter(self, field, type=None, value=None):
         if callable(field):
             filter_func = field
-            field = lambda data, params: filter_func(dict(data), **params)
+
+            def field(data, params):
+                return filter_func(dict(data), **params)
+
         self._table.addFilter(field, type, value)
 
     def remove_filter(self, field=None, type=None, value=None):
@@ -204,7 +212,9 @@ class Tabulator(TabulatorTemplate):
 
     def row_selection_change(self, e, rows):
         return self.raise_event(
-            "row_selection_change", rows=[dict(row.getData()) for row in rows], _rows=rows
+            "row_selection_change",
+            rows=[dict(row.getData()) for row in rows],
+            _rows=rows,
         )
 
     def cell_click(self, e, cell):
