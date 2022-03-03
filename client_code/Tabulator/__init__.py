@@ -14,18 +14,12 @@
 
     Source code published at https://github.com/s-cork/Tabulator
 """
-# from anvil.js.window import Tabulator as _Tabulator
-from anvil.js import get_dom_node as _get_dom_node
-from anvil.js import import_from as _import_from
-from anvil.js.window import window
-
-from ._anvil_designer import TabulatorTemplate
-
-_TabulatorModule = _import_from("https://cdn.skypack.dev/tabulator-tables@5.0.4")
-window.Tabulator = _Tabulator = _TabulatorModule.TabulatorFull
 
 from anvil import HtmlTemplate as _HtmlTemplate
+from anvil.js import get_dom_node as _get_dom_node
+from anvil.js.window import Tabulator as _Tabulator
 
+from ._anvil_designer import TabulatorTemplate
 from ._CleanCols import _clean_cols, _clean_editor, _clean_formatter, _clean_sorter
 from ._Helpers import maintain_scroll_position
 
@@ -90,10 +84,8 @@ class Tabulator(TabulatorTemplate):
                 "rowFormatter": self.row_formatter,
             },
         )
-        t = self._table
-        t.modules.layout.initialize()
-        self._columns = []
-        #         self.columns = properties.get("columns", [])
+
+        self.columns = properties.get("columns", [])
         self._table_init = True
 
     # helpers
@@ -206,8 +198,7 @@ class Tabulator(TabulatorTemplate):
     def clear_sort(self):
         self._table.clearSort()
         # reset the table data
-        data = self._table.getData()
-        self._table.setData(data)
+        self._table.setData(self._table.getData())
 
     def set_group_by(self, field):
         self._table.setGroupBy(field)
@@ -221,7 +212,9 @@ class Tabulator(TabulatorTemplate):
 
     def row_selection_change(self, e, rows):
         return self.raise_event(
-            "row_selection_change", rows=[dict(row.getData()) for row in rows], _rows=rows
+            "row_selection_change",
+            rows=[dict(row.getData()) for row in rows],
+            _rows=rows,
         )
 
     def cell_click(self, e, cell):
@@ -277,7 +270,7 @@ class Tabulator(TabulatorTemplate):
 
     def form_show(self, **event_args):
         # redraw on show
-        #         self.redraw(full_render=not self._from_cache)
+        self.redraw(full_render=not self._from_cache)
         self._from_cache = True
 
     def get_data(self, active="all"):

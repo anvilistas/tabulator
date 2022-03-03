@@ -42,7 +42,7 @@ def _clean_cols(self, cols):
                 "headerSort": False,
                 "cssClass": "title-center",
                 "cellClick": lambda e, cell: cell.getRow().toggleSelect(),
-                "frozen": bool(cols) and cols[0].get("frozen", False)
+                "frozen": bool(cols) and cols[0].get("frozen", False),
             }
         ] + cols
 
@@ -115,8 +115,6 @@ def setup_editor_component(component, cancel, onRendered):
     component.set_event_handler("x-close-editor", close_editor)
 
     def set_focus(*args):
-        if component.visible is None:
-            component.visible = True
         to_focus = el.querySelector(":not(div)")
         to_focus = to_focus or el
         to_focus.focus()
