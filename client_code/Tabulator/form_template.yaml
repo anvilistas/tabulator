@@ -10,7 +10,7 @@ properties:
 - {name: spacing_above, type: string, default_value: small, group: layout, important: false}
 - {name: spacing_below, type: string, default_value: small, group: layout, important: false}
 - {name: visible, type: boolean, default_value: true, group: appearance, important: true}
-- {name: layout, type: string, default_value: fitColumns, group: columns, important: false,
+- {name: layout, type: string, default_value: '', group: columns, important: false,
   description: 'valid values include fitColumns, fitData, fitDataTable, fitDataStretch
     and fitDataFill. See tabulator docs for examples'}
 - {name: role, type: string, default_value: '', group: appearance, important: false}
