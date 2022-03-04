@@ -109,3 +109,18 @@ FilterModule.prototype.findFilter = function(filter) {
 }
 """,
 )(TabulatorModule.FilterModule, filter_wrapper)
+
+
+Function(
+    "FormatModule",
+    """
+const linkFormatter = FormatModule.formatters.link;
+function linkWrapper(cell, formatterParams, onRendered) {
+    if (formatterParams.url === "undefined") {
+        formattaerParms.url = "javascript:void(0)";
+    }
+    return linkFormatter.call(this, cell, formatterParams, onRendered);
+}
+FormatModule.formatters.link = linkWrapper;
+""",
+)(TabulatorModule.FormatModule)

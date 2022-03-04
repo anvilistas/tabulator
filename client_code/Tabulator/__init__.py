@@ -89,40 +89,33 @@ class Tabulator(TabulatorTemplate):
         self.raise_event("row_formatter", row=row)
 
     def _initialize(self):
-        options = _camelKeys(self._options)
+        options = _camelKeys(self._options) | _camelKeys(self.options)
         options["columns"] = [_camelKeys(defn) for defn in options["columns"]]
         options["columnDefaults"] = _camelKeys(options["columnDefaults"])
-        options.update(_camelKeys(self.options))
         data = options.pop("data")
 
         t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
-        for attr, args, kws in self._queued:
-            getattr(t, attr)(*args, **kws)
-        self._queued.clear()
-        # use setData - initiating data with anything other than list[dict] breaks tabulator
 
         def built():
+            # use setData - initiating data with anything other than list[dict] breaks tabulator
             t.setData(data)
             self._t = t
 
-        t.on("tableBuilt", built)
+        on = self.on = t.on
+        on("tableBuilt", built)
+        for event, handler in self._queued:
+            on(event, handler)
+        self._queued.clear()
 
     def _show(self, **event_args):
-        if self._t is None:
-            self._initialize()
+        self.remove_event_handler("show", self._show)
+        self._initialize()
 
     def __getattr__(self, attr):
-        if attr[0] == "_":
-            raise AttributeError(attr)
-        attr = _toCamel(attr)
         if self._t is None:
-
-            def queued_call(*args, **kws):
-                self._queued.append([attr, args, kws])
-
-            return queued_call
-        return getattr(self._t, attr)
+            raise AttributeError(attr)
+        return getattr(self._t, _toCamel(attr))
 
     def add_event_handler(self, event, handler):
         super().add_event_handler(event, handler)
@@ -137,11 +130,14 @@ class Tabulator(TabulatorTemplate):
         self._handlers[(event, handler)] = raiser
         self.on(_toCamel(event), raiser)
 
-    set_event_handler = add_event_handler
+    def set_event_handler(self, event, handler):
+        self.remove_event_handler(event)
+        self.add_event_handler(event, handler)
 
-    def remove_event_handler(self, event, handler):
+    def remove_event_handler(self, event, handler=None):
         super().remove_event_handler(event, handler)
-        self.off(_toCamel(event), self._handlers.pop((event, handler), None))
+        if self._t is not None:
+            self.off(_toCamel(event), self._handlers.pop((event, handler), None))
 
     data = _options_property("data", "getData", "setData")
     columns = _options_property("columns", None, "setColumns")
@@ -159,10 +155,12 @@ class Tabulator(TabulatorTemplate):
     spacing_above = _spacing_property("above")
     spacing_below = _spacing_property("below")
 
-    #### for the autocomplete
-    def on(self, tabulator_event, handler):
-        """Add an event handler to any tablulator event"""
+    # we queue event handlers and set them on initialization
+    def on(self, event, handler):
+        """Add an event handler to any tablulator event, check the argument defintion at tabulator docs"""
+        self._queued.append([_toCamel(event), handler])
 
+    #### for the autocomplete - removed below
     def add_row(self, row, top=True, pos=None):
         """add a row - ensure the row has an index"""
 

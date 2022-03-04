@@ -62,6 +62,7 @@ events:
   description: when the row is rendered - manipulate the tabulator row object
   parameters:
   - {name: row, description: the tabulator row object}
+- {name: table_built, description: when the tabulator instance has been built - it is safe to call tabulator methods}
 - {name: show, description: when the tabulator is shown}
 - {name: hide, description: when the tabulator is hidden}
 custom_component: true

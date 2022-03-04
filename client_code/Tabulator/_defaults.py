@@ -11,6 +11,7 @@ _event_call_signatures = {
     "row_selected": ("row",),
     "row_deselected": ("row",),
     "row_selection_changed": ("data", "rows"),
+    "table_built": (),
 }
 
 _default_options = {
@@ -54,7 +55,6 @@ _default_table_options = {"layout": "fitColumns", "selectable": False}
 _default_theme = "bootstrap3"
 
 _methods = (
-    "on",
     "add_row",
     "delete_row",
     "update_row",
