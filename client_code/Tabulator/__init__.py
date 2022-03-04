@@ -30,12 +30,13 @@ from ._js_tabulator import Tabulator as _Tabulator
 
 row_selection_column = {
     "formatter": "rowSelection",
-    "titleFormatter": "rowSelection",
+    "title_formatter": "rowSelection",
+    "title_formatter_params": {"rowRange": "visible"},
     "width": 40,
-    "hozAlign": "center",
-    "headerHozAlign": "center",
-    "headerSort": False,
-    "cellClick": lambda e, cell: cell.getRow().toggleSelect(),
+    "hoz_align": "center",
+    "header_hoz_align": "center",
+    "header_sort": False,
+    "cell_click": lambda e, cell: cell.getRow().toggleSelect(),
 }
 
 
@@ -98,7 +99,8 @@ class Tabulator(TabulatorTemplate):
         t.anvil_form = self
 
         def built():
-            # use setData - initiating data with anything other than list[dict] breaks tabulator
+            # use setData - initiating data with anything other than
+            # list[dict] or str breaks tabulator
             t.setData(data)
             self._t = t
 
