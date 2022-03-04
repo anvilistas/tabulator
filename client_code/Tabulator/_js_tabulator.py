@@ -116,8 +116,8 @@ Function(
     """
 const linkFormatter = FormatModule.formatters.link;
 function linkWrapper(cell, formatterParams, onRendered) {
-    if (formatterParams.url === "undefined") {
-        formattaerParms.url = "javascript:void(0)";
+    if (formatterParams.url === undefined) {
+        formatterParams.url = "javascript:void(0)";
     }
     return linkFormatter.call(this, cell, formatterParams, onRendered);
 }
