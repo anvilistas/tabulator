@@ -79,7 +79,7 @@ def dt_editor(pick_time):
         dom_node.style.justifyContent = "space-between"
         dom_node.style.height = "100%"
         dom_node.style.width = "100%"
-        dom_node.style.padding = "0 16px"
+        dom_node.style.padding = "0 4px"
 
         def show(**event_args):
             pass

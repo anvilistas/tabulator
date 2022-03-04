@@ -3,6 +3,7 @@
 
 from anvil import Component
 from anvil.js import get_dom_node
+from anvil.js.window import document
 
 from ._module_helpers import AbstractModule, tabulator_module
 
@@ -106,8 +107,12 @@ def setup_editor(component, cell, onRendered, success, cancel):
         rt = getattr(e, "relatedTarget", None)
         if rt is None or rt.closest(".daterangepicker") is None:
             close_editor()
-
-    el = get_dom_node(component)
+    
+    el = document.createElement("div")
+    el.style.height = "100%"
+    el.style.display = "flex"
+    el.style.alignItems = "center"
+    el.append(get_dom_node(component))
     to_focus = el.querySelector(":not(div)") or el
 
     def set_focus(*args):
