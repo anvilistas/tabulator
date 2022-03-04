@@ -107,7 +107,7 @@ def setup_editor(component, cell, onRendered, success, cancel):
         rt = getattr(e, "relatedTarget", None)
         if rt is None or rt.closest(".daterangepicker") is None:
             close_editor()
-    
+
     el = document.createElement("div")
     el.style.height = "100%"
     el.style.display = "flex"
