@@ -259,6 +259,24 @@ self.tabulator.columns = [
 If you previously used the `'date'` or `'datetime'` formatter, previously these would have worked for either date or datetime objects.
 Now the cell value must be a date object if using the `'date'` formatter, likewise with datetime.
 
+date and datetime `formatter_params` used to support `outputFormat` as a format like `"MM/DD/YYYY"`.
+This is no longer supported. Instead the format should match what you use for `strftime()`.
+The `outputFormat` param can be replaced by just `format`
+
+e.g.
+```python
+    {
+        "title": "Date Of Birth",
+        "field": "dob",
+        "editor": "date",
+        "align": "center",
+        "sorter": "date",
+        "formatter": "date",
+        "formatter_params": {"format": "%d/%m/%Y"},
+    },
+
+```
+
 ### Events
 
 The `row_selection_change` event was changed to `row_selection_changed`.
