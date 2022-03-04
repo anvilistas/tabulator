@@ -104,10 +104,9 @@ class Tabulator(TabulatorTemplate):
             t.setData(data)
             self._t = t
 
-        on = self.on = t.on
-        on("tableBuilt", built)
-        for event, handler in self._queued:
-            on(event, handler)
+        t.on("tableBuilt", built)
+        for meth, event, handler in self._queued:
+            t[meth](event, handler)
         self._queued.clear()
 
     def _show(self, **event_args):
@@ -130,7 +129,7 @@ class Tabulator(TabulatorTemplate):
             return self.raise_event(event, **kws)
 
         self._handlers[(event, handler)] = raiser
-        self.on(_toCamel(event), raiser)
+        self.on(event, raiser)
 
     def set_event_handler(self, event, handler):
         self.remove_event_handler(event)
@@ -138,8 +137,9 @@ class Tabulator(TabulatorTemplate):
 
     def remove_event_handler(self, event, handler=None):
         super().remove_event_handler(event, handler)
-        if self._t is not None:
-            self.off(_toCamel(event), self._handlers.pop((event, handler), None))
+        if event in ("show", "hide") or event.startswith("x-"):
+            return
+        self.off(event, self._handlers.pop((event, handler), None))
 
     data = _options_property("data", "getData", "setData")
     columns = _options_property("columns", None, "setColumns")
@@ -157,10 +157,20 @@ class Tabulator(TabulatorTemplate):
     spacing_above = _spacing_property("above")
     spacing_below = _spacing_property("below")
 
+    def _queue_or_call(self, meth, event, handler):
+        if self._t is None:
+            self._queued.append([meth, _toCamel(event), handler])
+        else:
+            self._t[meth](_toCamel(event), handler)
+
     # we queue event handlers and set them on initialization
     def on(self, event, handler):
-        """Add an event handler to any tablulator event, check the argument defintion at tabulator docs"""
-        self._queued.append([_toCamel(event), handler])
+        """Add an event handler to any tablulator event (can be snake case), check the call signature from the tabulator docs"""
+        self._queue_or_call("on", event, handler)
+
+    def off(self, event, handler=None):
+        """Remove an event handler to any tablulator event (can be snake case)"""
+        self._queue_or_call("off", event, handler)
 
     #### for the autocomplete - removed below
     def add_row(self, row, top=True, pos=None):
