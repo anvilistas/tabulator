@@ -107,18 +107,19 @@ def setup_editor(component, cell, onRendered, success, cancel):
         if rt is None or rt.closest(".daterangepicker") is None:
             close_editor()
 
+    el = get_dom_node(component)
+    to_focus = el.querySelector(":not(div)") or el
+
     def set_focus(*args):
         if component.visible is None:
             component.visible = True
-        to_focus = el.querySelector(":not(div)") or el
         to_focus.focus()
 
     component.set_event_handler("x-close-editor", close_editor)
     if component.visible:
         component.visible = None
 
-    el = get_dom_node(component)
-    el.addEventListener("blur", blur_cancel, True)
+    to_focus.addEventListener("blur", blur_cancel)
 
     onRendered(set_focus)
     return el
