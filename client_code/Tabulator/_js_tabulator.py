@@ -115,11 +115,12 @@ Function(
     "FormatModule",
     """
 const linkFormatter = FormatModule.formatters.link;
-function linkWrapper(cell, formatterParams, onRendered) {
-    if (formatterParams.url === undefined) {
-        formatterParams.url = "javascript:void(0)";
+function linkWrapper(cell, params, onRendered) {
+    const {url, urlPrefix, urlField} = params;
+    if (!url && !urlPrefix && !urlField) {
+        params.url = "javascript:void(0)";
     }
-    return linkFormatter.call(this, cell, formatterParams, onRendered);
+    return linkFormatter.call(this, cell, params, onRendered);
 }
 FormatModule.formatters.link = linkWrapper;
 """,
