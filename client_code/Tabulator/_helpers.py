@@ -94,12 +94,11 @@ def _inject_theme(theme):
         theme = f"https://cdn.jsdelivr.net/npm/tabulator-tables@5.1.3/dist/css/tabulator{theme}.min.css"
     link.href = theme
     link.rel = "stylesheet"
-#     link.integrity="sha256-X+nZ8IG0y1s7r4idlK2src96HsOSClbD7VZTMPpXo9s="
     link.crossorigin="anonymous"
 
     def do_wait(res, rej):
         link.onload = res
-        link.onerror = rej
+        link.onerror = lambda e: print(f"ERROR: Failed to load theme {theme}")
 
     document.body.appendChild(link)
     p = Promise(do_wait)
