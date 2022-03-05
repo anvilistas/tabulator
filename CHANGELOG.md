@@ -5,9 +5,9 @@
 ### `options`
 
 Anvil only includes a handful of options to customize in the designer.
-There are so many options available that it would be a nightmare to put them all in the designer.
+There are  many options available, JS Tabulator and it would be a nightmare to put them all in the designer.
 
-If you find options in the Javascript Tabulator docs you can add them (as camel or snake case) using the options property
+If you find options in the JS Tabulator docs you can add them (as camel or snake case) using the options property
 
 ```python
 self.tabulator.options["langs"] = {
@@ -33,11 +33,11 @@ self.tabulator.options = {
 }
 
 ```
-But to have any effect it must be set before the form show event
+But to have any effect it must be set before the form show event fires.
 
 ### `theme`
 
-Tabulator ships with various themes, or you can write your own
+Tabulator ships with various themes, or you can write your own (see [JS Tabulator Docs](http://tabulator.info/docs/5.1/theme)).
 The default theme is `"bootstrap3"` since Anvil ships with bootstrap 3.
 
 You can change the theme:
@@ -63,7 +63,7 @@ Tabulator.theme = None
 Tabulator 5.x has moved to a module design.
 Features can be enhanced/redacted by changing the Tabulator modules.
 
-See the full list of available Modules in the Javascript docs.
+See the full list of available Modules in the JS Tabulator docs.
 http://tabulator.info/docs/5.1/modules#modules
 
 Anvil Tabulator includes the following optional Modules
@@ -101,8 +101,8 @@ Unlike other Tabulator methods, this can be called before the `table_built` even
 
 There is also a `self.tabulator.off(event, handler=None)` method.
 
-You can find events in the Javascript Tabulator docs.
-Note that when using the `on` API the handler call signature must match the call signature from Javascript.
+You can find events in the JS Tabulator docs.
+Note that when using the `on` API the handler call signature should match the call signature from Javascript.
 
 http://tabulator.info/docs/5.1/events
 
@@ -164,12 +164,12 @@ The paramters keys must be camel case, e.g.
 
 ### `default_options`
 
-Tabulator has default options for various properties that can be defined using options.
+Tabulator has default options for various properties that can be defined using options property.
 These can be changed using:
 
 ```python
 from tabulator.Tabulator import Tabulator
-Tabulator.default_options = {"layout": "fitData", "selectable": True}
+Tabulator.default_options.update({"layout": "fitData", "selectable": True})
 ```
 
 This is most useful if you have multiple Tabulator components and don't want to repeatedly set options
@@ -191,14 +191,14 @@ self.tabulator.column_defaults = {"resizable": False}
 ### `table_built` event
 
 Use the `table_built` event to determine when you can start accessing methods on the tabulator instance.
-Things like `self.tabulator.set_sort(...)` can only be called after the tabulator instance is built.
+Things like `self.tabulator.set_sort(...)` can only be called after the tabulator instance has been built.
 
 
 ## Breaking changes
 
 We've moved from tabulator 4.6.x to tabulator 5.x
 That means that some column definitions may not work as before.
-If you've made a lot of use of the tabulator API for column definitions you should check they still work.
+If you've made heave use of the JS Tabulator API for column definitions you should check they still work.
 
 
 ### Package Name
@@ -223,15 +223,19 @@ The `tabulator_built` event will be called after the `form_show` event.
 
 ### Custom Sorter
 
-If you were defining a function as a sorter the call signature has changed
+If you were previously defining a function as a sorter the call signature has changed:
 
 ```python
-{"title": "Age", "field": "age", "sorter": lambda a,b **params: a - b}
+{"title": "Age", "field": "age", "sorter": lambda a, b, aRow, bRow, asc, **params: a - b}
+
+# becomes
+
+{"title": "Age", "field": "age", "sorter": lambda a, b, **params: a - b}
 ```
 
 ## Custom Formatters
 
-If you defined a function as a custom formatter the call signature has changed
+If you defined a function as a custom formatter the call signature has changed:
 
 ```python
 def image_formatter(row, **kws):
@@ -256,12 +260,12 @@ self.tabulator.columns = [
 
 ```
 
-If you previously used the `'date'` or `'datetime'` formatter, previously these would have worked for either date or datetime objects.
+If you previously used the `'date'` or `'datetime'` formatter, these would have worked for either date or datetime objects.
 Now the cell value must be a date object if using the `'date'` formatter, likewise with datetime.
 
-date and datetime `formatter_params` used to support `outputFormat` as a format like `"MM/DD/YYYY"`.
-This is no longer supported. Instead the format should match what you use for `strftime()`.
-The `outputFormat` param can be replaced by just `format`
+date and datetime `formatter_params` used to support an `outputFormat` like `"MM/DD/YYYY"`.
+This is no longer supported. Instead the format should match what you would use for `strftime()`.
+Note that the `outputFormat` param can be replaced by just `format`
 
 e.g.
 ```python
@@ -279,12 +283,13 @@ e.g.
 
 ### Events
 
-The `row_selection_change` event was changed to `row_selection_changed`.
+The `row_selection_change` event was renamed to `row_selection_changed`
+(since that's what it's called in JS Tabulator).
 If you made use of this event you should remove it from the designer view before making the switch.
 Once you've made the switch you can hook up the new event name.
-If you forget to do this. Switch back to `v1.0.0` remove the designer definition and then to `v2.0.0`.
+If you forget to do this, you can always switch back to `v1.0.0` remove it from the designer.
 
-The call signatures for events have now changed. The parameters now match those of js Tabulator.
+The call signatures for events have now changed. The parameters now match those of JS Tabulator.
 
 e.g.
 
@@ -323,9 +328,9 @@ You can also check the possible event_args by going to Tabulator.info and findin
 
 ### Methods
 Tabulator methods (the ones from the autocomplete) may previously have wrapped
-a javascript Tabulator method.
-Now calling a Tabulator method directly calls the underlying javascript method.
-This means keywords are no longer valid and you should look through the Tabulator.info docs
+a JS Tabulator method.
+Now calling any Anvil Tabulator method directly calls the underlying javascript method.
+This means keywords arguments are no longer supported and you should look through the Tabulator.info docs
 for the correct call signatures
 
 e.g. `add_sort` which previously used `ascending=True` now expects a `dir` argument to be either `"asc"` or `"desc"`
@@ -369,12 +374,12 @@ self.tabulator.options = {
 ```
 
 The reason for this change is that something like, `pagination_size_selector`, can also take a value of `True`.
-That can't be expressed in the designer.
+This can't easily be expressed in the designer view of a property.
 
 
 ### row_selectable
 
-If you made use of the `row_selectable` column with checkboxes. That feature has been removed.
+If you made use of the `row_selectable` column with checkboxes. That feature has been removed as a propert.
 You will now need to explicitly define the column in your column definition.
 
 ```python
