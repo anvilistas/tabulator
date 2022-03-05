@@ -73,13 +73,14 @@ def dt_editor(pick_time):
         properties["date"] = value
         dp = DatePicker(**properties)
         dom_node = get_dom_node(dp)
-        dom_node.firstElementChild.style.fontSize = "inherit"
-        dom_node.firstElementChild.style.padding = "0"
+        inputNode = dom_node.firstElementChild
+        inputNode.style.fontSize = "inherit"
+        inputNode.style.padding = "0"
         dom_node.style.display = "inline-flex"
         dom_node.style.justifyContent = "space-between"
         dom_node.style.height = "100%"
         dom_node.style.width = "100%"
-        dom_node.style.padding = "0 4px"
+        inputNode.nextSibling.style.bottom = "6px"
 
         def show(**event_args):
             pass

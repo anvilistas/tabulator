@@ -112,6 +112,7 @@ def setup_editor(component, cell, onRendered, success, cancel):
     el.style.height = "100%"
     el.style.display = "flex"
     el.style.alignItems = "center"
+    el.style.padding = "8px"
     el.append(get_dom_node(component))
     to_focus = el.querySelector(":not(div)") or el
 
