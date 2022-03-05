@@ -31,7 +31,8 @@ def _ignore_resize_observer_error_handler(e):
     # This covers both
     # - 'ResizeObserver loop limit exceeded', and
     # - 'ResizeObserver loop ocmpleted with undelivered notifications'
-    if "ResizeObserver loop" in e.get("message", ""):
+    msg = e.get("message", "")
+    if "ResizeObserver loop" in msg or "Script error." == msg:
         e.stopPropagation()
         e.stopImmediatePropagation()
 

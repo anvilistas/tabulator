@@ -2,6 +2,7 @@
 # Copyright (c) 2022 Stu Cork
 
 from anvil.js import import_from
+# from anvil.js.window import TabulatorModule
 TabulatorModule = import_from("https://cdn.skypack.dev/pin/tabulator-tables@v5.1.2-Od0AWBDAql7PzayHpzwZ/mode=imports,min/optimized/tabulator-tables.js")
 
 def __getattr__(attr):
@@ -64,7 +65,7 @@ support_snake = Function(
     """
 const RE_SNAKE = new RegExp("_[a-z]", "g")
 const to_camel = (s) => s.replace(RE_SNAKE, (m) => m[1].toUpperCase());
-const target = {sk$object: null, $isPyWrapped: false};
+const target = {sk$object: null, $isPyWrapped: false, $isSuspension: false};
 
 Object.setPrototypeOf(Component.prototype, new Proxy(target, {
     get(target, name, receiver) {
@@ -89,7 +90,7 @@ def filter_wrapper(f, params):
     def wrapped(data):
         return f(data, **params)
 
-    return wrapped
+    return report_exceptions(wrapped)
 
 Function(
     "FilterModule",

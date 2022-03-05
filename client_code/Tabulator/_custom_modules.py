@@ -2,8 +2,9 @@
 # Copyright (c) 2022 Stu Cork
 
 from anvil import Component
-from anvil.js import get_dom_node
+from anvil.js import get_dom_node, report_exceptions
 from anvil.js.window import document
+import anvil.js
 
 from ._module_helpers import AbstractModule, tabulator_module
 
@@ -72,7 +73,7 @@ class AbstractCallableWrapper(AbstractModule):
             f = definition.get(option)
             if f is None or not callable(f):
                 continue
-            definition[option] = self.wrap(f)
+            definition[option] = report_exceptions(self.wrap(f))
 
     @staticmethod
     def wrap(f):

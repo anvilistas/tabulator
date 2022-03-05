@@ -2,7 +2,7 @@
 # Copyright (c) 2022 Stu Cork
 
 from anvil import HtmlTemplate as _HtmlTemplate
-from anvil.js import get_dom_node as _get_dom_node
+from anvil.js import get_dom_node as _get_dom_node, report_exceptions as _report_exceptions
 
 from . import _datetime_overrides
 from ._anvil_designer import TabulatorTemplate
@@ -94,17 +94,14 @@ class Tabulator(TabulatorTemplate):
         options["columns"] = [_camelKeys(defn) for defn in options["columns"]]
         options["columnDefaults"] = _camelKeys(options["columnDefaults"])
         data = options.pop("data")
-        print("making")
         t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
 
         def built():
             # use setData - initiating data with anything other than
             # list[dict] or str breaks tabulator
-            print("data")
             t.setData(data)
             self._t = t
-            print("built")
 
         t.on("tableBuilt", built)
         for meth, event, handler in self._queued:
@@ -130,7 +127,6 @@ class Tabulator(TabulatorTemplate):
             kws = dict(zip(call_sig, args))
             return self.raise_event(event, **kws)
 
-        self._handlers[(event, handler)] = raiser
         self.on(event, raiser)
 
     def set_event_handler(self, event, handler):
@@ -141,7 +137,7 @@ class Tabulator(TabulatorTemplate):
         super().remove_event_handler(event, handler)
         if event in ("show", "hide") or event.startswith("x-"):
             return
-        self.off(event, self._handlers.pop((event, handler), None))
+        self.off(event, handler)
 
     data = _options_property("data", "getData", "setData")
     columns = _options_property("columns", None, "setColumns")
@@ -168,10 +164,14 @@ class Tabulator(TabulatorTemplate):
     # we queue event handlers and set them on initialization
     def on(self, event, handler):
         """Add an event handler to any tablulator event (can be snake case), check the call signature from the tabulator docs"""
-        self._queue_or_call("on", event, handler)
+        with_reporting = _report_exceptions(handler)
+        self._handlers[(event, handler)] = with_reporting
+        self._queue_or_call("on", event, with_reporting)
 
     def off(self, event, handler=None):
         """Remove an event handler to any tablulator event (can be snake case)"""
+        if handler is not None:
+            handler = self._handlers.pop((event, handler), handler)
         self._queue_or_call("off", event, handler)
 
     #### for the autocomplete - removed below

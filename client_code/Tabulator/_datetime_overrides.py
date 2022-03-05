@@ -4,7 +4,7 @@
 from datetime import date, datetime
 
 from anvil import DatePicker
-from anvil.js import get_dom_node
+from anvil.js import get_dom_node, report_exceptions
 
 from ._js_tabulator import Tabulator
 
@@ -30,7 +30,7 @@ def dt_formatter(dt_type, name, default_format):
         else:
             return val.strftime(out)
 
-    return formatter
+    return report_exceptions(formatter)
 
 
 def dt_sorter(compare):
@@ -54,7 +54,7 @@ def dt_sorter(compare):
             empty_align *= -1
         return empty_align
 
-    return sorter
+    return report_exceptions(sorter)
 
 
 def dt_editor(pick_time):
@@ -99,7 +99,7 @@ def dt_editor(pick_time):
         dp.add_event_handler("hide", hide)
         return dp
 
-    return EditorWrapper.wrap(editor)
+    return report_exceptions(EditorWrapper.wrap(editor))
 
 
 def init_overrides():
