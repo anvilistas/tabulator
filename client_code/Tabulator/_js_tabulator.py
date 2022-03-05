@@ -2,9 +2,9 @@
 # Copyright (c) 2022 Stu Cork
 
 from anvil.js import import_from
-
-TabulatorModule = import_from("https://cdn.skypack.dev/tabulator-tables@5.1.2")
-
+print(1)
+TabulatorModule = import_from("https://cdn.skypack.dev/pin/tabulator-tables@v5.1.2-Od0AWBDAql7PzayHpzwZ/mode=imports,min/optimized/tabulator-tables.js")
+print(1)
 
 def __getattr__(attr):
     global TabulatorModule
@@ -93,7 +93,7 @@ def filter_wrapper(f, params):
 
     return wrapped
 
-
+print(2)
 Function(
     "FilterModule",
     "wrapper",
@@ -110,6 +110,7 @@ FilterModule.prototype.findFilter = function(filter) {
 """,
 )(TabulatorModule.FilterModule, filter_wrapper)
 
+print(3)
 
 Function(
     "FormatModule",
@@ -125,3 +126,4 @@ function linkWrapper(cell, params, onRendered) {
 FormatModule.formatters.link = linkWrapper;
 """,
 )(TabulatorModule.FormatModule)
+print(4)

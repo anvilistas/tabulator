@@ -4,6 +4,7 @@
 from anvil.js.window import Function as _Function
 
 from ._js_tabulator import Module, Tabulator
+print(5)
 
 _body = """
 class CustomModule extends Module {
