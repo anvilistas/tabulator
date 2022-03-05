@@ -71,7 +71,7 @@ container:
   type: HtmlTemplate
   properties: {tooltip: '', background: '', foreground: '', border: '', visible: true,
     role: null, html: "<div class='placeholder-table'></div>\n\n<script type=\"module\"\
-      >\nimport {TabulatorFull as Tabulator} from \"https://cdn.skypack.dev/tabulator-tables@5.1.2\"\
+      \ type=\"text/javascript\">\nimport {TabulatorFull as Tabulator} from \"https://cdn.skypack.dev/tabulator-tables@5.1.2\"\
       ;\n\nif (!window.anvilTabulatorLoaded) {\n  const l = document.createElement(\"\
       link\");\n  l.href = \"https://cdn.skypack.dev/tabulator-tables@5.1.2/dist/css/tabulator_bootstrap3.min.css\"\
       ;\n  l.rel = \"stylesheet\";\n  document.body.appendChild(l);\n  window.anvilTabulatorLoaded\

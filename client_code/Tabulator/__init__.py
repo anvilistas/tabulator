@@ -51,7 +51,6 @@ class Tabulator(TabulatorTemplate):
         return TabulatorTemplate.__new__(cls, **properties)
 
     def __init__(self, **properties):
-        print(8)
         self._t = None
         self._dom_node = dom_node = _get_dom_node(self)
         self._queued = []
@@ -104,7 +103,6 @@ class Tabulator(TabulatorTemplate):
             # list[dict] or str breaks tabulator
             t.setData(data)
             self._t = t
-            print(11)
 
         t.on("tableBuilt", built)
         for meth, event, handler in self._queued:
@@ -113,9 +111,7 @@ class Tabulator(TabulatorTemplate):
 
     def _show(self, **event_args):
         self.remove_event_handler("show", self._show)
-        print(9)
         self._initialize()
-        print(10)
 
     def __getattr__(self, attr):
         if self._t is None:

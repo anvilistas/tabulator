@@ -78,7 +78,6 @@ _themes = {
     "bootstrap3",
 }
 
-print(7)
 def _inject_theme(theme):
     style = document.createElement("style")
     style.textContent = """
