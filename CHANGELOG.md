@@ -42,7 +42,7 @@ The default theme is `"bootstrap3"` since Anvil ships with bootstrap 3.
 
 You can change the theme:
 
-```
+```python
 from tabulator.Tabulator import Tabulator
 
 Tabulator.theme = "midnight" # "standard", "simple", "modern"
@@ -164,20 +164,22 @@ The paramters keys must be camel case, e.g.
 
 ### `default_options`
 
-Tabulator has default options for various properties that can be defined using options property.
-These can be changed using:
+Tabulator has default options for various properties that can be overriden using `self.tabulator.options` attribute.
+
+It's also possible to change these defaults without having to override them with the `options` attribute.
 
 ```python
 from tabulator.Tabulator import Tabulator
 Tabulator.default_options.update({"layout": "fitData", "selectable": True})
 ```
 
-This is most useful if you have multiple Tabulator components and don't want to repeatedly set options
-The default default_options are:
+This is most useful if you have multiple Tabulator components and don't want to repeatedly set options.
+The default `default_options` are:
 
 ```python
 Tabulator.default_options = {"layout": "fitColumns", "selectable": False}
 ```
+*(as well as all the JS Tabulator default options)*
 
 ### `column_defaults`
 

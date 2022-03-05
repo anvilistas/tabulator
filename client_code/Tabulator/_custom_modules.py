@@ -8,6 +8,22 @@ from anvil.js.window import document
 from ._module_helpers import AbstractModule, tabulator_module
 
 
+@tabulator_module("cssClassAdder")
+class CssClassAdder(AbstractModule):
+    def __init__(self, mod, table):
+        super().__init__(mod, table)
+        mod.registerTableOption("cssClass", None)
+
+    def initialize(self):
+        classes = self.table.options.get("cssClass")
+        if classes is None:
+            return
+        elif isinstance(classes, str):
+            classes = [classes]
+
+        self.table.element.classList.add(*classes)
+
+
 @tabulator_module("componentFormatter")
 class ComponentFormatter(AbstractModule):
     def initialize(self):
@@ -166,6 +182,7 @@ class EditorWrapper(AbstractCallableWrapper):
 custom_modules = [
     cls.Module
     for cls in (
+        CssClassAdder,
         ComponentFormatter,
         EditorWrapper,
         FormatterWrapper,
