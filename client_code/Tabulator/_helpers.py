@@ -91,17 +91,19 @@ def _inject_theme(theme):
     link = document.createElement("link")
     if theme in _themes:
         theme = "_" + theme if theme != "standard" else ""
-        theme = f"https://cdn.skypack.dev/tabulator-tables@5.1.2/dist/css/tabulator{theme}.min.css"
+        theme = f"https://cdn.jsdelivr.net/npm/tabulator-tables@5.1.3/dist/css/tabulator{theme}.min.css"
     link.href = theme
     link.rel = "stylesheet"
+#     link.integrity="sha256-X+nZ8IG0y1s7r4idlK2src96HsOSClbD7VZTMPpXo9s="
+    link.crossorigin="anonymous"
 
     def do_wait(res, rej):
         link.onload = res
         link.onerror = rej
 
-#     document.body.appendChild(link)
-#     p = Promise(do_wait)
-#     anvil.js.await_promise(p)
+    document.body.appendChild(link)
+    p = Promise(do_wait)
+    anvil.js.await_promise(p)
 
 
 def _to_module(modname):
