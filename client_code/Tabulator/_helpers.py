@@ -40,7 +40,7 @@ def _ignore_resize_observer_error():
     # we need this error handler to fire first so we can stopImmediatePropagation
     onerror = window.onerror
     window.onerror = None
-    window.addEventListener("error", _ignore_resize_observer_error)
+    window.addEventListener("error", _ignore_resize_observer_error_handler)
     window.onerror = onerror
 
 

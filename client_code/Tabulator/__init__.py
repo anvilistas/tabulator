@@ -94,15 +94,17 @@ class Tabulator(TabulatorTemplate):
         options["columns"] = [_camelKeys(defn) for defn in options["columns"]]
         options["columnDefaults"] = _camelKeys(options["columnDefaults"])
         data = options.pop("data")
-
+        print("making")
         t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
 
         def built():
             # use setData - initiating data with anything other than
             # list[dict] or str breaks tabulator
+            print("data")
             t.setData(data)
             self._t = t
+            print("built")
 
         t.on("tableBuilt", built)
         for meth, event, handler in self._queued:
