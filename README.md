@@ -42,7 +42,7 @@ In Anvil Tabulator add the Tabulator Component in the design view and then set t
 
 ### Defining options
 
-In JS Tabulator options are defined within the object parsed to Tabulator constructor.
+In JS Tabulator options are defined within the object passed to Tabulator constructor.
 
 In Anvil Tabulator, some options are available in the designer as properties.
 Other options can be set at runtime.
@@ -341,6 +341,7 @@ These built-in Formatters, Editors and Sorters have been overridden to expect py
             "sorter": "date",
             "formatter": "date",
             "formatter_params": {"format": "%d/%m/%Y"},
+            "editor_params": {"format": "%d/%m/%Y"},
         },
     ]
 
