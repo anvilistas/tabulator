@@ -96,11 +96,11 @@ def _inject_theme(theme):
 
     def do_wait(res, rej):
         link.onload = res
-        link.onerror = lambda e: rej(Exception(f"{theme} was not loaded"))
+        link.onerror = rej
 
-    document.body.appendChild(link)
-    p = Promise(do_wait)
-    anvil.js.await_promise(p)
+#     document.body.appendChild(link)
+#     p = Promise(do_wait)
+#     anvil.js.await_promise(p)
 
 
 def _to_module(modname):
