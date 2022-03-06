@@ -1,5 +1,204 @@
 # v2.0.0
 
+## Breaking changes
+
+We've moved from tabulator 4.6.x to tabulator 5.x
+That means that some column definitions may not work as before.
+If you've made heave use of the JS Tabulator API for column definitions you should check they still work.
+
+
+### Package Name
+
+The package name has changed from `Tabulator` to `tabulator`
+
+```python
+from Tabulator.Tabulator import Tabulator
+# too many Tabulators
+
+# becomes
+from tabulator.Tabulator import Tabulator
+```
+
+### Calling Methods
+
+It's no longer possible to call methods on a tabulator object until it's been built.
+If you try to call a method too early you'll get an `AttributeError`.
+
+There is a new `tabulator_built` event that you can use.
+The `tabulator_built` event will be called after the `form_show` event.
+
+### Custom Sorter
+
+If you were previously defining a function as a sorter the call signature has changed:
+
+```python
+{"title": "Age", "field": "age", "sorter": lambda a, b, aRow, bRow, asc, **params: a - b}
+
+# becomes
+
+{"title": "Age", "field": "age", "sorter": lambda a, b, **params: a - b}
+```
+
+## Custom Formatters
+
+If you defined a function as a custom formatter the call signature has changed:
+
+```python
+def image_formatter(row, **kws):
+    return Image(source=row["image"], height=50, spacing_above="none", spacing_below="none")
+
+self.tabulator.columns = [
+    ...
+    {'title': 'Image', 'field':'image', 'formatter': image_formatter},
+]
+
+# becomes
+
+def image_formatter(cell, **kws):
+    return Image(source=cell.get_value(), height=50, spacing_above="none", spacing_below="none")
+
+# Alternatively
+
+self.tabulator.columns = [
+    ...
+    {'title': 'Image', 'field':'image', 'formatter': Image, 'formatter_params': lambda cell: dict(source=cell.get_value(), height=50, spacing_above="none", spacing_below="none")},
+]
+
+```
+
+If you previously used the `'date'` or `'datetime'` formatter, these would have worked for either date or datetime objects.
+Now the cell value must be a date object if using the `'date'` formatter, likewise with datetime.
+
+date and datetime `formatter_params` used to support an `outputFormat` like `"MM/DD/YYYY"`.
+This is no longer supported. Instead the format should match what you would use for `strftime()`.
+Note that the `outputFormat` param can be replaced by just `format`
+
+e.g.
+```python
+    {
+        "title": "Date Of Birth",
+        "field": "dob",
+        "editor": "date",
+        "sorter": "date",
+        "formatter": "date",
+        "formatter_params": {"format": "%d/%m/%Y"},
+    },
+
+```
+
+### Events
+
+The `row_selection_change` event was renamed to `row_selection_changed`
+(since that's what it's called in JS Tabulator).
+If you made use of this event you should remove it from the designer view before making the switch.
+Once you've made the switch you can hook up the new event name.
+If you forget to do this, you can always switch back to `v1.0.0` remove it from the designer.
+
+The call signatures for events have now changed. The parameters now match those of JS Tabulator.
+
+e.g.
+
+```python
+def row_click(self, row, **event_args):
+    print(row) # python dictionary
+
+# becomes
+def row_click(self, row, **event_args):
+    print(row) # javascript tabulator row component
+    print(row.get_data()) # python dictionary
+```
+
+```python
+def cell_click(self, field, row, **event_args):
+    if field == "name":
+        ...
+
+# becomes
+def cell_click(self, cell, **event_args):
+    field = cell.get_field()
+    data = cell.get_data()
+    if field == "name":
+        ...
+
+```
+
+You can reset the call signatures by:
+  - cutting the function from the code view
+  - switching back to the design view
+  - clicking the event handler in the designer view
+  - pasting the function back
+
+You can also check the possible event_args by going to Tabulator.info and finding the events
+
+
+### Methods
+Tabulator methods (the ones from the autocomplete) may previously have wrapped
+a JS Tabulator method.
+Now calling any Anvil Tabulator method directly calls the underlying Javascript method.
+This means keywords arguments are no longer supported and you should look through the Tabulator.info docs
+for the correct call signatures
+
+e.g. `add_sort` which previously used `ascending=True` now expects a `dir` argument to be either `"asc"` or `"desc"`
+```python
+self.tabulator.set_sort("name", ascending=True)
+# becomes
+self.tabulator.set_sort("name", "asc")
+```
+
+### Properties
+Some properties were removed from the designer.
+You should change a few properties in the designer after migration to force the designer spec to update.
+
+The following properties are supported in the designer:
+```python
+"auto_columns": False,
+"header_visible": True,
+"height": "",
+"index": "id",
+"layout": "",
+"pagination": True,
+"pagination_size": 5,
+"data" # set at runtime
+"columns" # set at runtime
+"column_defaults": # set at runtime
+```
+
+Other properties can be added via the `options` attribute.
+
+e.g.
+```python
+self.tabulator.options.update({
+    "selectable": "highlight",
+    "pagination_size_selector": [1, 2, 5, 10]
+})
+# or just
+self.tabulator.options = {
+    "selectable": "highlight",
+    "pagination_size_selector": [1, 2, 5, 10]
+}
+```
+
+The reason for this change is that something like, `pagination_size_selector`, can also take a value of `True`.
+This can't easily be expressed in the designer view of a property.
+
+
+### row_selectable
+
+If you made use of the `row_selectable` column with checkboxes. That feature has been removed as a propert.
+You will now need to explicitly define the column in your column definition.
+
+```python
+from tabulator.Tabulator import row_selection_column
+
+...
+
+    self.tabulator.columns = [
+        row_selection_column,
+        {"title": "Name", "field": "name", ...},
+        ...
+    ]
+    self.tabulator.options["selectable"] = "highlight"
+```
 ## New Features
 
 ### `options`
@@ -194,205 +393,3 @@ self.tabulator.column_defaults = {"resizable": False}
 
 Use the `table_built` event to determine when you can start accessing methods on the tabulator instance.
 Things like `self.tabulator.set_sort(...)` can only be called after the tabulator instance has been built.
-
-
-## Breaking changes
-
-We've moved from tabulator 4.6.x to tabulator 5.x
-That means that some column definitions may not work as before.
-If you've made heave use of the JS Tabulator API for column definitions you should check they still work.
-
-
-### Package Name
-
-The package name has changed from `Tabulator` to `tabulator`
-
-```python
-from Tabulator.Tabulator import Tabulator
-# too many Tabulators
-
-# becomes
-from tabulator.Tabulator import Tabulator
-```
-
-### Calling Methods
-
-It's no longer possible to call methods on a tabulator object until it's been built.
-If you try to call a method too early you'll get an `AttributeError`.
-
-There is a new `tabulator_built` event that you can use.
-The `tabulator_built` event will be called after the `form_show` event.
-
-### Custom Sorter
-
-If you were previously defining a function as a sorter the call signature has changed:
-
-```python
-{"title": "Age", "field": "age", "sorter": lambda a, b, aRow, bRow, asc, **params: a - b}
-
-# becomes
-
-{"title": "Age", "field": "age", "sorter": lambda a, b, **params: a - b}
-```
-
-## Custom Formatters
-
-If you defined a function as a custom formatter the call signature has changed:
-
-```python
-def image_formatter(row, **kws):
-    return Image(source=row["image"], height=50, spacing_above="none", spacing_below="none")
-
-self.tabulator.columns = [
-    ...
-    {'title': 'Image', 'field':'image', 'formatter': image_formatter},
-]
-
-# becomes
-
-def image_formatter(cell, **kws):
-    return Image(source=cell.get_value(), height=50, spacing_above="none", spacing_below="none")
-
-# Alternatively
-
-self.tabulator.columns = [
-    ...
-    {'title': 'Image', 'field':'image', 'formatter': Image, 'formatter_params': lambda cell: dict(source=cell.get_value(), height=50, spacing_above="none", spacing_below="none")},
-]
-
-```
-
-If you previously used the `'date'` or `'datetime'` formatter, these would have worked for either date or datetime objects.
-Now the cell value must be a date object if using the `'date'` formatter, likewise with datetime.
-
-date and datetime `formatter_params` used to support an `outputFormat` like `"MM/DD/YYYY"`.
-This is no longer supported. Instead the format should match what you would use for `strftime()`.
-Note that the `outputFormat` param can be replaced by just `format`
-
-e.g.
-```python
-    {
-        "title": "Date Of Birth",
-        "field": "dob",
-        "editor": "date",
-        "align": "center",
-        "sorter": "date",
-        "formatter": "date",
-        "formatter_params": {"format": "%d/%m/%Y"},
-    },
-
-```
-
-### Events
-
-The `row_selection_change` event was renamed to `row_selection_changed`
-(since that's what it's called in JS Tabulator).
-If you made use of this event you should remove it from the designer view before making the switch.
-Once you've made the switch you can hook up the new event name.
-If you forget to do this, you can always switch back to `v1.0.0` remove it from the designer.
-
-The call signatures for events have now changed. The parameters now match those of JS Tabulator.
-
-e.g.
-
-```python
-def row_click(self, row, **event_args):
-    print(row) # python dictionary
-
-# becomes
-def row_click(self, row, **event_args):
-    print(row) # javascript tabulator row component
-    print(row.get_data()) # python dictionary
-```
-
-```python
-def cell_click(self, field, row, **event_args):
-    if field == "name":
-        ...
-
-# becomes
-def cell_click(self, cell, **event_args):
-    field = cell.get_field()
-    data = cell.get_data()
-    if field == "name":
-        ...
-
-```
-
-You can reset the call signatures by:
-  - cutting the function from the code view
-  - switching back to the design view
-  - clicking the event handler in the designer view
-  - pasting the function back
-
-You can also check the possible event_args by going to Tabulator.info and finding the events
-
-
-### Methods
-Tabulator methods (the ones from the autocomplete) may previously have wrapped
-a JS Tabulator method.
-Now calling any Anvil Tabulator method directly calls the underlying javascript method.
-This means keywords arguments are no longer supported and you should look through the Tabulator.info docs
-for the correct call signatures
-
-e.g. `add_sort` which previously used `ascending=True` now expects a `dir` argument to be either `"asc"` or `"desc"`
-```python
-self.tabulator.set_sort("name", ascending=True)
-# becomes
-self.tabulator.set_sort("name", "asc")
-```
-
-### Properties
-Some properties were removed from the designer.
-You should change a few properties in the designer after migration to force the designer spec to update.
-
-The following properties are supported in the designer:
-```python
-"auto_columns": False,
-"header_visible": True,
-"height": "",
-"index": "id",
-"layout": "",
-"pagination": True,
-"pagination_size": 5,
-"data" # set at runtime
-"columns" # set at runtime
-"column_defaults": # set at runtime
-```
-
-Other properties can be added via the `options` attribute.
-
-e.g.
-```python
-self.tabulator.options.update({
-    "selectable": "highlight",
-    "pagination_size_selector": [1, 2, 5, 10]
-})
-# or just
-self.tabulator.options = {
-    "selectable": "highlight",
-    "pagination_size_selector": [1, 2, 5, 10]
-}
-```
-
-The reason for this change is that something like, `pagination_size_selector`, can also take a value of `True`.
-This can't easily be expressed in the designer view of a property.
-
-
-### row_selectable
-
-If you made use of the `row_selectable` column with checkboxes. That feature has been removed as a propert.
-You will now need to explicitly define the column in your column definition.
-
-```python
-from tabulator.Tabulator import row_selection_column
-
-...
-
-    self.tabulator.columns = [
-        row_selection_column,
-        {"title": "Name", "field": "name", ...},
-        ...
-    ]
-    self.tabulator.options["selectable"] = "highlight"
-```
