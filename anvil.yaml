@@ -10,8 +10,6 @@ name: Tabulator
 runtime_options: {version: 2, client_version: '3', server_version: python3-full}
 metadata: {}
 startup_form: null
-native_deps: {head_html: "<!-- \n<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/tabulator-tables@5.1.3/dist/css/tabulator_bootstrap3.min.css\"\
-    \ integrity=\"sha256-X+nZ8IG0y1s7r4idlK2src96HsOSClbD7VZTMPpXo9s=\" crossorigin=\"\
-    anonymous\"> \n-->\n\n"}
+native_deps: {head_html: ""}
 db_schema: {}
 renamed: true
