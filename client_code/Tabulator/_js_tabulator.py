@@ -1,9 +1,14 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2022 Stu Cork
 
-from anvil.js import import_from
+from anvil.js import import_from, report_exceptions
+from anvil.js.window import Function
+
 # from anvil.js.window import TabulatorModule
-TabulatorModule = import_from("https://cdn.skypack.dev/pin/tabulator-tables@v5.1.2-Od0AWBDAql7PzayHpzwZ/mode=imports,min/optimized/tabulator-tables.js")
+TabulatorModule = import_from(
+    "https://cdn.skypack.dev/pin/tabulator-tables@v5.1.2-Od0AWBDAql7PzayHpzwZ/mode=imports,min/optimized/tabulator-tables.js"
+)
+
 
 def __getattr__(attr):
     global TabulatorModule
@@ -58,8 +63,6 @@ def __dir__():
     ]
 
 
-from anvil.js.window import Function
-
 support_snake = Function(
     "Component",
     """
@@ -87,10 +90,12 @@ for Component in "ColumnComponent", "CellComponent", "RowComponent":
 def filter_wrapper(f, params):
     params = params or {}
 
+    @report_exceptions
     def wrapped(data):
         return f(data, **params)
 
-    return report_exceptions(wrapped)
+    return wrapped
+
 
 Function(
     "FilterModule",

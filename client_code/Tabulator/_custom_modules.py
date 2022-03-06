@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2022 Stu Cork
 
+import anvil.js
 from anvil import Component
 from anvil.js import get_dom_node, report_exceptions
 from anvil.js.window import document
-import anvil.js
 
 from ._module_helpers import AbstractModule, tabulator_module
 

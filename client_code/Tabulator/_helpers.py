@@ -79,6 +79,7 @@ _themes = {
     "bootstrap3",
 }
 
+
 def _inject_theme(theme):
     style = document.createElement("style")
     style.textContent = """
@@ -94,7 +95,7 @@ def _inject_theme(theme):
         theme = f"https://cdn.jsdelivr.net/npm/tabulator-tables@5.1.3/dist/css/tabulator{theme}.min.css"
     link.href = theme
     link.rel = "stylesheet"
-    link.crossorigin="anonymous"
+    link.crossorigin = "anonymous"
 
     def do_wait(res, rej):
         link.onload = res

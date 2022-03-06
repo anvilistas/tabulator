@@ -10,6 +10,7 @@ from ._js_tabulator import Tabulator
 
 
 def dt_formatter(dt_type, name, default_format):
+    @report_exceptions
     def formatter(cell, params, onRendered):
         val = cell.getValue()
         if val is None:
@@ -30,10 +31,11 @@ def dt_formatter(dt_type, name, default_format):
         else:
             return val.strftime(out)
 
-    return report_exceptions(formatter)
+    return formatter
 
 
 def dt_sorter(compare):
+    @report_exceptions
     def sorter(a, b, a_row, b_row, column, dir, params):
         align_empty_values = params.get("align_empty_values") or params.get(
             "alignEmptyValues"
@@ -54,7 +56,7 @@ def dt_sorter(compare):
             empty_align *= -1
         return empty_align
 
-    return report_exceptions(sorter)
+    return sorter
 
 
 def dt_editor(pick_time):
@@ -67,6 +69,7 @@ def dt_editor(pick_time):
         "font": "inherit",
     }
 
+    @report_exceptions
     def editor(cell, **properties):
         properties = params | properties
         value = cell.getValue()
@@ -99,7 +102,7 @@ def dt_editor(pick_time):
         dp.add_event_handler("hide", hide)
         return dp
 
-    return report_exceptions(EditorWrapper.wrap(editor))
+    return EditorWrapper.wrap(editor)
 
 
 def init_overrides():
