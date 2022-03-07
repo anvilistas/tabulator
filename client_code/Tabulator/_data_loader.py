@@ -171,13 +171,16 @@ class Query:
         return self.args == other.args and self.kws == other.kws
 
 
+EMPTY_QUERY = Query()
+
+
 @tabulator_module("query")
 class QueryModule(AbstractModule):
     def __init__(self, mod, table):
         super().__init__(mod, table)
         mod.registerTableFunction("setQuery", self.set_query)
         mod.registerTableFunction("clearQuery", self.clear_query)
-        self.query = Query()
+        self.query = EMPTY_QUERY
 
     def initialize(self):
         if self.table.options.get("appTable") is None:
@@ -193,5 +196,5 @@ class QueryModule(AbstractModule):
         self.mod.reloadData()
 
     def clear_query(self):
-        self.query = Query()
+        self.query = EMPTY_QUERY
         self.mod.reloadData()
