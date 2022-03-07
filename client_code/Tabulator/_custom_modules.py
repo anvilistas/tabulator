@@ -180,6 +180,8 @@ class EditorWrapper(AbstractCallableWrapper):
         return editor_wrapper
 
 
+from ._data_loader import AppTableLoader, QueryModule
+
 custom_modules = [
     cls.Module
     for cls in (
@@ -188,5 +190,7 @@ custom_modules = [
         EditorWrapper,
         FormatterWrapper,
         SorterWrapper,
+        AppTableLoader,
+        QueryModule,
     )
 ]

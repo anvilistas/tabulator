@@ -65,10 +65,11 @@ def __dir__():
 
 support_snake = Function(
     "Component",
+    "type",
     """
 const RE_SNAKE = new RegExp("_[a-z]", "g")
 const to_camel = (s) => s.replace(RE_SNAKE, (m) => m[1].toUpperCase());
-const target = {sk$object: null, $isPyWrapped: false, $isSuspension: false};
+const target = {sk$object: null, $isPyWrapped: false, $isSuspension: null};
 
 Object.setPrototypeOf(Component.prototype, new Proxy(target, {
     get(target, name, receiver) {
@@ -77,14 +78,19 @@ Object.setPrototypeOf(Component.prototype, new Proxy(target, {
         if (typeof targetVal !== "undefined") return targetVal;
         const camel = to_camel(name);
         if (name === camel) return;
-        return receiver[camel];
+        const maybeRet = receiver[camel];
+        if (typeof maybeRet !== "undefined") {
+            return maybeRet;
+        }
+        const real = receiver["_" + type];
+        return real.table.componentFunctionBinder.handle(type, real, camel);
     }
 }));
 """,
 )
 
-for Component in "ColumnComponent", "CellComponent", "RowComponent":
-    support_snake(TabulatorModule[Component])
+for component in "column", "cell", "row", "calc":
+    support_snake(TabulatorModule[component.capitalize() + "Component"], component)
 
 
 def filter_wrapper(f, params):

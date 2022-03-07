@@ -71,6 +71,10 @@ _methods = (
     "remove_filter",
     "get_filters",
     "clear_filter",
+    "set_qeury",
+    "clear_qeury",
     "set_sort",
     "clear_sort",
+    "get_page",
+    "set_page",
 )

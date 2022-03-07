@@ -209,7 +209,7 @@ class Tabulator(TabulatorTemplate):
     def update_or_add_data(self, data):
         """checks each row and updates data if the row exists, otherwise creates a new row"""
 
-    def replace_data(self, data):
+    def replace_data(self, data=None):
         """replace all data in the table"""
 
     def set_filter(self, field, type=None, value=None):
@@ -228,11 +228,23 @@ class Tabulator(TabulatorTemplate):
     def clear_filter(self, clear_header=False):
         """include an arg of True to clear header filters as well"""
 
+    def set_query(self, *args, **kws):
+        """if you've used an app_table then this will set the query args and kws for the Search"""
+
+    def clear_query(self):
+        """clear the current query"""
+
     def set_sort(self, column, dir):
         """first argument can also be a list of sorters [{'column': field, 'dir':'asc' | 'desc'}, ...]"""
 
     def clear_sort(self):
         """clear the sorters"""
+
+    def get_page(self):
+        """get the current page"""
+
+    def set_page(self, page):
+        """set the current page"""
 
 
 for method in _methods:
