@@ -5,7 +5,11 @@ from math import ceil
 from anvil.js import report_exceptions
 from anvil.js.window import Promise
 from anvil.server import no_loading_indicator
-from anvil.tables import Table, order_by
+
+try:
+    from anvil.tables import Table, order_by
+except AttributeError:
+    pass
 
 from ._module_helpers import AbstractModule, tabulator_module
 
