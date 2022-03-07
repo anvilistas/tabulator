@@ -476,3 +476,59 @@ Tabulator.default_options["layout"] = "fitData"
 
 Note that `default_options` will not override any designer propeties.
 e.g. setting `Tabulator.default_options["header_visible"] = False` will have no effect.
+
+
+### App Tables
+
+Anvil Tabulator provides an API for working with anvil `app_tables`
+
+Instead of setting the `self.tabulator.data` attribute, provide the tabulator component with an `app_table` in the options.
+
+```python
+    self.tabulator.options = {
+        "app_table": app_tables.my_table,
+        "data_loader": False, # display JS Tabulators 'loading' component
+    }
+```
+
+*You may want to make a server call to retrieve a `client_readable` view of an `app_table`*
+
+If an `app_table` option is provided the data will be retrieved by calling `.search()`.
+The search will be adjusted depending on the header sorting.
+Pagination must be `True` if using the `app_table` option.
+
+It is also possible to set queries on the data, similar to JS Tabulator's `set_filter()` method.
+Instead use `set_query()`. Any valid query using Anvil's query API will be supported.
+
+```python
+import anvil.tables.query as q
+
+def text_box_1_change(self, **event_args):
+    name = self.text_box_1.text
+    if not name:
+        self.tabulator.clear_query()
+    else:
+        self.tabulator.set_query(name=q.ilike(f"%{name}%"))
+
+```
+
+If you want to retrieve an app_table row from the a tabulator event, use the `.get_table_row()` method.
+
+```python
+def tabulator_row_click(self, row, **event_args):
+    # row is a tabulator row_component
+    data = row.get_data() # returns a javascript wrapped data object
+    table_row = row.get_table_row() # returns the original anvil app_table row
+
+def tabulator_cell_edited(self, cell, **event_args):
+    row = cell.get_table_row() # also possible
+    val = cell.get_value()
+    field = cell.get_field()
+    anvil.server.call("update_row", row, field, val)
+
+def select_visible(self):
+    self.tabulator.get_table_rows("visible") # returns a list of app_table rows
+```
+
+If you need to reload/refresh the data in the tabulator component, you can call `self.tabulator.replace_data()`.
+This will create a fresh call to `search()` on the `app_table`, effectively clearing any cached values.
