@@ -2,9 +2,9 @@
 # Copyright (c) 2022 Stu Cork
 from math import ceil
 
-import anvil.server
 from anvil.js import report_exceptions
 from anvil.js.window import Promise
+from anvil.server import no_loading_indicator
 from anvil.tables import Table, order_by
 
 from ._module_helpers import AbstractModule, tabulator_module
@@ -47,11 +47,8 @@ class CachedSearch:
             self.cache.append(self.row_to_dict(row))
 
     def paginate(self, upto):
-        if upto <= 0:
-            return
-        with anvil.server.no_loading_indicator:
-            for _ in range(upto):
-                self.get_next()
+        for _ in range(upto):
+            self.get_next()
 
     def get_data(self, page, size):
         last_page = ceil(self.len / size)
@@ -66,11 +63,23 @@ class CachedSearch:
         return {"data": data, "last_page": last_page}
 
 
+class LoadingInidcator:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+
+loading_indicator = LoadingInidcator()
+
+
 @tabulator_module("appTableLoader", moduleInitOrder=1)
 class AppTableLoader(AbstractModule):
     def __init__(self, mod, table):
         super().__init__(mod, table)
         mod.registerTableOption("appTable", None)
+        mod.registerTableOption("loadingIndicator", True)
         mod.registerTableFunction("getTableRows", self.get_table_rows)
         mod.registerComponentFunction("row", "getTableRow", self.get_table_row)
         mod.registerComponentFunction("cell", "getTableRow", self.get_table_row)
@@ -79,6 +88,7 @@ class AppTableLoader(AbstractModule):
         self.search_cache = {}
         self.index_cache = {}
         self.index = None
+        self.context = None
 
     @report_exceptions
     def initialize(self):
@@ -100,6 +110,11 @@ class AppTableLoader(AbstractModule):
         self.mod.subscribe("data-loading", self.request_data_check)
         self.mod.subscribe("data-load", self.request_data)
         self.mod.subscribe("row-data-retrieve", self.retrieve_data)
+        self.context = (
+            loading_indicator
+            if options.get("loadingIndicator")
+            else no_loading_indicator
+        )
 
     def refresh(self):
         self.search = None
@@ -126,13 +141,15 @@ class AppTableLoader(AbstractModule):
         query = params["query"]
         cache_key = hash((ordering, query))
         search = self.search_cache.get(cache_key)
-        if search is None:
-            with anvil.server.no_loading_indicator:
+        with self.context:
+            if search is None:
                 search = self.db.search(*ordering, *query.args, **query.kws)
-            search = CachedSearch(search, self.index, self.index_cache, self.col_spec)
-            self.search_cache[cache_key] = search
-
-        return Promise.resolve(search.get_data(params["page"], params["size"]))
+                search = CachedSearch(
+                    search, self.index, self.index_cache, self.col_spec
+                )
+                self.search_cache[cache_key] = search
+            p = Promise.resolve(search.get_data(params["page"], params["size"]))
+        return p
 
     @report_exceptions
     def retrieve_data(self, row, transformType, prev):

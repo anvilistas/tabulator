@@ -488,6 +488,7 @@ Instead of setting the `self.tabulator.data` attribute, provide the tabulator co
     self.tabulator.options = {
         "app_table": app_tables.my_table,
         "data_loader": False, # display JS Tabulators 'loading' component
+        "loading_indicator": False # defaults to True - whether to use the anvil spinner during page loading
     }
 ```
 
