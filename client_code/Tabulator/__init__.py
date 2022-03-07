@@ -101,8 +101,9 @@ class Tabulator(TabulatorTemplate):
         def built():
             # use setData - initiating data with anything other than
             # list[dict] or str breaks tabulator
-            t.setData(data)
             self._t = t
+            if data:
+                t.setData(data)
 
         t.on("tableBuilt", built)
         for meth, event, handler in self._queued:
