@@ -10,9 +10,6 @@ properties:
 - {name: spacing_above, type: string, default_value: small, group: layout, important: false}
 - {name: spacing_below, type: string, default_value: small, group: layout, important: false}
 - {name: visible, type: boolean, default_value: true, group: appearance, important: true}
-- {name: layout, type: string, default_value: '', group: columns, important: false,
-  description: 'valid values include fitColumns, fitData, fitDataTable, fitDataStretch
-    and fitDataFill. See tabulator docs for examples'}
 - {name: role, type: string, default_value: '', group: appearance, important: false}
 - {name: data, type: object, default_value: null, important: true, description: typically a list of dicts}
 - {name: columns, type: object, default_value: null, important: true, description: column definitions should be a list of dicts. Each dict represents a column with options. See Tabulator.info for full documentation on available options}

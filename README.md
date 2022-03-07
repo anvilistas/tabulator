@@ -17,7 +17,6 @@ In JS Tabulator a tabulator instance is defined like:
 ```js
 var table = new Tabulator("#example-table", {
  	data:tabledata,
- 	layout:"fitColumns",
  	columns:[
 	 	{title:"Name", field:"name", width:150},
 	 	{title:"Age", field:"age", hozAlign:"left", formatter:"progress"},
@@ -474,3 +473,6 @@ In Anvil Tabulator
 from tabulator.Tabulator import Tabulator
 Tabulator.default_options["layout"] = "fitData"
 ```
+
+Note that `default_options` will not override any designer propeties.
+e.g. setting `Tabulator.default_options["header_visible"] = False` will have no effect.

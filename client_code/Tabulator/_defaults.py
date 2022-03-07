@@ -19,7 +19,6 @@ _default_options = {
     "header_visible": True,
     "height": "",
     "index": "id",
-    "layout": "",
     "pagination": True,
     "pagination_size": 5,
     "data": None,

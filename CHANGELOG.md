@@ -155,7 +155,6 @@ The following properties are supported in the designer:
 "header_visible": True,
 "height": "",
 "index": "id",
-"layout": "",
 "pagination": True,
 "pagination_size": 5,
 "data" # set at runtime
@@ -169,12 +168,12 @@ e.g.
 ```python
 self.tabulator.options.update({
     "selectable": "highlight",
-    "pagination_size_selector": [1, 2, 5, 10]
+    "pagination_size_selector": [5, 10, 15]
 })
 # or just
 self.tabulator.options = {
     "selectable": "highlight",
-    "pagination_size_selector": [1, 2, 5, 10]
+    "pagination_size_selector": [5, 10 ,15]
 }
 ```
 
