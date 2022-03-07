@@ -4,7 +4,7 @@
 import anvil.js
 from anvil import Component
 from anvil.js import get_dom_node, report_exceptions
-from anvil.js.window import document
+from anvil.js.window import document, window
 
 from ._module_helpers import AbstractModule, tabulator_module
 
@@ -180,6 +180,32 @@ class EditorWrapper(AbstractCallableWrapper):
         return editor_wrapper
 
 
+@tabulator_module("scrollPosMaintainer")
+class ScrollPosMaintainer(AbstractModule):
+    # fix annoying scroll to top after page changes when no height is set
+    def initialize(self):
+        if not self.table.options.pagination:
+            return
+        self.mod.subscribe("page-changed", self.page_changed)
+        self.mod.subscribe("data-refreshed", self.page_loaded)
+        self.x = self.y = 0
+        self.page_changing = False
+
+    def page_changed(self):
+        if self.page_changing:
+            return
+        if self.table.options.height:
+            return
+        self.page_changing = True
+        self.x, self.y = window.scrollX, window.scrollY
+
+    def page_loaded(self):
+        if not self.page_changing:
+            return
+        self.page_changing = False
+        window.scrollTo(self.x, self.y)
+
+
 from ._data_loader import AppTableLoader, QueryModule
 
 custom_modules = [
@@ -192,5 +218,6 @@ custom_modules = [
         SorterWrapper,
         AppTableLoader,
         QueryModule,
+        ScrollPosMaintainer,
     )
 ]

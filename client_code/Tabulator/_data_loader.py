@@ -5,11 +5,7 @@ from math import ceil
 from anvil.js import report_exceptions
 from anvil.js.window import Promise
 from anvil.server import no_loading_indicator
-
-try:
-    from anvil.tables import Table, order_by
-except AttributeError:
-    pass
+from anvil.tables import order_by
 
 from ._module_helpers import AbstractModule, tabulator_module
 
@@ -100,7 +96,7 @@ class AppTableLoader(AbstractModule):
         db = options.get("appTable")
         if db is None:
             return
-        elif not isinstance(db, Table):
+        elif not hasattr(db, "search"):
             raise TypeError(
                 f"Expected a table as the tabulator 'app_table' options, got {type(db).__name__}"
             )

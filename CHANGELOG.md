@@ -183,7 +183,7 @@ This can't easily be expressed in the designer view of a property.
 
 ### row_selectable
 
-If you made use of the `row_selectable` column with checkboxes. That feature has been removed as a propert.
+If you made use of the `row_selectable` column with checkboxes. That feature has been removed as a property.
 You will now need to explicitly define the column in your column definition.
 
 ```python

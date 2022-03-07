@@ -116,6 +116,9 @@ class Tabulator(TabulatorTemplate):
 
     def __getattr__(self, attr):
         if self._t is None:
+            if attr in _methods:
+                msg = "Calling a method before the tabulator component is built, use the 'table_built' event"
+                raise RuntimeError(msg)
             raise AttributeError(attr)
         return getattr(self._t, _toCamel(attr))
 
