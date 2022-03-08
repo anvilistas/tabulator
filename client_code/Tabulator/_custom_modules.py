@@ -4,7 +4,7 @@
 import anvil.js
 from anvil import Component
 from anvil.js import get_dom_node, report_exceptions
-from anvil.js.window import document, window
+from anvil.js.window import Function, document, window
 
 from ._module_helpers import AbstractModule, tabulator_module
 
@@ -206,6 +206,53 @@ class ScrollPosMaintainer(AbstractModule):
         window.scrollTo(self.x, self.y)
 
 
+generate_wrapper = Function(
+    "generate",
+    "update_mod",
+    "type",
+    """
+function generateWrapper(defaultOptions, userOptions = {}) {
+    const allowed = new Set([...Object.keys(this.registeredDefaults), ...Object.keys(defaultOptions)]);
+    const userKeys = new Set(Object.keys(userOptions));
+
+    for (const key of userKeys) {
+        if (allowed.has(key)) {
+            userKeys.delete(key);
+        }
+    }
+    if (userKeys.size) {
+        update_mod(type, userKeys);
+    }
+    return generate.call(this, defaultOptions, userOptions);
+}
+return generateWrapper;
+""",
+)
+
+
+@tabulator_module("optionVerifier")
+class OptionVerifier(AbstractModule):
+    # don't ignore bad options
+    def __init__(self, mod, table):
+        super().__init__(mod, table)
+        generate = table.optionsList.generate
+        table.optionsList.generate = generate_wrapper(
+            generate, self.check_keys, "table"
+        )
+        generate = table.columnManager.optionsList.generate
+        table.columnManager.optionsList.generate = generate_wrapper(
+            generate, self.check_keys, "column"
+        )
+
+    @report_exceptions
+    def check_keys(self, type, bad_keys):
+        if not bad_keys:
+            return
+        msg = f"The following {type} option(s) are invalid: {', '.join(map(repr,bad_keys))}.\n"
+        msg += "You may need to include the required Module in Tabulator.modules."
+        raise AttributeError(msg)
+
+
 from ._data_loader import AppTableLoader, QueryModule
 
 custom_modules = [
@@ -219,5 +266,6 @@ custom_modules = [
         AppTableLoader,
         QueryModule,
         ScrollPosMaintainer,
+        OptionVerifier,
     )
 ]

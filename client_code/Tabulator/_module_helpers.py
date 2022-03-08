@@ -40,4 +40,4 @@ class AbstractModule:
         mod.initialize = self.initialize
 
     def initialize(self):
-        raise NotImplementedError
+        pass

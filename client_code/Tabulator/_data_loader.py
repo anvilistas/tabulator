@@ -100,8 +100,6 @@ class AppTableLoader(AbstractModule):
             raise TypeError(
                 f"Expected a table as the tabulator 'app_table' options, got {type(db).__name__}"
             )
-        if not options.pagination:
-            raise RuntimeError("using an an 'app_table' requires pagination")
         self.db = db
         self.index = options.index
         options.paginationMode = "remote"

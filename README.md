@@ -496,7 +496,29 @@ Instead of setting the `self.tabulator.data` attribute, provide the tabulator co
 
 If an `app_table` option is provided the data will be retrieved by calling `.search()`.
 The search will be adjusted depending on the header sorting.
-Pagination must be `True` if using the `app_table` option.
+
+Other options that work will with the `app_table` option:
+
+```python
+    self.tabulator.options = {
+        "app_table": app_tables.my_table,
+        "height" 400,
+        "pagination": False,
+        "progressive_load": "load", # enable progressive loading
+        "progressive_load_delay": 200, # wait 200 milliseconds between each request
+    }
+
+    # OR
+
+    self.tabulator.options = {
+        "app_table": app_tables.my_table,
+        "height" 400,
+        "pagination": False,
+        "progressive_load": "scroll", # load data into the table as the user scrolls
+        "progressive_load_delay": 300, # trigger next data request when scroll bar is 300px or less from the bottom of the table
+    }
+
+```
 
 It is also possible to set queries on the data, similar to JS Tabulator's `set_filter()` method.
 Instead use `set_query()`. Any valid query using Anvil's query API will be supported.
