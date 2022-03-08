@@ -68,6 +68,8 @@ class Tabulator(TabulatorTemplate):
 
     @classmethod
     def _setup(cls):
+        for key, val in cls.default_options.items():
+            _Tabulator.defaultOptions[key] = val
         if cls._registered:
             return
         _inject_theme(cls.theme)
@@ -75,8 +77,6 @@ class Tabulator(TabulatorTemplate):
         cls.register_module(custom_modules)
         _datetime_overrides.init_overrides()
         _ignore_resize_observer_error()
-        for key, val in cls.default_options.items():
-            _Tabulator.defaultOptions[key] = val
         cls._registered = True
 
     @staticmethod

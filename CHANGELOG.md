@@ -379,6 +379,10 @@ Tabulator.default_options = {"layout": "fitColumns", "selectable": False}
 ```
 *(as well as all the JS Tabulator default options)*
 
+The `default_options` are a class level attribute. `default_options` will be applied each time a new Tabulator instance is created.
+Changing the `default_options` will only affect Tabulator instances that have yet to be created.
+
+
 ### `column_defaults`
 
 Check out the migration documentation for Tabulator 4.9 to 5.0: http://tabulator.info/docs/5.0/upgrade#column-defaults
