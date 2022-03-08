@@ -557,7 +557,7 @@ Other options that work will with the `app_table` option:
         "height" 400,
         "pagination": False,
         "progressive_load": "scroll", # load data into the table as the user scrolls
-        "progressive_load_delay": 300, # trigger next data request when scroll bar is 300px or less from the bottom of the table
+        "progressive_load_scroll_margin": 300, # trigger next data request when scroll bar is 300px or less from the bottom of the table
     }
 
 ```
