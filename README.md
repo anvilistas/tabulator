@@ -11,7 +11,25 @@ This app is available as a [third party dependency](https://anvil.works/forum/t/
 
 ---
 
-## Differences between JS Tabulator and Anvil Tabulator
+
+# Docs
+
+- [Creating a Tabulator Component](#creating-a-tabulator-component)
+- [Defining options](#defining-options)
+- [Events](#events)
+- [Methods](#methods)
+- [Table Built](#table-built)
+- [Snake Case](#snake-case)
+- [Formatters, Sorters, Editors, Filters](#formatters-sorters-editors-filters)
+- [Dates and Datetimes](#dates-and-datetimes)
+- [Modules](#modules)
+- [Themes](#themes)
+- [Default Options](#default-options)
+- [App Tables](#app-tables)
+
+
+---
+### Creating a Tabulator Component
 
 In JS Tabulator a tabulator instance is defined like:
 ```js
@@ -38,6 +56,8 @@ In Anvil Tabulator add the Tabulator Component in the design view and then set t
     ]
 
 ```
+
+---
 
 ### Defining options
 
@@ -75,6 +95,8 @@ self.tabulator.options["langs"] = {
 }
 ```
 
+---
+
 ### Events
 
 Some JS Tabulator events are available in the design view.
@@ -96,21 +118,27 @@ def header_click(self, e, column):
     alert(f"{column.get_field()!r} column was clicked")
 ```
 
+---
+
 ### Methods
 
 Some JS Tabulator methods are available in the Anvil autocompleter.
 Any method in the autocompleter is just there for convenience.
-Calling a JS Tabulator method directly calls the JS method.
+Calling an Anvil Tabulator method directly calls the underlying JS method.
 
 Any methods not available in the autocompleter can also be called.
 Check the call signatures in the JS Tabulator docs.
 
-Keyword arguments are not supported (JS doesn't do keyword arguments).
 
 ```python
 # not available in the autocomplete but can still be called
 self.tabulator.previous_page()
 ```
+Keyword arguments are not supported (JS doesn't have keyword arguments).
+
+*(The only exception to this is `set_query()` which does support kwargs)*
+
+---
 
 ### Table Built
 
@@ -122,7 +150,7 @@ Doing something like this in the `__init__` method
 ```python
 self.tabulator.set_sort("name", "asc")
 ```
-would throw an `AttributeError` since the tabulator instance does not exist yet.
+would throw an `AttributeError` or `RuntimeError` since the tabulator instance does not exist yet.
 
 Instead do:
 ```python
@@ -135,10 +163,12 @@ The exception to this is the `self.tabulator.on()` and `self.tabulator.off()` me
 These can be called before the tabulator is built.
 
 
+---
+
 ### Snake Case
 
 JS tabulator uses camelCase. Whereas Python formatting guide suggests snake case.
-You can use camelCase but if you prefer to use snake case it is supported in the following places.
+You can always use camelCase but if you prefer to use snake case it is supported in the following places.
 
 - any tabulator instance method
 - any method called on a tabulator row, cell or column
@@ -147,7 +177,7 @@ You can use camelCase but if you prefer to use snake case it is supported in the
 - keys in the tabulator `column` definition
 - keys in the tabulator `column_defaults` definition
 
-Snake case is not supported for any values in the definition.
+Snake case is not supported for any values in a definition.
 
 e.g.
 
@@ -165,6 +195,8 @@ self.tabulator.columns = [
 
 `labelField` and `urlPrefix` are part of the `formatter_params` value so must be camelCase.
 
+
+---
 
 ### Formatters, Sorters, Editors, Filters
 
@@ -322,6 +354,9 @@ def custom_filter(data, **params):
 self.tabulator.set_filter(custom_filter, {"height":3})
 
 ```
+
+---
+
 ### Dates and Datetimes
 
 JS Tabulator favours strings as dates and datetimes whereas
@@ -372,6 +407,7 @@ Otherwise, it can be set to an Anvil.tz object e.g.
 
 ```
 
+---
 
 ### Modules
 
@@ -423,6 +459,8 @@ Tabulator.modules.add("Persistance")
 or by overriding the modules property with a new `set`, `list`, `tuple` of modules.
 
 
+---
+
 ### Themes
 
 Anvil Tabulator uses JS Tabulator's `"bootstrap3"` theme.
@@ -459,6 +497,8 @@ other common CSS classes for the bootstrap theme can be added like
 self.tabulator.options.update(css_class=["table_striped", "table_bordered", "table_condensed"])
 ```
 
+---
+
 ### Default Options
 
 JS Tabulator has various default options.
@@ -477,6 +517,8 @@ Tabulator.default_options["layout"] = "fitData"
 Note that `default_options` will not override any designer propeties.
 e.g. setting `Tabulator.default_options["header_visible"] = False` will have no effect.
 
+
+---
 
 ### App Tables
 
