@@ -1,57 +1,56 @@
 properties:
-- {name: height, type: string, default_value: '', default_binding_prop: true, group: appearance,
-  important: false}
-- {name: data, type: object, default_value: null, important: true, description: typically a list of dicts}
-- {name: layout, type: string, default_value: fitColumns, group: columns, important: false}
-- {name: columns, type: object, default_value: null, important: true, description: column definitions should be a list of dicts. Each dict represents a column with options. See Tabulator.info for full documentation on available options}
-- {name: pagination_size_selector, type: string, default_value: 6 10 20, group: pagination,
-  important: false}
-- {name: index, type: string, default_value: id, important: true, description: This should be a unique identifier for a row.}
 - {name: auto_columns, type: boolean, default_value: null, group: columns, important: false}
-- {name: resizable_columns, type: boolean, default_value: true, group: columns, important: false}
-- {name: movable_columns, type: boolean, default_value: false, group: columns, important: false}
-- {name: header_align, type: string, default_value: middle, group: header, important: false}
-- {name: header_visible, type: boolean, default_value: true, group: header, important: true}
-- {name: pagination, type: boolean, default_value: true, group: pagination, important: true}
-- {name: pagination_size, type: number, default_value: 10, group: pagination, important: false}
-- {name: pagination_button_count, type: number, default_value: 5, group: pagination,
-  important: false}
-- {name: row_selectable, type: string, default_value: checkbox, group: appearance,
-  important: false}
+- {name: header_visible, type: boolean, default_value: true, group: header, important: false}
+- {name: height, type: string, default_value: '', default_binding_prop: true, group: appearance,
+  important: true}
+- {name: index, type: string, default_value: id, important: true, description: This should be a unique identifier for a row.}
+- {name: pagination, type: boolean, default_value: true, group: pagination, important: false}
+- {name: pagination_size, type: number, default_value: 5, group: pagination, important: false}
+- {name: border, type: string, default_value: '', group: appearance, important: false}
 - {name: spacing_above, type: string, default_value: small, group: layout, important: false}
 - {name: spacing_below, type: string, default_value: small, group: layout, important: false}
 - {name: visible, type: boolean, default_value: true, group: appearance, important: true}
-- {name: border, type: string, default_value: '', group: appearance, important: false}
-- {name: langs, type: object, default_value: null, description: set lang options,
-  important: false}
 - {name: role, type: string, default_value: '', group: appearance, important: false}
+- {name: data, type: object, default_value: null, important: true, description: typically a list of dicts}
+- {name: columns, type: object, default_value: null, important: true, description: column definitions should be a list of dicts. Each dict represents a column with options. See Tabulator.info for full documentation on available options}
+- {name: column_defaults, type: object, default_value: null, description: set to a dict at runtime}
 is_package: true
 events:
 - name: row_click
   default_event: true
   description: when a row is clicked
   parameters:
-  - {name: row, description: ''}
+  - {name: row, description: the tabulator row object}
+- name: row_tap
+  default_event: true
+  description: when a row is tapped on a mobile device
+  parameters:
+  - {name: row, description: the tabulator row object}
+- name: cell_click
+  description: when a cell is clicked
+  parameters:
+  - {name: cell, description: the tabulator cell object}
+- name: cell_tap
+  description: when a cell is tapped on a mobile device
+  parameters:
+  - {name: cell, description: the tabulator cell object}
+- name: cell_edited
+  description: when a cell is edited
+  parameters:
+  - {name: cell, description: the tabulator cell object}
 - name: row_selected
   description: when a row is selected
   parameters:
-  - {name: row, description: ''}
-- name: row_selection_change
+  - {name: row, description: the tabulator row object}
+- name: row_selection_changed
   parameters:
   - {name: rows}
+  - {name: data}
   description: when the row selection changes
-- name: cell_click
-  description: when a cell is clicked - event_args include field and row
+- name: row_deselected
+  description: when a row is deselected
   parameters:
-  - {name: field}
-  - {name: row}
-  - {name: cell, description: the tabulator cell object}
-- name: cell_edited
-  description: when a cell is edited - event_args include field and row
-  parameters:
-  - {name: field}
-  - {name: row}
-  - {name: cell, description: the tabulator cell object}
+  - {name: row, description: the tabulator row object}
 - name: page_loaded
   description: when a page is loaded
   parameters:
@@ -60,6 +59,7 @@ events:
   description: when the row is rendered - manipulate the tabulator row object
   parameters:
   - {name: row, description: the tabulator row object}
+- {name: table_built, description: when the tabulator instance has been built - it is safe to call tabulator methods}
 - {name: show, description: when the tabulator is shown}
 - {name: hide, description: when the tabulator is hidden}
 custom_component: true
@@ -67,11 +67,16 @@ components: []
 container:
   type: HtmlTemplate
   properties: {tooltip: '', background: '', foreground: '', border: '', visible: true,
-    role: null, html: "<div class='placeholder-table'></div>\n\n<script>\n  \n$('.placeholder-table').each(function()\
-      \ {\n    table = new Tabulator(this, {\n    layout:\"fitColumns\",\n    pagination:\"\
-      local\",\n    paginationSize:6,\n    paginationSizeSelector:[3, 6, 10],\n  \
-      \  autoColumns: true,\n  \tdata: [{columnA:'columnA', columnB:'columnB', columnC:'columnC',\
-      \ columnD:'columnD'},\n          {columnA:'columnA', columnB:'columnB', columnC:'columnC',\
-      \ columnD:'columnD'}],\n\t});\n\n});\n</script>\n\n<style>\n  .tabulator-row\
-      \ .tabulator-cell {\n    font-style: italic;\n  }\n</style>\n\n"}
-  event_bindings: {show: form_show}
+    role: null, html: "<div class='placeholder-table'></div>\n\n<script type=\"module\"\
+      \ type=\"text/javascript\">\nimport {TabulatorFull as Tabulator} from \"https://cdn.skypack.dev/tabulator-tables@5.1.2\"\
+      ;\n\nlet p = Promise.resolve();\nif (!window.anvilTabulatorLoaded) {\n  window.anvilTabulatorLoaded\
+      \ = true;\n  const l = document.createElement(\"link\");\n  l.href = \"https://cdn.skypack.dev/tabulator-tables@5.1.2/dist/css/tabulator_bootstrap3.min.css\"\
+      ;\n  l.rel = \"stylesheet\";\n  p = new Promise((resolve) => {\n    l.onload\
+      \ = resolve;\n    l.onerror = resolve;\n  });\n  document.body.appendChild(l);\n\
+      }\n\np.then(() => {\n  $('.placeholder-table').each(function() {\n    new Tabulator(this,\
+      \ {\n          autoColumns: true,\n          layout:\"fitColumns\",\n      \
+      \    pagination: true,\n          paginationSize:2,\n          data: new Array(6).fill({columnA:'columnA',\
+      \ columnB:'columnB', columnC:'columnC', columnD:'columnD'})\n    });\n  });\n\
+      });\n\n</script>\n\n<style>\n.tabulator-row .tabulator-cell {\n    font-style:\
+      \ italic;\n}\n</style>\n\n"}
+  event_bindings: {show: _show}
