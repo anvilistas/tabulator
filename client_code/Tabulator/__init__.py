@@ -63,7 +63,8 @@ class Tabulator(TabulatorTemplate):
         # public
         self.options = {}
 
-        dom_node.replaceChildren()
+        while dom_node.lastChild:
+            dom_node.lastChild.remove()
         self.init_components(**_merge(_default_props, properties))
 
     @classmethod
