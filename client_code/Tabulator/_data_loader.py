@@ -10,28 +10,41 @@ from anvil.tables import order_by
 from ._module_helpers import AbstractModule, tabulator_module
 
 
+def feildgetter(*fields):
+    if len(fields) == 1:
+        field = fields[0]
+
+        def g(row, obj):
+            obj[field] = row[field]
+
+    else:
+
+        def g(row, obj):
+            for field in fields[:-1]:
+                if row is not None:
+                    row = row[field]
+                obj = obj.setdefault(field, {})
+
+            if row is not None:
+                obj[fields[-1]] = row[fields[-1]]
+
+    return g
+
+
 class CachedSearch:
-    def __init__(self, search, index, index_cache, col_spec):
+    def __init__(self, search, index, index_cache, field_getters):
         self.iter = iter(search)
         self.len = len(search)
         self.cache = []
         self.index_cache = index_cache
         self.index = index
-        self.col_spec = col_spec
+        self.field_getters = field_getters
 
     def row_to_dict(self, row):
         # we do 1 level deep
         as_dict = {}
-        for col in self.col_spec:
-            key = col["name"]
-            as_dict[key] = val = row[key]
-            if val is None:
-                continue
-            type = col["type"]
-            if type == "link_single":
-                as_dict[key] = {**val}
-            elif type == "link_multiple":
-                as_dict[key] = [{**r} for r in val]
+        for getter in self.field_getters:
+            getter(row, as_dict)
         return as_dict
 
     def get_next(self):
@@ -84,7 +97,9 @@ class AppTableLoader(AbstractModule):
         mod.registerComponentFunction("row", "getTableRow", self.get_table_row)
         mod.registerComponentFunction("cell", "getTableRow", self.get_table_row)
         self.db = None
+        self.field_getters = None
         self.col_spec = None
+        self.auto_cols = False
         self.search_cache = {}
         self.index_cache = {}
         self.index = None
@@ -102,12 +117,14 @@ class AppTableLoader(AbstractModule):
             )
         self.db = db
         self.index = options.index
+        self.auto_cols = options.autoColumns
         options.paginationMode = "remote"
         options.sortMode = "remote"
         options.filterMode = "remote"
         self.mod.subscribe("data-loading", self.request_data_check)
         self.mod.subscribe("data-load", self.request_data)
         self.mod.subscribe("row-data-retrieve", self.retrieve_data)
+        self.mod.subscribe("columns-loaded", self.columns_loaded)
         self.context = (
             loading_indicator
             if options.get("loadingIndicator")
@@ -127,13 +144,22 @@ class AppTableLoader(AbstractModule):
         return self.db is not None
 
     @report_exceptions
+    def columns_loaded(self):
+        cols = self.table.columnManager.columns
+        field_structures = {(self.index,)}
+        field_structures |= set(
+            tuple(c.fieldStructure) for c in cols if c.fieldStructure
+        )
+        self.field_getters = [feildgetter(*fields) for fields in field_structures]
+
+    @report_exceptions
     def request_data(self, data, params, config, silent, prev):
         if silent:
             self.refresh()
 
-        if self.col_spec is None:
-            # this will cause a server call so only do it now
+        if self.auto_cols and self.col_spec is None:
             self.col_spec = self.db.list_columns()
+            self.field_getters = [feildgetter(c["name"]) for c in self.col_spec]
 
         ordering = self.get_ordering(params)
         query = params["query"]
@@ -143,7 +169,7 @@ class AppTableLoader(AbstractModule):
             if search is None:
                 search = self.db.search(*ordering, *query.args, **query.kws)
                 search = CachedSearch(
-                    search, self.index, self.index_cache, self.col_spec
+                    search, self.index, self.index_cache, self.field_getters
                 )
                 self.search_cache[cache_key] = search
             p = Promise.resolve(search.get_data(params["page"], params["size"]))
