@@ -116,12 +116,16 @@ class Tabulator(TabulatorTemplate):
         self._initialize()
 
     def __getattr__(self, attr):
-        if self._t is None:
-            if attr in _methods:
-                msg = "Calling a method before the tabulator component is built, use the 'table_built' event"
-                raise RuntimeError(msg)
+        if self._t is not None:
+            attr = _toCamel(attr)
+            if attr in ("setData", "replaceData"):
+                self._t.clearAppTableCache()
+            return getattr(self._t, attr)
+        elif attr in _methods:
+            msg = "Calling a method before the tabulator component is built, use the 'table_built' event"
+            raise RuntimeError(msg)
+        else:
             raise AttributeError(attr)
-        return getattr(self._t, _toCamel(attr))
 
     def add_event_handler(self, event, handler):
         super().add_event_handler(event, handler)

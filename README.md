@@ -595,5 +595,6 @@ def select_visible(self):
     self.tabulator.get_table_rows("visible") # returns a list of app_table rows
 ```
 
-If you need to reload/refresh the data in the tabulator component, you can call `self.tabulator.replace_data()`.
+If you need to reload/refresh the data in the tabulator component, you can call `self.tabulator.replace_data()` or `self.tabulator.set_data()`.
 This will create a fresh call to `search()` on the `app_table`, effectively clearing any cached values.
+You can stay on the same page by surrounding the call with `x = self.tabulator.get_page()` and `self.tabulator.set_page(x)`.

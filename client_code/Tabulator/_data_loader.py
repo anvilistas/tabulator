@@ -93,6 +93,7 @@ class AppTableLoader(AbstractModule):
         super().__init__(mod, table)
         mod.registerTableOption("appTable", None)
         mod.registerTableOption("loadingIndicator", True)
+        mod.registerTableFunction("clearAppTableCache", self.reset_cache)
         mod.registerTableFunction("getTableRows", self.get_table_rows)
         mod.registerComponentFunction("row", "getTableRow", self.get_table_row)
         mod.registerComponentFunction("cell", "getTableRow", self.get_table_row)
@@ -131,7 +132,7 @@ class AppTableLoader(AbstractModule):
             else no_loading_indicator
         )
 
-    def refresh(self):
+    def reset_cache(self):
         self.search = None
         self.search_cache.clear()
         self.index_cache.clear()
@@ -154,9 +155,6 @@ class AppTableLoader(AbstractModule):
 
     @report_exceptions
     def request_data(self, data, params, config, silent, prev):
-        if silent:
-            self.refresh()
-
         if self.auto_cols and self.col_spec is None:
             self.col_spec = self.db.list_columns()
             self.field_getters = [feildgetter(c["name"]) for c in self.col_spec]
