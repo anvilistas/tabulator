@@ -1,3 +1,11 @@
+
+# Unreleased
+
+## New Features
+- support models as valid data for a Tabulator component
+  https://github.com/s-cork/Tabulator/issues/23
+
+
 # v2.0.0
 
 ## Breaking changes

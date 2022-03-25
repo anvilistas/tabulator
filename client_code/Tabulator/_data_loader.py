@@ -64,6 +64,13 @@ class DataIterator:
                 self.cache_next()
             except StopIteration:
                 return
+            except (AttributeError, KeyError) as e:
+                if self.id_field not in str(e):
+                    raise e
+                tp = type(e)
+                field = "key" if tp is KeyError else "attribute"
+                msg = f"{e} - each data object must have a unique {self.id_field!r} {field}. You can change the required {field} by changing the tabulator 'index' property"
+                raise tp(msg)
 
     def get_remote_data(self, page, size):
         last_page = ceil(self.len / size)
@@ -94,7 +101,7 @@ loading_indicator = LoadingInidcator()
 
 
 @tabulator_module("appTableLoader", moduleInitOrder=1)
-class AppTableLoader(AbstractModule):
+class CustomDataLoader(AbstractModule):
     def __init__(self, mod, table):
         super().__init__(mod, table)
         mod.registerTableOption("appTable", None)
