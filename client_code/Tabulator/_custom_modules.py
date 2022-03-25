@@ -253,7 +253,7 @@ class OptionVerifier(AbstractModule):
         raise AttributeError(msg)
 
 
-from ._data_loader import AppTableLoader, QueryModule
+from ._data_loader import CustomDataLoader, QueryModule
 
 custom_modules = [
     cls.Module
@@ -263,7 +263,7 @@ custom_modules = [
         EditorWrapper,
         FormatterWrapper,
         SorterWrapper,
-        AppTableLoader,
+        CustomDataLoader,
         QueryModule,
         ScrollPosMaintainer,
         OptionVerifier,

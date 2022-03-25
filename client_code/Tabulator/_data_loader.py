@@ -64,6 +64,13 @@ class DataIterator:
                 self.cache_next()
             except StopIteration:
                 return
+            except (AttributeError, KeyError) as e:
+                if self.id_field not in str(e):
+                    raise e
+                tp = type(e)
+                field = "key" if tp is KeyError else "attribute"
+                msg = f"{e} - each data object must have a unique {self.id_field!r} {field}. You can change the required {field} by changing the tabulator 'index' property"
+                raise tp(msg)
 
     def get_remote_data(self, page, size):
         last_page = ceil(self.len / size)
@@ -94,7 +101,7 @@ loading_indicator = LoadingInidcator()
 
 
 @tabulator_module("appTableLoader", moduleInitOrder=1)
-class AppTableLoader(AbstractModule):
+class CustomDataLoader(AbstractModule):
     def __init__(self, mod, table):
         super().__init__(mod, table)
         mod.registerTableOption("appTable", None)
@@ -228,7 +235,7 @@ class AppTableLoader(AbstractModule):
 
     @report_exceptions
     def retrieve_data(self, row, transformType, prev):
-        if transformType != "table_row":
+        if transformType != "py_source":
             return prev or row.data
         data = row.data
         index = data[self.id_field]
@@ -237,10 +244,10 @@ class AppTableLoader(AbstractModule):
 
     def get_py_source(self, row_or_cell):
         row = row_or_cell.get("row", row_or_cell)
-        return row.getData("table_row")
+        return row.getData("py_source")
 
     def get_py_sources(self, active=None):
-        return self.table.rowManager.getData(active, "table_row")
+        return self.table.rowManager.getData(active, "py_source")
 
 
 class Query:
