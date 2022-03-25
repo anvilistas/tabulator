@@ -488,13 +488,13 @@ To add bootstrap3 alternative table stripes you can add the `table-striped` CSS 
 using the `css_class` option.
 
 ```python
-self.tabulator.options.update(css_class="table_striped")
+self.tabulator.options.update(css_class="table-striped")
 ```
 
 other common CSS classes for the bootstrap theme can be added like
 
 ```python
-self.tabulator.options.update(css_class=["table_striped", "table_bordered", "table_condensed"])
+self.tabulator.options.update(css_class=["table-striped", "table-bordered", "table-condensed"])
 ```
 
 ---
