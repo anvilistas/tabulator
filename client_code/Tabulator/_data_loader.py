@@ -228,7 +228,7 @@ class AppTableLoader(AbstractModule):
 
     @report_exceptions
     def retrieve_data(self, row, transformType, prev):
-        if transformType != "table_row":
+        if transformType != "py_source":
             return prev or row.data
         data = row.data
         index = data[self.id_field]
@@ -237,10 +237,10 @@ class AppTableLoader(AbstractModule):
 
     def get_py_source(self, row_or_cell):
         row = row_or_cell.get("row", row_or_cell)
-        return row.getData("table_row")
+        return row.getData("py_source")
 
     def get_py_sources(self, active=None):
-        return self.table.rowManager.getData(active, "table_row")
+        return self.table.rowManager.getData(active, "py_source")
 
 
 class Query:
