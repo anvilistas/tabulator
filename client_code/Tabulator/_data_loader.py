@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2022 Stu Cork
 from math import ceil
+from operator import getitem
 
 from anvil.js import report_exceptions
 from anvil.js.window import Promise
@@ -10,60 +11,61 @@ from anvil.tables import order_by
 from ._module_helpers import AbstractModule, tabulator_module
 
 
-def feildgetter(*fields):
+def feildgetter(*fields, getter=None):
+    getter = getter or getitem
+
     if len(fields) == 1:
         field = fields[0]
 
         def g(row, obj):
-            obj[field] = row[field]
+            obj[field] = getter(row, field)
 
     else:
 
         def g(row, obj):
             for field in fields[:-1]:
                 if row is not None:
-                    row = row[field]
+                    # None because of linked rows being None
+                    row = getter(row, field)
                 obj = obj.setdefault(field, {})
 
             if row is not None:
-                obj[fields[-1]] = row[fields[-1]]
+                obj[fields[-1]] = getter(row, fields[-1])
 
     return g
 
 
-class CachedSearch:
-    def __init__(self, search, index, index_cache, field_getters):
-        self.iter = iter(search)
-        self.len = len(search)
+class DataIterator:
+    def __init__(self, data_source, id_field, id_cache, field_getters, getter):
+        self.iter = iter(data_source)
+        self.len = len(data_source)
         self.cache = []
-        self.index_cache = index_cache
-        self.index = index
+        self.id_field = id_field
+        self.id_cache = id_cache
         self.field_getters = field_getters
+        self.getter = getter
 
-    def row_to_dict(self, row):
+    def to_dict(self, row):
         # we do 1 level deep
         as_dict = {}
-        for getter in self.field_getters:
-            getter(row, as_dict)
+        for f in self.field_getters:
+            f(row, as_dict)
         return as_dict
 
-    def get_next(self):
-        try:
-            row = next(self.iter)
-        except StopIteration:
-            pass
-        else:
-            index = row[self.index]
-            cached = self.index_cache.get(index)
-            if cached is None:
-                cached = self.index_cache[index] = row
-            self.cache.append(self.row_to_dict(row))
+    def cache_next(self):
+        pysource = next(self.iter)
+        index = self.getter(pysource, self.id_field)
+        self.id_cache.setdefault(index, pysource)
+        self.cache.append(self.to_dict(pysource))
 
     def paginate(self, upto):
         for _ in range(upto):
-            self.get_next()
+            try:
+                self.cache_next()
+            except StopIteration:
+                return
 
-    def get_data(self, page, size):
+    def get_remote_data(self, page, size):
         last_page = ceil(self.len / size)
 
         current_index = page * size
@@ -74,6 +76,10 @@ class CachedSearch:
 
         data = self.cache[prev_index:current_index]
         return {"data": data, "last_page": last_page}
+
+    def get_all_data(self):
+        self.paginate(self.len)
+        return self.cache
 
 
 class LoadingInidcator:
@@ -92,85 +98,132 @@ class AppTableLoader(AbstractModule):
     def __init__(self, mod, table):
         super().__init__(mod, table)
         mod.registerTableOption("appTable", None)
+        mod.registerTableOption("getter", None)
+        mod.registerTableOption("useModel", False)
         mod.registerTableOption("loadingIndicator", True)
         mod.registerTableFunction("clearAppTableCache", self.reset_cache)
-        mod.registerTableFunction("getTableRows", self.get_table_rows)
-        mod.registerComponentFunction("row", "getTableRow", self.get_table_row)
-        mod.registerComponentFunction("cell", "getTableRow", self.get_table_row)
+        mod.registerTableFunction("getTableRows", self.get_py_sources)
+        mod.registerTableFunction("getModels", self.get_py_sources)
+        mod.registerComponentFunction("row", "getTableRow", self.get_py_source)
+        mod.registerComponentFunction("cell", "getTableRow", self.get_py_source)
+        mod.registerComponentFunction("row", "getModel", self.get_py_source)
+        mod.registerComponentFunction("cell", "getModel", self.get_py_source)
         self.db = None
         self.field_getters = None
+        self.getter = None
         self.col_spec = None
         self.auto_cols = False
-        self.search_cache = {}
-        self.index_cache = {}
-        self.index = None
+        self.iter_cache = {}
+        self.id_cache = {}
+        self.id_field = None
         self.context = None
+        self.use_model = False
 
-    @report_exceptions
-    def initialize(self):
-        options = self.table.options
-        db = options.get("appTable")
-        if db is None:
-            return
-        elif not hasattr(db, "search"):
+    def initialize_db(self, db, options):
+        if not hasattr(db, "search"):
             raise TypeError(
                 f"Expected a table as the tabulator 'app_table' options, got {type(db).__name__}"
             )
         self.db = db
-        self.index = options.index
-        self.auto_cols = options.autoColumns
         options.paginationMode = "remote"
         options.sortMode = "remote"
         options.filterMode = "remote"
-        self.mod.subscribe("data-loading", self.request_data_check)
-        self.mod.subscribe("data-load", self.request_data)
-        self.mod.subscribe("row-data-retrieve", self.retrieve_data)
-        self.mod.subscribe("columns-loaded", self.columns_loaded)
+        self.mod.subscribe("data-loading", self.db_data_check)
+        self.mod.subscribe("data-load", self.request_db_data)
         self.context = (
             loading_indicator
             if options.get("loadingIndicator")
             else no_loading_indicator
         )
 
+    def initialize_model(self, options):
+        modes = ("paginationMode", "filterMode", "sortMode")
+        if any(options.get(mode) == "remote" for mode in modes):
+            msg = "cannot use a model with remote filtering, pagination or sorting"
+            raise TypeError(msg)
+        self.use_model = True
+        self.mod.subscribe("data-loading", self.model_data_check)
+        self.mod.subscribe("data-load", self.request_model_data)
+
+    @report_exceptions
+    def initialize(self):
+        options = self.table.options
+        self.id_field = options.index
+        db = options.get("appTable")
+        if db is not None:
+            self.initialize_db(db, options)
+        elif options.get("useModel"):
+            self.initialize_model(options)
+        else:
+            return
+        self.mod.subscribe("row-data-retrieve", self.retrieve_data)
+        self.mod.subscribe("columns-loaded", self.columns_loaded)
+        self.auto_cols = options.autoColumns
+
     def reset_cache(self):
         self.search = None
-        self.search_cache.clear()
-        self.index_cache.clear()
+        self.iter_cache.clear()
+        self.id_cache.clear()
 
     def get_ordering(self, params):
         sort = params.get("sort") or ()
         return tuple(order_by(s.field, s.dir == "asc") for s in sort)
 
-    def request_data_check(self, data, params, config, silent):
+    def db_data_check(self, data, params, config, silent):
         return self.db is not None
+
+    def model_data_check(self, data, params, config, silent):
+        return type(data) is list and self.use_model
 
     @report_exceptions
     def columns_loaded(self):
         cols = self.table.columnManager.columns
-        field_structures = {(self.index,)}
+        field_structures = {(self.id_field,)}
         field_structures |= set(
             tuple(c.fieldStructure) for c in cols if c.fieldStructure
         )
-        self.field_getters = [feildgetter(*fields) for fields in field_structures]
+        self.getter = self.table.options.getter or getitem
+        self.field_getters = [
+            feildgetter(*fields, getter=self.getter) for fields in field_structures
+        ]
 
     @report_exceptions
-    def request_data(self, data, params, config, silent, prev):
+    def request_model_data(self, data, params, config, silent, prev):
+        if self.auto_cols and self.col_spec is None and len(data):
+            self.col_spec = data[0].__dict__.keys()
+            self.field_getters = [
+                feildgetter(key, getter=self.getter) for key in self.col_spec
+            ]
+
+        iter_ = DataIterator(
+            data, self.id_field, self.id_cache, self.field_getters, self.getter
+        )
+        return Promise.resolve(iter_.get_all_data())
+
+    @report_exceptions
+    def request_db_data(self, data, params, config, silent, prev):
         if self.auto_cols and self.col_spec is None:
-            self.col_spec = self.db.list_columns()
-            self.field_getters = [feildgetter(c["name"]) for c in self.col_spec]
+            self.col_spec = (c["name"] for c in self.db.list_columns())
+            self.field_getters = [
+                feildgetter(key, getter=self.getter) for key in self.col_spec
+            ]
 
         ordering = self.get_ordering(params)
         query = params["query"]
         cache_key = hash((ordering, query))
-        search = self.search_cache.get(cache_key)
+        iter_ = self.iter_cache.get(cache_key)
         with self.context:
-            if search is None:
+            if iter_ is None:
                 search = self.db.search(*ordering, *query.args, **query.kws)
-                search = CachedSearch(
-                    search, self.index, self.index_cache, self.field_getters
+                iter_ = DataIterator(
+                    search,
+                    self.id_field,
+                    self.id_cache,
+                    self.field_getters,
+                    self.getter,
                 )
-                self.search_cache[cache_key] = search
-            p = Promise.resolve(search.get_data(params["page"], params["size"]))
+                self.iter_cache[cache_key] = iter_
+            p = Promise.resolve(iter_.get_remote_data(params["page"], params["size"]))
         return p
 
     @report_exceptions
@@ -178,15 +231,15 @@ class AppTableLoader(AbstractModule):
         if transformType != "table_row":
             return prev or row.data
         data = row.data
-        index = data[self.index]
-        retrieved = self.index_cache[index]
+        index = data[self.id_field]
+        retrieved = self.id_cache[index]
         return retrieved
 
-    def get_table_row(self, row_or_cell):
+    def get_py_source(self, row_or_cell):
         row = row_or_cell.get("row", row_or_cell)
         return row.getData("table_row")
 
-    def get_table_rows(self, active=None):
+    def get_py_sources(self, active=None):
         return self.table.rowManager.getData(active, "table_row")
 
 
