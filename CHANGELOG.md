@@ -1,5 +1,5 @@
 
-# Unreleased
+# v2.1.0
 
 ## New Features
 - support models as valid data for a Tabulator component
