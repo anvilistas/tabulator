@@ -76,7 +76,7 @@ class DataIterator:
                     raise e
                 tp = type(e)
                 field = _error_to_field.get(tp, "field")
-                msg = f"{e} - each data object must have a unique {self.id_field!r} {field}. You can change the required {field} by changing the tabulator 'index' property"
+                msg = f"{e} - each data object must have a unique value for the {field} {self.id_field!r}. You can change the required {field} by changing the tabulator 'index' property"
                 raise tp(msg)
 
     def get_remote_data(self, page, size):
