@@ -60,6 +60,8 @@ class DataIterator:
         self.field_getters = data_loader.field_getters
         self.index_getter = data_loader.index_getter
         self.data_loader = data_loader
+        if self.data_loader.data_initialized:
+            self.get_index = self.index_getter
 
     def to_dict(self, row):
         as_dict = {}
@@ -72,37 +74,38 @@ class DataIterator:
         self.data_loader.table.options.index = _ID  # this seems ok to set dynamically
         self.index_getter = self.data_loader.index_getter = row_id_fallback
 
+    def get_index(self, pysource, id_field):
+        # this only happens once! we assume that if the first data object has an id we're good
+        try:
+            rv = self.index_getter(pysource, id_field)
+            self.get_index = self.index_getter
+            return rv
+        except TableError as e:
+            if id_field == _ID:
+                raise e
+        except (AttributeError, KeyError) as e:
+            tp = type(e)
+            field = _error_to_field.get(tp, "field")
+            msg = f"{e} - each data object must have a unique value for the {field} {self.id_field!r}."
+            f"You can change the required {field} by changing the tabulator 'index' property"
+            raise tp(msg)
+        self.fallback_to_row_id()
+        return self.get_index(pysource, _ID)
+
     def cache_next(self):
         pysource = next(self.iter)
-        index = self.index_getter(pysource, self.id_field)
+        index = self.get_index(pysource, self.id_field)
         self.id_cache.setdefault(index, pysource)
         data = self.to_dict(pysource)
         data[self.id_field] = index
         self.cache.append(data)
 
     def paginate(self, upto):
-        for i in range(upto):
-            try:
+        try:
+            for _ in range(upto):
                 self.cache_next()
-            except StopIteration:
-                return
-            except (AttributeError, KeyError, TableError) as e:
-                if self.id_field not in str(e):
-                    raise e
-                tp = type(e)
-
-                if (
-                    i == 0
-                    and tp is TableError
-                    and not self.data_loader.data_initialized
-                ):
-                    self.fallback_to_row_id()
-                    return self.paginate(upto)
-
-                field = _error_to_field.get(tp, "field")
-                msg = f"{e} - each data object must have a unique value for the {field} {self.id_field!r}."
-                f"You can change the required {field} by changing the tabulator 'index' property"
-                raise tp(msg)
+        except StopIteration:
+            pass
 
     def get_remote_data(self, page, size):
         last_page = ceil(self.len / size)
