@@ -1,14 +1,18 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2022 Stu Cork
+from functools import lru_cache
 from math import ceil
 from operator import getitem
 
 from anvil.js import report_exceptions
 from anvil.js.window import Promise
 from anvil.server import no_loading_indicator
-from anvil.tables import order_by
+from anvil.tables import TableError, order_by
 
+from ._hashable_queries import make_hashable
 from ._module_helpers import AbstractModule, tabulator_module
+
+make_hashable()
 
 
 def feildgetter(*fields, getter=None):
@@ -33,6 +37,9 @@ def feildgetter(*fields, getter=None):
                 obj[fields[-1]] = getter(row, fields[-1])
 
     return g
+
+
+_error_to_field = {KeyError: "key", AttributeError: "attribute", TableError: "column"}
 
 
 class DataIterator:
@@ -64,12 +71,12 @@ class DataIterator:
                 self.cache_next()
             except StopIteration:
                 return
-            except (AttributeError, KeyError) as e:
+            except (AttributeError, KeyError, TableError) as e:
                 if self.id_field not in str(e):
                     raise e
                 tp = type(e)
-                field = "key" if tp is KeyError else "attribute"
-                msg = f"{e} - each data object must have a unique {self.id_field!r} {field}. You can change the required {field} by changing the tabulator 'index' property"
+                field = _error_to_field.get(tp, "field")
+                msg = f"{e} - each data object must have a unique value for the {field} {self.id_field!r}. You can change the required {field} by changing the tabulator 'index' property"
                 raise tp(msg)
 
     def get_remote_data(self, page, size):
@@ -120,7 +127,6 @@ class CustomDataLoader(AbstractModule):
         self.getter = None
         self.col_spec = None
         self.auto_cols = False
-        self.iter_cache = {}
         self.id_cache = {}
         self.id_field = None
         self.context = None
@@ -168,9 +174,19 @@ class CustomDataLoader(AbstractModule):
         self.auto_cols = options.autoColumns
 
     def reset_cache(self):
-        self.search = None
-        self.iter_cache.clear()
+        self.get_search_iter.cache_clear()
         self.id_cache.clear()
+
+    @lru_cache
+    def get_search_iter(self, ordering, query):
+        search = self.db.search(*ordering, *query.args, **query.kws)
+        return DataIterator(
+            search,
+            self.id_field,
+            self.id_cache,
+            self.field_getters,
+            self.getter,
+        )
 
     def get_ordering(self, params):
         sort = params.get("sort") or ()
@@ -217,19 +233,8 @@ class CustomDataLoader(AbstractModule):
 
         ordering = self.get_ordering(params)
         query = params["query"]
-        cache_key = hash((ordering, query))
-        iter_ = self.iter_cache.get(cache_key)
         with self.context:
-            if iter_ is None:
-                search = self.db.search(*ordering, *query.args, **query.kws)
-                iter_ = DataIterator(
-                    search,
-                    self.id_field,
-                    self.id_cache,
-                    self.field_getters,
-                    self.getter,
-                )
-                self.iter_cache[cache_key] = iter_
+            iter_ = self.get_search_iter(ordering, query)
             p = Promise.resolve(iter_.get_remote_data(params["page"], params["size"]))
         return p
 
