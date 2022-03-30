@@ -4,6 +4,7 @@ from functools import lru_cache
 from math import ceil
 from operator import getitem
 
+import anvil
 from anvil.js import report_exceptions
 from anvil.js.window import Promise
 from anvil.server import no_loading_indicator
@@ -15,7 +16,7 @@ from ._module_helpers import AbstractModule, tabulator_module
 make_hashable()
 
 
-def feildgetter(*fields, getter=None):
+def fieldgetter(*fields, getter=None):
     getter = getter or getitem
 
     if len(fields) == 1:
@@ -39,34 +40,45 @@ def feildgetter(*fields, getter=None):
     return g
 
 
+def row_id_fallback(row, _field):
+    return anvil._get_live_object_id(row)
+
+
 _error_to_field = {KeyError: "key", AttributeError: "attribute", TableError: "column"}
 
 
 class DataIterator:
-    def __init__(self, data_source, id_field, id_cache, field_getters, getter):
+    def __init__(self, data_source, data_loader):
         self.iter = iter(data_source)
         self.len = len(data_source)
         self.cache = []
-        self.id_field = id_field
-        self.id_cache = id_cache
-        self.field_getters = field_getters
-        self.getter = getter
+        self.id_field = data_loader.id_field
+        self.id_cache = data_loader.id_cache
+        self.field_getters = data_loader.field_getters
+        self.index_getter = data_loader.index_getter
+        self.data_loader = data_loader
 
     def to_dict(self, row):
-        # we do 1 level deep
         as_dict = {}
         for f in self.field_getters:
             f(row, as_dict)
         return as_dict
 
+    def fallback_to_row_id(self):
+        self.id_field = self.data_loader.id_field = "_id"
+        self.data_loader.table.options.index = "_id"  # this seems ok to set dynamically
+        self.index_getter = self.data_loader.index_getter = row_id_fallback
+
     def cache_next(self):
         pysource = next(self.iter)
-        index = self.getter(pysource, self.id_field)
+        index = self.index_getter(pysource, self.id_field)
         self.id_cache.setdefault(index, pysource)
-        self.cache.append(self.to_dict(pysource))
+        data = self.to_dict(pysource)
+        data[self.id_field] = index
+        self.cache.append(data)
 
     def paginate(self, upto):
-        for _ in range(upto):
+        for i in range(upto):
             try:
                 self.cache_next()
             except StopIteration:
@@ -75,8 +87,18 @@ class DataIterator:
                 if self.id_field not in str(e):
                     raise e
                 tp = type(e)
+
+                if (
+                    i == 0
+                    and tp is TableError
+                    and not self.data_loader.data_initialized
+                ):
+                    self.fallback_to_row_id()
+                    return self.paginate(upto)
+
                 field = _error_to_field.get(tp, "field")
-                msg = f"{e} - each data object must have a unique value for the {field} {self.id_field!r}. You can change the required {field} by changing the tabulator 'index' property"
+                msg = f"{e} - each data object must have a unique value for the {field} {self.id_field!r}."
+                f"You can change the required {field} by changing the tabulator 'index' property"
                 raise tp(msg)
 
     def get_remote_data(self, page, size):
@@ -123,31 +145,33 @@ class CustomDataLoader(AbstractModule):
         mod.registerComponentFunction("row", "getModel", self.get_py_source)
         mod.registerComponentFunction("cell", "getModel", self.get_py_source)
         self.db = None
-        self.field_getters = None
         self.getter = None
+        self.field_getters = None
+        self.index_getter = None
         self.col_spec = None
         self.auto_cols = False
         self.id_cache = {}
         self.id_field = None
         self.context = None
         self.use_model = False
+        self.data_initialized = False
+        # make sure this is the same function when subscribing/unsubscribing in js
+        self.initial_request_complete = self.initial_request_complete
 
     def initialize_db(self, db, options):
         if not hasattr(db, "search"):
-            raise TypeError(
-                f"Expected a table as the tabulator 'app_table' options, got {type(db).__name__}"
-            )
+            msg = f"Expected a table as the tabulator 'app_table' options, got {type(db).__name__}"
+            raise TypeError(msg)
         self.db = db
         options.paginationMode = "remote"
         options.sortMode = "remote"
         options.filterMode = "remote"
         self.mod.subscribe("data-loading", self.db_data_check)
         self.mod.subscribe("data-load", self.request_db_data)
-        self.context = (
-            loading_indicator
-            if options.get("loadingIndicator")
-            else no_loading_indicator
-        )
+        if options.get("loadingIndicator"):
+            self.context = loading_indicator
+        else:
+            self.context = no_loading_indicator
 
     def initialize_model(self, options):
         modes = ("paginationMode", "filterMode", "sortMode")
@@ -172,6 +196,11 @@ class CustomDataLoader(AbstractModule):
         self.mod.subscribe("row-data-retrieve", self.retrieve_data)
         self.mod.subscribe("columns-loaded", self.columns_loaded)
         self.auto_cols = options.autoColumns
+        self.mod.subscribe("data-processing", self.initial_request_complete)
+
+    def initial_request_complete(self, _data):
+        self.data_initialized = True
+        self.mod.unsubscribe("data-processing", self.initial_request_complete)
 
     def reset_cache(self):
         self.get_search_iter.cache_clear()
@@ -180,13 +209,7 @@ class CustomDataLoader(AbstractModule):
     @lru_cache
     def get_search_iter(self, ordering, query):
         search = self.db.search(*ordering, *query.args, **query.kws)
-        return DataIterator(
-            search,
-            self.id_field,
-            self.id_cache,
-            self.field_getters,
-            self.getter,
-        )
+        return DataIterator(search, self)
 
     def get_ordering(self, params):
         sort = params.get("sort") or ()
@@ -201,13 +224,13 @@ class CustomDataLoader(AbstractModule):
     @report_exceptions
     def columns_loaded(self):
         cols = self.table.columnManager.columns
-        field_structures = {(self.id_field,)}
-        field_structures |= set(
+        field_structures = set(
             tuple(c.fieldStructure) for c in cols if c.fieldStructure
         )
-        self.getter = self.table.options.getter or getitem
+        self.getter = getter = self.table.options.getter or getitem
+        self.index_getter = getter
         self.field_getters = [
-            feildgetter(*fields, getter=self.getter) for fields in field_structures
+            fieldgetter(*fields, getter=getter) for fields in field_structures
         ]
 
     @report_exceptions
@@ -215,7 +238,7 @@ class CustomDataLoader(AbstractModule):
         if self.auto_cols and self.col_spec is None and len(data):
             self.col_spec = data[0].__dict__.keys()
             self.field_getters = [
-                feildgetter(key, getter=self.getter) for key in self.col_spec
+                fieldgetter(key, getter=self.getter) for key in self.col_spec
             ]
 
         iter_ = DataIterator(
@@ -228,7 +251,7 @@ class CustomDataLoader(AbstractModule):
         if self.auto_cols and self.col_spec is None:
             self.col_spec = (c["name"] for c in self.db.list_columns())
             self.field_getters = [
-                feildgetter(key, getter=self.getter) for key in self.col_spec
+                fieldgetter(key, getter=self.getter) for key in self.col_spec
             ]
 
         ordering = self.get_ordering(params)
