@@ -96,6 +96,15 @@ class Tabulator(TabulatorTemplate):
         options["columns"] = [_camelKeys(defn) for defn in options["columns"]]
         options["columnDefaults"] = _camelKeys(options["columnDefaults"])
         data = options.pop("data")
+
+        # if we're using the rowSelection make sure things are selectable
+        if (
+            any(col.get("formatter") == "rowSelection" for col in options["columns"])
+            and options.get("selectable") is None
+            and Tabulator.default_options.get("selectable") is False
+        ):
+            options["selectable"] = "highlight"
+
         t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
 
