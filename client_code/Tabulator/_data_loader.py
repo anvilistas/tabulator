@@ -127,7 +127,6 @@ class CustomDataLoader(AbstractModule):
         self.getter = None
         self.col_spec = None
         self.auto_cols = False
-        self.iter_cache = {}
         self.id_cache = {}
         self.id_field = None
         self.context = None
@@ -175,12 +174,11 @@ class CustomDataLoader(AbstractModule):
         self.auto_cols = options.autoColumns
 
     def reset_cache(self):
-        self.cached_query.cache_clear()
-        self.iter_cache.clear()
+        self.get_search_iter.cache_clear()
         self.id_cache.clear()
 
     @lru_cache
-    def cached_query(self, ordering, query):
+    def get_search_iter(self, ordering, query):
         search = self.db.search(*ordering, *query.args, **query.kws)
         return DataIterator(
             search,
@@ -235,10 +233,8 @@ class CustomDataLoader(AbstractModule):
 
         ordering = self.get_ordering(params)
         query = params["query"]
-        cache_key = hash((ordering, query))
-        iter_ = self.iter_cache.get(cache_key)
         with self.context:
-            iter_ = self.cached_query(ordering, query)
+            iter_ = self.get_search_iter(ordering, query)
             p = Promise.resolve(iter_.get_remote_data(params["page"], params["size"]))
         return p
 
