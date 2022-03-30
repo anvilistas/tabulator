@@ -40,6 +40,9 @@ def fieldgetter(*fields, getter=None):
     return g
 
 
+_ID = "_$id"
+
+
 def row_id_fallback(row, _field):
     return anvil._get_live_object_id(row)
 
@@ -65,8 +68,8 @@ class DataIterator:
         return as_dict
 
     def fallback_to_row_id(self):
-        self.id_field = self.data_loader.id_field = "_id"
-        self.data_loader.table.options.index = "_id"  # this seems ok to set dynamically
+        self.id_field = self.data_loader.id_field = _ID
+        self.data_loader.table.options.index = _ID  # this seems ok to set dynamically
         self.index_getter = self.data_loader.index_getter = row_id_fallback
 
     def cache_next(self):
@@ -148,7 +151,6 @@ class CustomDataLoader(AbstractModule):
         self.getter = None
         self.field_getters = None
         self.index_getter = None
-        self.col_spec = None
         self.auto_cols = False
         self.id_cache = {}
         self.id_field = None
@@ -185,17 +187,26 @@ class CustomDataLoader(AbstractModule):
     @report_exceptions
     def initialize(self):
         options = self.table.options
-        self.id_field = options.index
+        self.id_field = options.index  # set now because we use it get_table_row
         db = options.get("appTable")
+        use_model = options.get("useModel")
+        if db is None and not use_model:
+            return
+
+        if options.autoColumns:
+            self.setup_auto_columns = self.setup_auto_columns
+            # needs to be in data-load to return a promise
+            self.mod.subscribe("data-load", self.setup_auto_columns)
+            if not options.autoColumnsDefinitions:
+                options.autoColumnsDefinitions = self.drop_auto_col_id
+
         if db is not None:
             self.initialize_db(db, options)
-        elif options.get("useModel"):
-            self.initialize_model(options)
         else:
-            return
+            self.initialize_model(options)
+
         self.mod.subscribe("row-data-retrieve", self.retrieve_data)
         self.mod.subscribe("columns-loaded", self.columns_loaded)
-        self.auto_cols = options.autoColumns
         self.mod.subscribe("data-processing", self.initial_request_complete)
 
     def initial_request_complete(self, _data):
@@ -219,7 +230,13 @@ class CustomDataLoader(AbstractModule):
         return self.db is not None
 
     def model_data_check(self, data, params, config, silent):
-        return type(data) is list and self.use_model
+        return type(data) is list and data and self.use_model
+
+    def drop_auto_col_id(self, cols):
+        self.auto_cols = False
+        self.table.options.autoColumns = False
+        # do auto columns only once! fixes a bug with dodgy header sorting for autoCols
+        return [col for col in cols if col.get("field") != _ID]
 
     @report_exceptions
     def columns_loaded(self):
@@ -228,32 +245,29 @@ class CustomDataLoader(AbstractModule):
             tuple(c.fieldStructure) for c in cols if c.fieldStructure
         )
         self.getter = getter = self.table.options.getter or getitem
-        self.index_getter = getter
+        self.index_getter = self.index_getter or getter
         self.field_getters = [
             fieldgetter(*fields, getter=getter) for fields in field_structures
         ]
 
     @report_exceptions
-    def request_model_data(self, data, params, config, silent, prev):
-        if self.auto_cols and self.col_spec is None and len(data):
-            self.col_spec = data[0].__dict__.keys()
-            self.field_getters = [
-                fieldgetter(key, getter=self.getter) for key in self.col_spec
-            ]
+    def setup_auto_columns(self, data, params, config, silent, prev):
+        if self.db is not None:
+            col_spec = (c["name"] for c in self.db.list_columns())
+        else:
+            # we know we have data because of the model_data_check
+            col_spec = data[0].__dict__.keys()
+        self.field_getters = [fieldgetter(key, getter=self.getter) for key in col_spec]
+        # don't go through this again
+        self.mod.unsubscribe("data-load", self.setup_auto_columns)
+        return Promise.resolve(prev)
 
-        iter_ = DataIterator(
-            data, self.id_field, self.id_cache, self.field_getters, self.getter
-        )
-        return Promise.resolve(iter_.get_all_data())
+    @report_exceptions
+    def request_model_data(self, data, params, config, silent, prev):
+        return Promise.resolve(DataIterator(data, self).get_all_data())
 
     @report_exceptions
     def request_db_data(self, data, params, config, silent, prev):
-        if self.auto_cols and self.col_spec is None:
-            self.col_spec = (c["name"] for c in self.db.list_columns())
-            self.field_getters = [
-                fieldgetter(key, getter=self.getter) for key in self.col_spec
-            ]
-
         ordering = self.get_ordering(params)
         query = params["query"]
         with self.context:
