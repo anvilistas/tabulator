@@ -249,6 +249,42 @@ self.tabulator.columns = [
 If using a Form as the `formatter` then the `data` for the current row will be passed as the `item` allowing data bindings to be used.
 
 
+**Row Selction Formatter**
+
+If you need a checkbox style selection column you can add one manually.
+Anvil Tabulator provides a default option
+
+```python
+from tabulator.Tabulator import row_selection_column
+
+self.tabulator.columns = [
+    row_selection_column,
+    {'title': 'Image', 'field':'image', 'formatter': Image, 'formatter_params': get_image_params},
+    ...
+]
+
+```
+
+The definition for this column is:
+
+```python
+row_selection_column = {
+    "formatter": "rowSelection",
+    "title_formatter": "rowSelection",
+    "title_formatter_params": {"rowRange": "visible"},
+    "width": 40,
+    "hoz_align": "center",
+    "header_hoz_align": "center",
+    "header_sort": False,
+    "cell_click": lambda e, cell: cell.getRow().toggleSelect(),
+}
+```
+
+If you use the `FrozenColumns` module you may need to add `"frozen": True` to this definiton.
+Adding this column will turn on the `selectable` option to `"highlight"`. (Unless you've already set it in your options)
+
+
+
 **Custom Editors**
 
 I'd probably recommend avoiding custom editors, instead favouring an Anvil alert to make edits and then updating the tabulator row.
@@ -523,8 +559,12 @@ e.g. setting `Tabulator.default_options["header_visible"] = False` will have no 
 ### App Tables
 
 Anvil Tabulator provides an API for working with anvil `app_tables`
+When working with `app_tables` your table should have a unique id column.
+Set Tabulator's `index` property to the unique id column name.
+Note Tabulator expects each data object to have an `index` key in order work with the data effectively.
+If you don't have a unique id column then Tabulator will fallback to using the row id as the `index`.
 
-Instead of setting the `self.tabulator.data` attribute, provide the tabulator component with an `app_table` in the options.
+To get started, instead of setting the `self.tabulator.data` attribute, provide the tabulator component with an `app_table` in the options.
 
 ```python
     self.tabulator.options = {
@@ -577,25 +617,29 @@ def text_box_1_change(self, **event_args):
 
 ```
 
-If you want to retrieve an app_table row from the a tabulator event, use the `.get_table_row()` method.
+**Retrieving app_table rows**
+
+If you want to retrieve an app_table row from the a tabulator event, use the `.get_table_row()` or `.get_table_rows()` method.
 
 ```python
 def tabulator_row_click(self, row, **event_args):
     # row is a tabulator row_component
-    data = row.get_data() # returns a javascript wrapped data object
-    table_row = row.get_table_row() # returns the original anvil app_table row
+    # row.get_data() returns a javascript wrapped data object - probably not what you want
+    data = row.get_data()
+    # row.get_table_row() returns the original anvil app_table row 😃
+    table_row = row.get_table_row()
 
 def tabulator_cell_edited(self, cell, **event_args):
-    row = cell.get_table_row() # also possible
-    val = cell.get_value()
-    field = cell.get_field()
-    anvil.server.call("update_row", row, field, val)
+    cell = cell.get_table_row() # also possible
 
 def select_visible(self):
-    self.tabulator.get_table_rows("visible") # returns a list of app_table rows
+    # returns a list of app_table rows
+    self.tabulator.get_table_rows("visible")
 ```
 
-If you need to reload/refresh the data in the tabulator component, you can call `self.tabulator.replace_data()` or `self.tabulator.set_data()`.
+
+All queries and searches are cached. If you need to reload/refresh the data in the tabulator component,
+you can call `self.tabulator.replace_data()` or `self.tabulator.set_data()`.
 This will create a fresh call to `search()` on the `app_table`, effectively clearing any cached values.
 You can stay on the same page by surrounding the call with `x = self.tabulator.get_page()` and `self.tabulator.set_page(x)`.
 
@@ -615,7 +659,8 @@ class Author:
 
 ```
 
-Add the following code, and set the `index` property in the designer to `uid`
+Add the following code, and set the `index` property in the designer to `uid` or in the `self.tabulator.options`.
+(You must have a unique id property for each model instance)
 
 ```python
     self.tabulator.columns = [{"title":"Name", "field":"name"}]
