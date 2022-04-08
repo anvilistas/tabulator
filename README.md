@@ -26,6 +26,7 @@ This app is available as a [third party dependency](https://anvil.works/forum/t/
 - [Themes](#themes)
 - [Default Options](#default-options)
 - [App Tables](#app-tables)
+- [Using Models](#using-models)
 
 
 ---
@@ -633,7 +634,7 @@ def tabulator_cell_edited(self, cell, **event_args):
     cell = cell.get_table_row() # also possible
 
 def select_visible(self):
-    # returns a list of app_table rows
+    # returns a list of app_table rows that are visible
     self.tabulator.get_table_rows("visible")
 ```
 
@@ -642,6 +643,13 @@ All queries and searches are cached. If you need to reload/refresh the data in t
 you can call `self.tabulator.replace_data()` or `self.tabulator.set_data()`.
 This will create a fresh call to `search()` on the `app_table`, effectively clearing any cached values.
 You can stay on the same page by surrounding the call with `x = self.tabulator.get_page()` and `self.tabulator.set_page(x)`.
+
+
+**Row Selection Column with `app_table` option**
+
+Using the `row_selection_column` does **not** work well with the `app_table` option.
+If you want to use the `row_selection_column` with the `app_table` option it's best to
+set the `progress_load` option to `"load"` and set `pagination` to `False`.
 
 
 
