@@ -103,6 +103,16 @@ class SorterWrapper(AbstractCallableWrapper):
 
         return sorter_wrapper
 
+@tabulator_module("headerFilterFuncWrapper", moduleInitOrder=1)
+class HeaderFilterFuncWrapper(AbstractCallableWrapper):
+    options = ["headerFilterFunc"]
+
+    @staticmethod
+    def wrap(f):
+        def header_filter_func(header_val, row_val, row_data, params):
+            return f(header_val, row_val, row_data, **params)
+
+        return header_filter_func
 
 def setup_editor(component, cell, onRendered, success, cancel):
     check = {"closed": False}
@@ -266,6 +276,7 @@ custom_modules = [
         EditorWrapper,
         FormatterWrapper,
         SorterWrapper,
+        HeaderFilterFuncWrapper,
         CustomDataLoader,
         QueryModule,
         ScrollPosMaintainer,
