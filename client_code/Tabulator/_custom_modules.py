@@ -173,8 +173,11 @@ class EditorWrapper(AbstractCallableWrapper):
             component = f(cell, **params)
             if not isinstance(component, Component):
                 return
-            cell.getTable().anvil_form.add_component(component)
-            cell._cell.modules.anvilEditComponent = component
+            try:
+                cell.getTable().anvil_form.add_component(component)
+                cell._cell.modules.anvilEditComponent = component
+            except AttributeError:
+                pass
             return setup_editor(component, cell, onRendered, success, cancel)
 
         return editor_wrapper
