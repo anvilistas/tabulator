@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2022 Stu Cork
+from functools import partial
 
-import anvil.js
 from anvil import Component
 from anvil.js import get_dom_node, report_exceptions
 from anvil.js.window import Function, document, window
@@ -54,8 +54,9 @@ class ComponentFormatter(AbstractModule):
 
 def cell_wrapper(f):
     if not isinstance(f, type) or not issubclass(f, Component):
-        return lambda cell, **params: f(cell, **params)
+        return lambda cell, **params: f(cell=cell, **params)
     elif hasattr(f, "init_components"):
+        # TODO - this could break if trying to use as both an editor and a headerFilter
         return lambda cell, **params: f(item=dict(cell.getData()), **params)
     else:
         return lambda cell, **params: f(**params)
@@ -118,6 +119,7 @@ class HeaderFilterFuncWrapper(AbstractCallableWrapper):
 
 def setup_editor(component, cell, onRendered, success, cancel):
     # if cell is None then we're being used as a HeaderFilterComponent
+    # the blur events and remove_from_parent are no longer relevant
     check = {"closed": False}
     sentinel = object()
 
@@ -134,6 +136,8 @@ def setup_editor(component, cell, onRendered, success, cancel):
             component.remove_from_parent()
 
     def blur_cancel(e):
+        if cell is None:
+            return
         # hack for datepicker
         rt = getattr(e, "relatedTarget", None)
         if rt is None or rt.closest(".daterangepicker") is None:
@@ -153,6 +157,13 @@ def setup_editor(component, cell, onRendered, success, cancel):
         to_focus.focus()
 
     component.set_event_handler("x-close-editor", close_editor)
+
+    def x_success(value, **event_args):
+        return close_editor(value=value, **event_args)
+
+    component.set_event_handler("x-success", x_success)
+    component.set_event_handler("x-cancel", partial(close_editor, value=sentinel))
+
     if component.visible and cell is not None:
         component.visible = None
 
@@ -197,6 +208,22 @@ class EditorWrapper(AbstractCallableWrapper):
             return setup_editor(component, cell, onRendered, success, cancel)
 
         return editor_wrapper
+
+
+@tabulator_module("headerFilterWrapper", moduleInitOrder=1)
+class HeaderFilterWrapper(AbstractCallableWrapper):
+    options = ["headerFilter"]
+
+    @staticmethod
+    def wrap(f):
+        def header_filter_wrapper(cellWrapper, onRendered, success, cancel, params):
+            component = f(**params)
+            if not isinstance(component, Component):
+                return
+            cellWrapper.getColumn().getTable().anvil_form.add_component(component)
+            return setup_editor(component, None, onRendered, success, cancel)
+
+        return header_filter_wrapper
 
 
 @tabulator_module("scrollPosMaintainer")
@@ -283,6 +310,7 @@ custom_modules = [
         FormatterWrapper,
         SorterWrapper,
         HeaderFilterFuncWrapper,
+        HeaderFilterWrapper,
         CustomDataLoader,
         QueryModule,
         ScrollPosMaintainer,
