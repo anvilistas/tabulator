@@ -104,12 +104,25 @@ class SorterWrapper(AbstractCallableWrapper):
         return sorter_wrapper
 
 
+@tabulator_module("headerFilterFuncWrapper", moduleInitOrder=1)
+class HeaderFilterFuncWrapper(AbstractCallableWrapper):
+    options = ["headerFilterFunc"]
+
+    @staticmethod
+    def wrap(f):
+        def header_filter_func(header_val, row_val, row_data, params):
+            return f(header_val, row_val, row_data, **params)
+
+        return header_filter_func
+
+
 def setup_editor(component, cell, onRendered, success, cancel):
+    # if cell is None then we're being used as a HeaderFilterComponent
     check = {"closed": False}
     sentinel = object()
 
     def close_editor(value=sentinel, **event_args):
-        if check["closed"]:
+        if check["closed"] and cell is not None:
             return
         else:
             check["closed"] = True
@@ -117,7 +130,8 @@ def setup_editor(component, cell, onRendered, success, cancel):
             success(value)
         else:
             cancel()
-        component.remove_from_parent()
+        if cell is not None:
+            component.remove_from_parent()
 
     def blur_cancel(e):
         # hack for datepicker
@@ -139,7 +153,7 @@ def setup_editor(component, cell, onRendered, success, cancel):
         to_focus.focus()
 
     component.set_event_handler("x-close-editor", close_editor)
-    if component.visible:
+    if component.visible and cell is not None:
         component.visible = None
 
     to_focus.addEventListener("blur", blur_cancel)
@@ -173,8 +187,13 @@ class EditorWrapper(AbstractCallableWrapper):
             component = f(cell, **params)
             if not isinstance(component, Component):
                 return
-            cell.getTable().anvil_form.add_component(component)
-            cell._cell.modules.anvilEditComponent = component
+            if hasattr(cell, "_cell"):
+                cell.getTable().anvil_form.add_component(component)
+                cell._cell.modules.anvilEditComponent = component
+            else:
+                # then it might be a cellWrapper because we're a headerFilter edit component
+                cell.getColumn().getTable().anvil_form.add_component(component)
+                cell = None
             return setup_editor(component, cell, onRendered, success, cancel)
 
         return editor_wrapper
@@ -263,6 +282,7 @@ custom_modules = [
         EditorWrapper,
         FormatterWrapper,
         SorterWrapper,
+        HeaderFilterFuncWrapper,
         CustomDataLoader,
         QueryModule,
         ScrollPosMaintainer,
