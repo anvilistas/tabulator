@@ -344,6 +344,10 @@ def color_editor(cell, **editor_params):
 
 ```
 
+The `x-close-editor` event can be raised with or without a value.
+When raised without a `value` paramater this is equivalent to  `self.raise_event("x-cancel")`.
+When raised with a `value` parameter this is equivalent to raising the event `self.raise_event("x-success", value=value)`.
+
 **Custom Sorters**
 
 In JS Tabulator
@@ -390,6 +394,22 @@ def custom_filter(data, **params):
 
 self.tabulator.set_filter(custom_filter, {"height":3})
 
+```
+
+**Custom Header Filter**
+
+A custom Header Filter component behaves much like an Custom Edit Component.
+The only difference is that no `cell` argument is provided.
+
+
+**Custom Header Filter Func**
+
+If using Header Filters you may need a `header_filter_func` in your column definition.
+This is particularly relevant with `datetime` objects where JS Tabulator doesn't know how to compare these objects.
+
+```python
+def header_filter_func(val, row_val, row_data, **params):
+    return val in str(row_val)
 ```
 
 ---
