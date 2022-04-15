@@ -69,6 +69,10 @@ def dt_editor(pick_time):
         "font": "inherit",
     }
 
+    if not pick_time:
+        # because American formatting is horrible
+        params["format"] = "DD/MM/YYYY"
+
     @report_exceptions
     def editor(cell, **properties):
         properties = params | properties
@@ -84,12 +88,6 @@ def dt_editor(pick_time):
         dom_node.style.height = "100%"
         dom_node.style.width = "100%"
         inputNode.nextSibling.style.bottom = "6px"
-
-        def show(**event_args):
-            pass
-
-        #             dom_node.parentElement.style.padding = "8px"
-        dp.add_event_handler("show", show)
 
         def change(**event_args):
             dp.raise_event("x-close-editor", value=dp.date)
