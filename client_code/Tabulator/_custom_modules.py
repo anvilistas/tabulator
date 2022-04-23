@@ -121,7 +121,7 @@ class HeaderFilterFuncWrapper(AbstractCallableWrapper):
 @tabulator_module("paramLookup", moduleInitOrder=1)
 class ParamLookupWrapper(AbstractCallableWrapper):
     options = [
-        "headerFileterParams",
+        "headerFilterParams",
         "titleFormatterParams",
         "sorterParams",
         "formatterParams",
