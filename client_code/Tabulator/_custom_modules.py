@@ -6,6 +6,7 @@ from anvil import Component
 from anvil.js import get_dom_node, report_exceptions
 from anvil.js.window import Function, document, window
 
+from ._helpers import assert_no_suspension
 from ._module_helpers import AbstractModule, tabulator_module
 
 
@@ -74,11 +75,11 @@ class AbstractCallableWrapper(AbstractModule):
             f = definition.get(option)
             if f is None or not callable(f):
                 continue
-            definition[option] = report_exceptions(self.wrap(f))
+            definition[option] = report_exceptions(self.wrap(assert_no_suspension(f)))
 
     @staticmethod
     def wrap(f):
-        raise NotImplementedError
+        return f
 
 
 @tabulator_module("formatterWrapper", moduleInitOrder=1)
@@ -115,6 +116,18 @@ class HeaderFilterFuncWrapper(AbstractCallableWrapper):
             return f(header_val, row_val, row_data, **params)
 
         return header_filter_func
+
+
+@tabulator_module("paramLookup", moduleInitOrder=1)
+class ParamLookupWrapper(AbstractCallableWrapper):
+    options = [
+        "headerFileterParams",
+        "titleFormatterParams",
+        "sorterParams",
+        "formatterParams",
+        "editorParams",
+        "headerFilterFuncParams",
+    ]
 
 
 def setup_editor(component, cell, onRendered, success, cancel):
@@ -313,6 +326,7 @@ custom_modules = [
         HeaderFilterWrapper,
         CustomDataLoader,
         QueryModule,
+        ParamLookupWrapper,
         ScrollPosMaintainer,
         OptionVerifier,
     )
