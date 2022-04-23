@@ -1,8 +1,10 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2022 Stu Cork
 
+from functools import partial, wraps
+
 import anvil.js
-from anvil.js.window import Promise, RegExp, String, document, window
+from anvil.js.window import Function, Promise, RegExp, String, document, window
 
 from ._js_tabulator import TabulatorModule
 
@@ -127,3 +129,17 @@ def _spacing_property(a_b):
         setattr(self, "_spacing_" + a_b, value)
 
     return property(getter, setter, None, a_b)
+
+
+do_call = Function(
+    "fn",
+    "return Sk.misceval.callsimArray(Sk.ffi.toPy(fn));",
+)
+
+
+def assert_no_suspension(fn):
+    @wraps(fn)
+    def wrapped(*args, **kws):
+        return do_call(partial(fn, *args, **kws))
+
+    return wrapped
