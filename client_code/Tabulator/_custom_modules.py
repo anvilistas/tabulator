@@ -75,7 +75,7 @@ class AbstractCallableWrapper(AbstractModule):
             f = definition.get(option)
             if f is None or not callable(f):
                 continue
-            definition[option] = report_exceptions(self.wrap(assert_no_suspension(f)))
+            definition[option] = report_exceptions(assert_no_suspension(self.wrap(f)))
 
     @staticmethod
     def wrap(f):
