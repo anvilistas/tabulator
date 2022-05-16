@@ -137,7 +137,7 @@ class LoadingInidcator:
 loading_indicator = LoadingInidcator()
 
 
-@tabulator_module("appTableLoader", moduleInitOrder=1)
+@tabulator_module("appTableLoader", moduleInitOrder=-10)
 class CustomDataLoader(AbstractModule):
     def __init__(self, mod, table):
         super().__init__(mod, table)

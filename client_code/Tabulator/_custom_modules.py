@@ -67,7 +67,7 @@ class AbstractCallableWrapper(AbstractModule):
     options = []
 
     def initialize(self):
-        self.mod.subscribe("column-layout", self.update_definition)
+        self.mod.subscribe("column-layout", self.update_definition, 10)
 
     def update_definition(self, column):
         definition = column.definition
@@ -82,7 +82,7 @@ class AbstractCallableWrapper(AbstractModule):
         return f
 
 
-@tabulator_module("formatterWrapper", moduleInitOrder=1)
+@tabulator_module("formatterWrapper", moduleInitOrder=-10)
 class FormatterWrapper(AbstractCallableWrapper):
     options = [
         "formatter" + suffix for suffix in ("", "Print", "Clipboard", "HtmlOutput")
@@ -94,7 +94,7 @@ class FormatterWrapper(AbstractCallableWrapper):
         return lambda cell, params, onRendered: f(cell, **params)
 
 
-@tabulator_module("sorterWrapper", moduleInitOrder=1)
+@tabulator_module("sorterWrapper", moduleInitOrder=-10)
 class SorterWrapper(AbstractCallableWrapper):
     options = ["sorter"]
 
@@ -106,7 +106,7 @@ class SorterWrapper(AbstractCallableWrapper):
         return sorter_wrapper
 
 
-@tabulator_module("headerFilterFuncWrapper", moduleInitOrder=1)
+@tabulator_module("headerFilterFuncWrapper", moduleInitOrder=-10)
 class HeaderFilterFuncWrapper(AbstractCallableWrapper):
     options = ["headerFilterFunc"]
 
@@ -118,7 +118,7 @@ class HeaderFilterFuncWrapper(AbstractCallableWrapper):
         return header_filter_func
 
 
-@tabulator_module("paramLookup", moduleInitOrder=1)
+@tabulator_module("paramLookup", moduleInitOrder=-10)
 class ParamLookupWrapper(AbstractCallableWrapper):
     options = [
         "headerFilterParams",
@@ -186,7 +186,7 @@ def setup_editor(component, cell, onRendered, success, cancel):
     return el
 
 
-@tabulator_module("editorWrapper", moduleInitOrder=1)
+@tabulator_module("editorWrapper", moduleInitOrder=-10)
 class EditorWrapper(AbstractCallableWrapper):
     options = ["editor"]
 
@@ -223,7 +223,7 @@ class EditorWrapper(AbstractCallableWrapper):
         return editor_wrapper
 
 
-@tabulator_module("headerFilterWrapper", moduleInitOrder=1)
+@tabulator_module("headerFilterWrapper", moduleInitOrder=-10)
 class HeaderFilterWrapper(AbstractCallableWrapper):
     options = ["headerFilter"]
 
