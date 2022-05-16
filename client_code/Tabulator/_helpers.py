@@ -32,7 +32,7 @@ def _merge(default, properties, **overrides):
 def _ignore_resize_observer_error_handler(e):
     # This covers both
     # - 'ResizeObserver loop limit exceeded', and
-    # - 'ResizeObserver loop ocmpleted with undelivered notifications'
+    # - 'ResizeObserver loop completed with undelivered notifications'
     msg = e.get("message", "")
     if "ResizeObserver loop" in msg or "Script error." == msg:
         e.stopPropagation()
@@ -66,9 +66,8 @@ def _options_property(key, getMethod=None, setMethod=None):
         elif _warnings.get("post_init") is not None:
             return
         _warnings["post_init"] = True
-        print(
-            f"Warning: chaning the option {key!r} after the table has been built has no effect"
-        )
+        msg = f"Warning: changing the option {key!r} after the table has been built has no effect"
+        print(msg)
 
     return property(option_getter, option_setter)
 
