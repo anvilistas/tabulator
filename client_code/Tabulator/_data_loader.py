@@ -15,6 +15,8 @@ from ._module_helpers import AbstractModule, tabulator_module
 
 make_hashable()
 
+JsProxy = type(Promise)
+
 
 def fieldgetter(*fields, getter=None):
     getter = getter or getitem
@@ -186,6 +188,7 @@ class CustomDataLoader(AbstractModule):
         self.use_model = True
         self.mod.subscribe("data-loading", self.model_data_check)
         self.mod.subscribe("data-load", self.request_model_data)
+        self.mod.subscribe("row-data-init-before", self.init_model_data)
 
     @report_exceptions
     def initialize(self):
@@ -277,6 +280,12 @@ class CustomDataLoader(AbstractModule):
             iter_ = self.get_search_iter(ordering, query)
             p = Promise.resolve(iter_.get_remote_data(params["page"], params["size"]))
         return p
+
+    @report_exceptions
+    def init_model_data(self, row, data, prev):
+        if type(data) == JsProxy:
+            return data
+        return DataIterator([data], self).get_all_data()[0]
 
     @report_exceptions
     def retrieve_data(self, row, transformType, prev):
