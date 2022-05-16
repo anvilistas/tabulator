@@ -283,7 +283,7 @@ class CustomDataLoader(AbstractModule):
 
     @report_exceptions
     def init_model_data(self, row, data, prev):
-        if type(data) == JsProxy:
+        if type(data) is JsProxy:
             return data
         return DataIterator([data], self).get_all_data()[0]
 
