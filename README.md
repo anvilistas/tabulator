@@ -1,5 +1,5 @@
 # Anvil Tabulator
-A dependency for anvil.works that wraps the JS Tabulator API
+A dependency for anvil.works that wraps the JavaScript Tabulator Library (version 5.2)
 
 This app is available as a [third party dependency](https://anvil.works/forum/t/third-party-dependencies/8712) using the code: `TGQCF3WT6FVL2EM2`
 
@@ -10,6 +10,8 @@ This app is available as a [third party dependency](https://anvil.works/forum/t/
 |Example Clone Link | [<img src="https://anvil.works/img/forum/copy-app.png" height='40px'>](https://anvil.works/build#clone:JVL5ORAAPZ6SVWDU=JA27THWRHTGHH7XK4U36PRN4)|
 
 ---
+
+The documentation below should be read in conjunction with the [JS Tabulator docs (5.2)](http://tabulator.info/docs/5.2).
 
 
 # Docs
