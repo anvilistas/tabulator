@@ -14,7 +14,7 @@ def dt_formatter(dt_type, name, default_format):
     def formatter(cell, params, onRendered):
         val = cell.getValue()
         if val is None:
-            return ""
+            return None
         if not isinstance(val, dt_type):
             raise TypeError(f"A {name} formatter expects a {name} object")
 
