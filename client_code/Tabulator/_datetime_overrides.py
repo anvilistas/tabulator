@@ -40,6 +40,11 @@ def dt_sorter(compare):
         align_empty_values = params.get("align_empty_values") or params.get(
             "alignEmptyValues"
         )
+        if a == "":
+            a = None
+        if b == "":
+            b = None
+
         empty_align = ""
         if a is None:
             empty_align = 0 if b is None else -1
