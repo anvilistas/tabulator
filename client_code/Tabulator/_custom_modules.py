@@ -273,9 +273,11 @@ generate_wrapper = Function(
 function generateWrapper(defaultOptions, userOptions = {}) {
     const allowed = new Set([...Object.keys(this.registeredDefaults), ...Object.keys(defaultOptions)]);
     const userKeys = new Set(Object.keys(userOptions));
+    const RE_SNAKE = new RegExp("_[a-z]", "g");
+    const toCamel = (s) => s.replace(RE_SNAKE, (m) => m[1].toUpperCase());
 
     for (const key of userKeys) {
-        if (allowed.has(key)) {
+        if (allowed.has(toCamel(key))) {
             userKeys.delete(key);
         }
     }
