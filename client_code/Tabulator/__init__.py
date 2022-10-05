@@ -95,7 +95,6 @@ class Tabulator(TabulatorTemplate):
         options = _camelKeys(self._options) | _camelKeys(self.options)
         options["columns"] = [_camelKeys(defn) for defn in options["columns"]]
         options["columnDefaults"] = _camelKeys(options["columnDefaults"])
-        data = options.pop("data")
 
         # if we're using the rowSelection make sure things are selectable
         if (
@@ -107,15 +106,8 @@ class Tabulator(TabulatorTemplate):
 
         t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
+        self._t = t
 
-        def built():
-            # use setData - initiating data with anything other than
-            # list[dict] or str breaks tabulator
-            self._t = t
-            if data:
-                t.setData(data)
-
-        t.on("tableBuilt", built)
         for meth, event, handler in self._queued:
             t[meth](event, handler)
         self._queued.clear()

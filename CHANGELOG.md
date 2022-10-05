@@ -1,3 +1,5 @@
+# v2.2.0
+- Move to tabulator 5.4.0
 
 # v2.1.0
 
