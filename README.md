@@ -11,7 +11,7 @@ This app is available as a [third party dependency](https://anvil.works/forum/t/
 
 ---
 
-The documentation below should be read in conjunction with the [JS Tabulator docs (5.2)](http://tabulator.info/docs/5.2).
+The documentation below should be read in conjunction with the [JS Tabulator docs (5.4)](http://tabulator.info/docs/5.4).
 
 
 # Docs
