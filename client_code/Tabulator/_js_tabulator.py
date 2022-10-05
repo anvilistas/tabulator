@@ -5,7 +5,7 @@ from anvil.js import import_from, report_exceptions
 from anvil.js.window import Function
 
 # from anvil.js.window import TabulatorModule
-url = "https://cdn.skypack.dev/pin/tabulator-tables@v5.2.4-cizWFIWbLLcKfdSOzv22/mode=imports,min/optimized/tabulator-tables.js"
+url = "https://cdn.skypack.dev/pin/tabulator-tables@v5.4.0-FoSPNwlYlC9yuj30YIGx/mode=imports,min/optimized/tabulator-tables.js"
 TabulatorModule = import_from(url)
 
 
