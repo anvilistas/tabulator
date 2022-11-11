@@ -46,7 +46,7 @@ _ID = "_$id"
 
 
 def row_id_fallback(row, _field):
-    return anvil._get_live_object_id(row)
+    return row.get_id()
 
 
 _error_to_field = {KeyError: "key", AttributeError: "attribute", TableError: "column"}
