@@ -11,4 +11,5 @@ unique_ids:
     Tabulator._datetime_overrides: IXNIGLCRIRZED7TITELUCMUOPFTIV3SX
     Tabulator._defaults: CLZ7EWWDPHSE3P3WIUQGUDKR7CMXJYAE
   server_modules: {}
-  assets: {}
+  assets:
+    theme.css: CIDRRZ3NDV2XEJKDOELQAK35QBCUKOB3

@@ -7,7 +7,7 @@ startup: {type: module, module: Tabulator._js_tabulator}
 package_name: tabulator
 allow_embedding: false
 name: Tabulator
-runtime_options: {version: 2, client_version: '3', server_version: python3-full}
+runtime_options: {version: 2, client_version: '3', server_version: python3-full, server_spec: null}
 metadata: {}
 startup_form: null
 native_deps: {head_html: ''}
