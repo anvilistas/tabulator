@@ -133,3 +133,23 @@ function linkWrapper(cell, params, onRendered) {
 FormatModule.formatters.link = linkWrapper;
 """,
 )(TabulatorModule.FormatModule)
+
+
+Function(
+    "Module",
+    """
+const oldRegisterFunc = Module.prototype.registerTableFunction;
+
+Module.prototype.registerTableFunction = function (name, func) {
+    if (typeof this.table[name] !== "undefined") {
+        console.warn("Unable to bind table function, name already in use", name);
+    } else if (func.$isPyWrapped) {
+        // don't wrap python functions with javascript functions - otherwise they won't support kwargs
+        this.table[name] = func;
+    } else {
+        oldRegisterFunc.call(this, name, func)
+    }
+};
+
+""",
+)(TabulatorModule.Module)
