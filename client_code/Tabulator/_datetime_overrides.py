@@ -6,7 +6,10 @@ from datetime import date, datetime
 from anvil import DatePicker
 from anvil.js import get_dom_node, report_exceptions
 
-from ._js_tabulator import Tabulator
+from ._js_tabulator import FormatModule, SortModule, Tabulator
+
+original_dt_formatter = FormatModule.formatters.datetime
+original_dt_sorter = SortModule.sorters.datetime
 
 
 def dt_formatter(dt_type, name, default_format):
@@ -115,6 +118,7 @@ def init_overrides():
         {
             "datetime": dt_formatter(datetime, "datetime", "%x"),
             "date": dt_formatter(date, "date", "%c"),
+            "luxon_datetime": original_dt_formatter,
         },
     )
     Tabulator.extendModule(
@@ -123,6 +127,7 @@ def init_overrides():
         {
             "datetime": dt_sorter(lambda a, b: a.timestamp() - b.timestamp()),
             "date": dt_sorter(lambda a, b: a.toordinal() - b.toordinal()),
+            "luxon_datetime": original_dt_sorter,
         },
     )
     Tabulator.extendModule(

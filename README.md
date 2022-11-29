@@ -424,6 +424,11 @@ Anvil favours python date and datetime objects.
 This is reflected in the built-in `"date"` and `"datetime"` Formatters, Editors and Sorters.
 These built-in Formatters, Editors and Sorters have been overridden to expect python objects.
 
+
+_If you would like to use JS Tabulator datetime formatter/sorter use `"luxon_datetime"` in place of `"datetime"`._
+_You will need `luxon.js` imported via CDN in your Native Libraries for this to work._
+
+
 ```python
     self.tabulator.columns = [
         ...
@@ -465,6 +470,8 @@ Otherwise, it can be set to an Anvil.tz object e.g.
             "formatter_params": {"tz": anvil.tz.tz_local()},
 
 ```
+
+
 
 ---
 
