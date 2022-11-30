@@ -16,7 +16,9 @@ def dt_formatter(dt_type, name, default_format):
         if val is None:
             return None
         if not isinstance(val, dt_type):
-            raise TypeError(f"A {name} formatter expects a {name} object")
+            raise TypeError(
+                f"A {name} formatter expects a {name} object, got {type(val).__name__}"
+            )
 
         if dt_type is datetime:
             tz = params.get("tz", False)
