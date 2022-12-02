@@ -42,9 +42,6 @@ def fieldgetter(*fields, getter=None):
     return g
 
 
-_ID = "_$id"
-
-
 def row_id_fallback(row, _field):
     return anvil._get_live_object_id(row)
 
@@ -72,8 +69,6 @@ class DataIterator:
         return as_dict
 
     def fallback_to_row_id(self):
-        self.id_field = self.data_loader.id_field = _ID
-        self.data_loader.table.options.index = _ID  # this seems ok to set dynamically
         self.index_getter = self.data_loader.index_getter = row_id_fallback
 
     def get_index(self, pysource, id_field):
@@ -83,16 +78,17 @@ class DataIterator:
             self.get_index = self.index_getter
             return rv
         except TableError as e:
-            if id_field == _ID:
+            # we don't have an id_field - we'll fall back to using the row_id
+            if self.index_getter is row_id_fallback:
                 raise e
+            self.index_getter = self.data_loader.index_getter = row_id_fallback
+            return self.get_index(pysource, id_field)
         except (AttributeError, KeyError) as e:
             tp = type(e)
             field = _error_to_field.get(tp, "field")
             msg = f"{e} - each data object must have a unique value for the {field} {self.id_field!r}."
             f"You can change the required {field} by changing the tabulator 'index' property"
             raise tp(msg)
-        self.fallback_to_row_id()
-        return self.get_index(pysource, _ID)
 
     def cache_next(self):
         pysource = next(self.iter)
@@ -241,8 +237,9 @@ class CustomDataLoader(AbstractModule):
     def drop_auto_col_id(self, cols):
         self.auto_cols = False
         self.table.options.autoColumns = False
+        id_field = self.id_field
         # do auto columns only once! fixes a bug with dodgy header sorting for autoCols
-        return [col for col in cols if col.get("field") != _ID]
+        return [col for col in cols if col.get("field") != id_field]
 
     @report_exceptions
     def columns_loaded(self):
