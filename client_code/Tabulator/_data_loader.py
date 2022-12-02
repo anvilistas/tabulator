@@ -236,9 +236,12 @@ class CustomDataLoader(AbstractModule):
 
     def drop_auto_col_id(self, cols):
         self.auto_cols = False
-        self.table.options.autoColumns = False
-        id_field = self.id_field
         # do auto columns only once! fixes a bug with dodgy header sorting for autoCols
+        self.table.options.autoColumns = False
+        include_id = self.index_getter is not row_id_fallback
+        if include_id:
+            return cols
+        id_field = self.id_field
         return [col for col in cols if col.get("field") != id_field]
 
     @report_exceptions
