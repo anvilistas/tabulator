@@ -244,6 +244,9 @@ class Tabulator(TabulatorTemplate):
     def clear_query(self):
         """clear the current query"""
 
+    def clear_app_table_cache(self):
+        """clear the app_table cache, you will likely want to call replace_data() after this call"""
+
     def set_sort(self, column, dir):
         """first argument can also be a list of sorters [{'column': field, 'dir':'asc' | 'desc'}, ...]"""
 
