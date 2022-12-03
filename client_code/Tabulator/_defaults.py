@@ -72,6 +72,7 @@ _methods = (
     "clear_filter",
     "set_query",
     "clear_query",
+    "clear_app_table_cache",
     "set_sort",
     "clear_sort",
     "get_page",

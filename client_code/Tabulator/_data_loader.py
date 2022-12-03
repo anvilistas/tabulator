@@ -6,7 +6,7 @@ from operator import getitem
 
 import anvil
 from anvil.js import report_exceptions
-from anvil.js.window import Promise
+from anvil.js.window import Object, Promise
 from anvil.server import no_loading_indicator
 from anvil.tables import TableError, order_by
 
@@ -56,6 +56,7 @@ class DataIterator:
         self.cache = []
         self.id_field = data_loader.id_field
         self.id_cache = data_loader.id_cache
+        self.data_cache = data_loader.data_cache
         self.field_getters = data_loader.field_getters
         self.index_getter = data_loader.index_getter
         self.data_loader = data_loader
@@ -93,9 +94,13 @@ class DataIterator:
     def cache_next(self):
         pysource = next(self.iter)
         index = self.get_index(pysource, self.id_field)
-        self.id_cache.setdefault(index, pysource)
-        data = self.to_dict(pysource)
-        data[self.id_field] = index
+        if index in self.id_cache:
+            pysource = self.id_cache[index]
+            data = self.data_cache[index]
+        else:
+            self.id_cache[index] = pysource
+            data = self.data_cache[index] = Object(self.to_dict(pysource))
+            data[self.id_field] = index
         self.cache.append(data)
 
     def paginate(self, upto):
@@ -154,6 +159,7 @@ class CustomDataLoader(AbstractModule):
         self.index_getter = None
         self.auto_cols = False
         self.id_cache = {}
+        self.data_cache = {}
         self.id_field = None
         self.context = None
         self.use_model = False
@@ -218,6 +224,7 @@ class CustomDataLoader(AbstractModule):
     def reset_cache(self):
         self.get_search_iter.cache_clear()
         self.id_cache.clear()
+        self.data_cache.clear()
 
     @lru_cache
     def get_search_iter(self, ordering, query):

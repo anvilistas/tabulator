@@ -681,6 +681,14 @@ If you want to use the `row_selection_column` with the `app_table` option it's b
 set the `progress_load` option to `"load"` and set `pagination` to `False`.
 
 
+**Row cache**
+
+For performance reasons rows and data are cached when using the `app_table` option.
+If you update a table row or add a new row, you may need to clear Tabulator's cache.
+You can do this with `self.tabulator.clear_app_table_cache()`.
+After calling this method you will probably want to call `self.tabulator.replace_data()`.
+
+
 
 ### Using Models
 
