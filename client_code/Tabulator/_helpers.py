@@ -93,7 +93,7 @@ def _inject_theme(theme):
     link = document.createElement("link")
     if theme in _themes:
         theme = "_" + theme if theme != "standard" else ""
-        theme = f"https://cdn.jsdelivr.net/npm/tabulator-tables@5.4.0/dist/css/tabulator{theme}.min.css"
+        theme = f"https://cdn.jsdelivr.net/npm/tabulator-tables@5.4.3/dist/css/tabulator{theme}.min.css"
     link.href = theme
     link.rel = "stylesheet"
     link.crossorigin = "anonymous"
