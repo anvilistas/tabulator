@@ -224,7 +224,8 @@ class Tabulator(TabulatorTemplate):
 
     def set_filter(self, field, type=None, value=None):
         """for multiple filters pass a list of dicts with keys 'field', 'type', 'value'
-        Can also pass in a function and dictionary of keyword arguments to pass to that function"""
+        Can also pass in a function and dictionary of keyword arguments to pass to that function
+        """
 
     def add_filter(self, field, type=None, value=None):
         """Add a filter to"""
