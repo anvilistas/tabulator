@@ -40,6 +40,8 @@ row_selection_column = {
     "cell_click": lambda e, cell: cell.getRow().toggleSelect(),
 }
 
+from ._data_loader import Query
+
 
 class Tabulator(TabulatorTemplate):
     theme = _default_theme

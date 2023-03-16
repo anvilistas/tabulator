@@ -338,6 +338,7 @@ EMPTY_QUERY = Query()
 class QueryModule(AbstractModule):
     def __init__(self, mod, table):
         super().__init__(mod, table)
+        mod.registerTableOption("initialQuery", EMPTY_QUERY)
         mod.registerTableFunction("setQuery", self.set_query)
         mod.registerTableFunction("clearQuery", self.clear_query)
         self.query = EMPTY_QUERY
@@ -346,6 +347,7 @@ class QueryModule(AbstractModule):
         if self.table.options.get("appTable") is None:
             return
         self.mod.subscribe("data-params", self.query_params)
+        self.query = self.table.options.get("initialQuery", EMPTY_QUERY)
 
     def query_params(self, data, config, silent, params):
         params.query = self.query
