@@ -6,7 +6,7 @@ from operator import getitem
 
 import anvil
 from anvil.js import report_exceptions
-from anvil.js.window import Object, Promise
+from anvil.js.window import Object, Promise, setTimeout
 from anvil.server import no_loading_indicator
 from anvil.tables import TableError, order_by
 
@@ -108,6 +108,9 @@ class DataIterator:
             for _ in range(upto):
                 self.cache_next()
         except StopIteration:
+            setTimeout(
+                lambda: self.data_loader.mod.dispatchExternal("anvilTableDataLoaded")
+            )
             pass
 
     def get_remote_data(self, page, size):
