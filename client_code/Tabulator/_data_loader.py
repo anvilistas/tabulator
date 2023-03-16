@@ -109,7 +109,7 @@ class DataIterator:
                 self.cache_next()
         except StopIteration:
             setTimeout(
-                lambda: self.data_loader.mod.dispatchExternal("anvilTableDataLoaded")
+                lambda: self.data_loader.mod.dispatchExternal("appTableDataLoaded")
             )
             pass
 
