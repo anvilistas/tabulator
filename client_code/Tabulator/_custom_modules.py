@@ -58,7 +58,7 @@ def cell_wrapper(f):
         return lambda cell, **params: f(cell=cell, **params)
     elif hasattr(f, "init_components"):
         # TODO - this could break if trying to use as both an editor and a headerFilter
-        return lambda cell, **params: f(item=dict(cell.getData()), **params)
+        return lambda cell, **params: f(item=dict(cell.getData()),cell=cell,**params)
     else:
         return lambda cell, **params: f(**params)
 
