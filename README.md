@@ -165,6 +165,8 @@ def tabulator_table_built(self, **event_args):
 The exception to this is the `self.tabulator.on()` and `self.tabulator.off()` method.
 These can be called before the tabulator is built.
 
+You can check whether a tabulator instance has been built using the `self.tabulator.initialized` property.
+
 
 ---
 

@@ -152,6 +152,10 @@ class Tabulator(TabulatorTemplate):
             return
         self.off(event, handler)
 
+    @property
+    def initialized(self):
+        return self._t is not None and self._t.initialized
+
     data = _options_property("data", "getData", "setData")
     columns = _options_property("columns", None, "setColumns")
     column_defaults = _options_property("columnDefaults")
