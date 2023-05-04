@@ -78,7 +78,7 @@ _themes = {
     "modern",
     "bootstrap3",
     "bootstrap4",
-    "materialize"
+    "materialize",
 }
 
 
