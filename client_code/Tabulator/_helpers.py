@@ -78,6 +78,8 @@ _themes = {
     "midnight",
     "modern",
     "bootstrap3",
+    "bootstrap4",
+    "materialize",
 }
 
 

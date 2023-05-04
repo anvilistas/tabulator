@@ -540,7 +540,15 @@ Some other pre-written themes can be used with Anvil Tabulator.
 ```python
 from tabulator.Tabulator import Tabulator
 
-Tabulator.theme = "midnight" # "standard", "simple", "modern"
+Tabulator.theme = "midnight"
+# Included themes are:
+# - "standard",
+# - "simple",
+# - "midnight",
+# - "modern",
+# - "bootstrap3",
+# - "bootstrap4",
+# - "materialize"
 
 # or a custom theme
 
