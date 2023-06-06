@@ -61,7 +61,7 @@ def cell_wrapper(f):
     elif hasattr(f, "init_components"):
         # TODO - this could break if trying to use as both an editor and a headerFilter
         def render_form(cell, **params):
-            data = cell.getData()
+            data = cell.getData("data")
             if type(data) is JsProxy:
                 data = dict(data)
             return f(item=data, cell=cell, **params)
