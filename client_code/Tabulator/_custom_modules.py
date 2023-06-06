@@ -9,6 +9,8 @@ from anvil.js.window import Function, document, window
 from ._helpers import assert_no_suspension
 from ._module_helpers import AbstractModule, tabulator_module
 
+JsProxy = type(document)
+
 
 @tabulator_module("cssClassAdder")
 class CssClassAdder(AbstractModule):
@@ -58,7 +60,13 @@ def cell_wrapper(f):
         return lambda cell, **params: f(cell=cell, **params)
     elif hasattr(f, "init_components"):
         # TODO - this could break if trying to use as both an editor and a headerFilter
-        return lambda cell, **params: f(item=dict(cell.getData()), cell=cell, **params)
+        def render_form(cell, **params):
+            data = cell.getData()
+            if type(data) is JsProxy:
+                data = dict(data)
+            return f(item=data, cell=cell, **params)
+
+        return render_form
     else:
         return lambda cell, **params: f(**params)
 
