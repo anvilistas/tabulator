@@ -286,9 +286,11 @@ class CustomDataLoader(AbstractModule):
     def request_db_data(self, data, params, config, silent, prev):
         ordering = self.get_ordering(params)
         query = params["query"]
+        scrollLeft = self.table.rowManager.scrollLeft
         with self.context:
             iter_ = self.get_search_iter(ordering, query)
             p = Promise.resolve(iter_.get_remote_data(params["page"], params["size"]))
+        setTimeout(lambda: self.table.rowManager.scrollHorizontal(scrollLeft))
         return p
 
     @report_exceptions
