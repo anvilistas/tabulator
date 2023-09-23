@@ -10,10 +10,7 @@ from anvil.js.window import Object, Promise, setTimeout
 from anvil.server import no_loading_indicator
 from anvil.tables import TableError, order_by
 
-from ._hashable_queries import make_hashable
 from ._module_helpers import AbstractModule, tabulator_module
-
-make_hashable()
 
 JsProxy = type(Promise)
 
