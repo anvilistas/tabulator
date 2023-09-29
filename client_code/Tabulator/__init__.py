@@ -309,6 +309,8 @@ class Tabulator(TabulatorTemplate):
             self._t.destroy()
             self._initialize()
 
+        return updates
+
 
 for method in _methods:
     delattr(Tabulator, method)
