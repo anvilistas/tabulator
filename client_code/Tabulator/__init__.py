@@ -42,6 +42,21 @@ row_selection_column = {
 
 from ._data_loader import Query
 
+try:
+    from anvil.designer import in_designer
+except ImportError:
+    in_designer = False
+
+if in_designer:
+    from anvil.js.window import document
+
+    _s = document.createElement("style")
+    _s.textContent = """
+.tabulator-row .tabulator-cell {
+    font-style: italic;
+}"""
+    document.head.append(_s)
+
 
 class Tabulator(TabulatorTemplate):
     theme = _default_theme
@@ -97,6 +112,21 @@ class Tabulator(TabulatorTemplate):
         options = _camelKeys(self._options) | _camelKeys(self.options)
         options["columns"] = [_camelKeys(defn) for defn in options["columns"]]
         options["columnDefaults"] = _camelKeys(options["columnDefaults"])
+        if in_designer and type(self) is Tabulator:
+            pagination = options.get("pagination")
+            data = [
+                {
+                    "columnA": "columnA",
+                    "columnB": "columnB",
+                    "columnC": "columnC",
+                    "columnD": "columnD",
+                }
+            ] * 2
+            if pagination:
+                data *= 3
+                options["paginationSize"] = 2
+            options["data"] = data
+            options["autoColumns"] = True
 
         # if we're using the rowSelection make sure things are selectable
         if (
@@ -265,6 +295,19 @@ class Tabulator(TabulatorTemplate):
 
     def set_page(self, page):
         """set the current page"""
+
+    def _anvil_set_property_values_(self, updates):
+        re_init = False
+        for attr, value in updates.items():
+            if attr in self._options:
+                self._options[attr] = value
+                re_init = True
+            else:
+                setattr(self, attr, value)
+
+        if re_init and self._t:
+            self._t.destroy()
+            self._initialize()
 
 
 for method in _methods:
