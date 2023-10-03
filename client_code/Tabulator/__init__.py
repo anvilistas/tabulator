@@ -296,19 +296,6 @@ class Tabulator(TabulatorTemplate):
     def set_page(self, page):
         """set the current page"""
 
-    def _anvil_set_property_values_(self, updates):
-        re_init = False
-        for attr, value in updates.items():
-            if attr in self._options:
-                self._options[attr] = value
-                re_init = True
-            else:
-                setattr(self, attr, value)
-
-        if re_init and self._t:
-            self._t.destroy()
-            self._initialize()
-
 
 for method in _methods:
     delattr(Tabulator, method)

@@ -6,6 +6,11 @@ from functools import partial, wraps
 import anvil.js
 from anvil.js.window import Function, Promise, RegExp, String, document, window
 
+try:
+    from anvil.designer import in_designer
+except ImportError:
+    in_designer = False
+
 from ._js_tabulator import TabulatorModule
 
 _RE_SNAKE = RegExp("_[a-z]", "g")
@@ -61,9 +66,13 @@ def _options_property(key, getMethod=None, setMethod=None):
         self._options[key] = value
         if self._t is None:
             return
-        elif setMethod is not None:
+        if setMethod is not None:
             return self._t[setMethod](value)
-        elif _warnings.get("post_init") is not None:
+        if in_designer:
+            self._t.destroy()
+            self._initialize()
+            return
+        if _warnings.get("post_init") is not None:
             return
         _warnings["post_init"] = True
         msg = f"Warning: changing the option {key!r} after the table has been built has no effect"
