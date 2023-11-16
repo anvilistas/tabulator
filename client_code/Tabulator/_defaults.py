@@ -31,6 +31,7 @@ _default_props = {
     "spacing_below": "small",
     "border": "",
     "visible": True,
+    "role": None,
 }
 
 _default_modules = {
