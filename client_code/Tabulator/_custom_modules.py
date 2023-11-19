@@ -64,7 +64,7 @@ def cell_wrapper(f):
         return lambda cell, **params: f(cell=cell, **params)
     elif hasattr(f, "init_components"):
         # TODO - this could break if trying to use as both an editor and a headerFilter
-        def render_form(cell, on_rendered=None, **params):
+        def render_form(cell, **params):
             data = cell.getData("data")
             if type(data) is JsProxy:
                 data = dict(data)
@@ -72,11 +72,7 @@ def cell_wrapper(f):
 
         return render_form
     else:
-
-        def render_component(cell, on_rendered=None, **params):
-            return f(**params)
-
-        return render_component
+        return lambda cell, **params: f(**params)
 
 
 class AbstractCallableWrapper(AbstractModule):
