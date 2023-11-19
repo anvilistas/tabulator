@@ -34,7 +34,9 @@ class ComponentFormatter(AbstractModule):
         self.mod.subscribe("cell-format", self.cell_format)
         self.mod.subscribe("cell-rendered", self.cell_render)
         self.mod.subscribe("cell-delete", self.cell_delete)
+        # because we don't support onRendered callbacks
         self.mod.registerColumnOption("cellRender", None)
+        self.mod.registerColumnOption("cellRenderParams", None)
 
     def cell_format(self, cell, component):
         if not isinstance(component, Component):
@@ -51,7 +53,10 @@ class ComponentFormatter(AbstractModule):
             component.visible = True
         renderCallback = cell.column.definition.get("cellRender", None)
         if renderCallback:
-            renderCallback(cell.getComponent())
+            renderParams = cell.column.definition.get("cellRenderParams", {})
+            if callable(renderParams):
+                renderParams = renderParams()
+            renderCallback(cell.getComponent(), **renderParams)
 
     def cell_delete(self, cell):
         component = cell.modules.get("anvilComponent")
