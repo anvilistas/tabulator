@@ -103,12 +103,7 @@ class FormatterWrapper(AbstractCallableWrapper):
     @staticmethod
     def wrap(f):
         f = cell_wrapper(f)
-
-        def wrapped(cell, params, onRendered):
-            params["on_rendered"] = onRendered
-            return f(cell, **params)
-
-        return wrapped
+        return lambda cell, params, onRendered: f(cell, **params)
 
 
 @tabulator_module("sorterWrapper", moduleInitOrder=-10)
