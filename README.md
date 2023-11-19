@@ -253,6 +253,22 @@ self.tabulator.columns = [
 
 If using a Form as the `formatter` then the `data` for the current row will be passed as the `item` allowing data bindings to be used.
 
+If you need the `onRendered` callback. You can add a `cell_render` option to your column definition.
+e.g.
+
+```python
+
+    columns = [
+        ...,
+        {"title": "Sparkline Column", ..., "cell_render": self.sparkline_render},
+    ]
+
+    def sparkline_render(self, cell):
+        el = cell.getElement()
+        jQuery(el).sparkline(cell.getValue(), {"width":"100%", "type":"bar"})
+
+```
+
 
 **Row Selction Formatter**
 

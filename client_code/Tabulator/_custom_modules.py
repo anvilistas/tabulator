@@ -34,6 +34,9 @@ class ComponentFormatter(AbstractModule):
         self.mod.subscribe("cell-format", self.cell_format)
         self.mod.subscribe("cell-rendered", self.cell_render)
         self.mod.subscribe("cell-delete", self.cell_delete)
+        # because we don't support onRendered callbacks
+        self.mod.registerColumnOption("cellRender", None)
+        self.mod.registerColumnOption("cellRenderParams", None)
 
     def cell_format(self, cell, component):
         if not isinstance(component, Component):
@@ -48,6 +51,12 @@ class ComponentFormatter(AbstractModule):
         component = cell.modules.get("anvilComponent")
         if component is not None and component.visible is None:
             component.visible = True
+        renderCallback = cell.column.definition.get("cellRender", None)
+        if renderCallback:
+            renderParams = cell.column.definition.get("cellRenderParams", {})
+            if callable(renderParams):
+                renderParams = renderParams()
+            renderCallback(cell.getComponent(), **renderParams)
 
     def cell_delete(self, cell):
         component = cell.modules.get("anvilComponent")
@@ -60,7 +69,7 @@ def cell_wrapper(f):
         return lambda cell, **params: f(cell=cell, **params)
     elif hasattr(f, "init_components"):
         # TODO - this could break if trying to use as both an editor and a headerFilter
-        def render_form(cell, on_rendered=None, **params):
+        def render_form(cell, **params):
             data = cell.getData("data")
             if type(data) is JsProxy:
                 data = dict(data)
@@ -68,11 +77,7 @@ def cell_wrapper(f):
 
         return render_form
     else:
-
-        def render_component(cell, on_rendered=None, **params):
-            return f(**params)
-
-        return render_component
+        return lambda cell, **params: f(**params)
 
 
 class AbstractCallableWrapper(AbstractModule):
@@ -103,12 +108,7 @@ class FormatterWrapper(AbstractCallableWrapper):
     @staticmethod
     def wrap(f):
         f = cell_wrapper(f)
-
-        def wrapped(cell, params, onRendered):
-            params["on_rendered"] = onRendered
-            return f(cell, **params)
-
-        return wrapped
+        return lambda cell, params, onRendered: f(cell, **params)
 
 
 @tabulator_module("sorterWrapper", moduleInitOrder=-10)
