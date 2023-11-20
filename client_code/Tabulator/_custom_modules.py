@@ -53,7 +53,7 @@ class ComponentFormatter(AbstractModule):
             component.visible = True
         renderCallback = cell.column.definition.get("cellRender", None)
         if renderCallback:
-            renderParams = cell.column.definition.get("cellRenderParams", {})
+            renderParams = cell.column.definition.get("cellRenderParams", None) or {}
             if callable(renderParams):
                 renderParams = renderParams()
             renderCallback(cell.getComponent(), **renderParams)
