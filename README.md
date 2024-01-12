@@ -269,6 +269,13 @@ e.g.
 
 ```
 
+**Security**:
+
+Strings returned from a custom formatter will become the innerHTML of the cell.
+This allows you to use dom strings like `f"<span style={'red'}>{cell.get_value()}</span>"`,
+but it can cause security issues where the value of the cell is something you do not control (see xss attacks).
+If you just want to display text with a custom formatter, it may be better to return an Anvil Label with the `text` property assigned to the data.
+
 
 **Row Selction Formatter**
 
