@@ -239,7 +239,7 @@ class CustomDataLoader(AbstractModule):
         return self.db is not None
 
     def model_data_check(self, data, params, config, silent):
-        return type(data) is list and data and self.use_model
+        return isinstance(data, list) and data and self.use_model
 
     def drop_auto_col_id(self, cols):
         self.auto_cols = False
