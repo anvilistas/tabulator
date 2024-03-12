@@ -177,7 +177,7 @@ class Tabulator(TabulatorTemplate):
         self.add_event_handler(event, handler)
 
     def remove_event_handler(self, event, handler=None):
-        if event is None:
+        if handler is None:
             super().remove_event_handler(event)
         else:
             super().remove_event_handler(event, handler)
