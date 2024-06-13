@@ -721,6 +721,33 @@ If you update a table row or add a new row, you may need to clear Tabulator's ca
 You can do this with `self.tabulator.clear_app_table_cache()`.
 After calling this method you will probably want to call `self.tabulator.replace_data()`.
 
+**Row Mutation**
+
+You can mutate a row from an app table to a different object by passing a callable to
+the `mutator` option. This callable should take a data tables row as its single argument
+and return whatever object you would like to use in the tabulator in its place.
+
+For example, if you were using the `Book` class from the example for the Anvil Extras
+persistence module, you might do the following:
+
+```python
+
+from anvil_extras.persistence import persisted_class
+
+
+@persisted_class
+class Book:
+    key = "title"
+
+
+self.tabulator.options = {
+    "app_table": app_tables.books,
+    "mutator": Book,
+    "index": "title",
+    "getter": getattr,
+}
+
+```
 
 
 ### Using Models

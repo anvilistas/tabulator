@@ -326,7 +326,7 @@ class OptionVerifier(AbstractModule):
     def check_keys(self, type, bad_keys):
         if not bad_keys:
             return
-        msg = f"The following {type} option(s) are invalid: {', '.join(map(repr,bad_keys))}.\n"
+        msg = f"The following {type} option(s) are invalid: {', '.join(map(repr, bad_keys))}.\n"
         msg += "You may need to include the required Module in Tabulator.modules."
         raise AttributeError(msg)
 

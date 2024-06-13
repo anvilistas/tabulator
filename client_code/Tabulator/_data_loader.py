@@ -47,7 +47,7 @@ _error_to_field = {KeyError: "key", AttributeError: "attribute", TableError: "co
 
 
 class DataIterator:
-    def __init__(self, data_source, data_loader):
+    def __init__(self, data_source, data_loader, mutator=None):
         self.iter = iter(data_source)
         self.len = len(data_source)
         self.cache = []
@@ -57,6 +57,7 @@ class DataIterator:
         self.field_getters = data_loader.field_getters
         self.index_getter = data_loader.index_getter
         self.data_loader = data_loader
+        self.mutator = mutator
         if self.data_loader.data_initialized:
             self.get_index = self.index_getter
 
@@ -90,6 +91,8 @@ class DataIterator:
 
     def cache_next(self):
         pysource = next(self.iter)
+        if self.mutator is not None:
+            pysource = self.mutator(pysource)
         index = self.get_index(pysource, self.id_field)
         if index in self.id_cache:
             pysource = self.id_cache[index]
@@ -146,6 +149,7 @@ class CustomDataLoader(AbstractModule):
         mod.registerTableOption("getter", None)
         mod.registerTableOption("useModel", False)
         mod.registerTableOption("loadingIndicator", True)
+        mod.registerTableOption("mutator", None)
         mod.registerTableFunction("clearAppTableCache", self.reset_cache)
         mod.registerTableFunction("getTableRows", self.get_py_sources)
         mod.registerTableFunction("getModels", self.get_py_sources)
@@ -229,7 +233,9 @@ class CustomDataLoader(AbstractModule):
     @lru_cache
     def get_search_iter(self, ordering, query):
         search = self.db.search(*ordering, *query.args, **query.kws)
-        return DataIterator(search, self)
+        options = self.table.options
+        mutator = options.get("mutator")
+        return DataIterator(search, self, mutator)
 
     def get_ordering(self, params):
         sort = params.get("sort") or ()
