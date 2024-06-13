@@ -1,3 +1,8 @@
+# v2.2.22
+
+- Add `mutator` option when using app tables
+  https://github.com/anvilistas/Tabulator/pull/148
+
 # v2.2.0
 - Move to tabulator 5.4.0
 
