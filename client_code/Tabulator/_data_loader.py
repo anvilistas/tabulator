@@ -92,7 +92,7 @@ class DataIterator:
     def cache_next(self):
         pysource = next(self.iter)
         if self.mutator is not None:
-            pysource =  self.mutator(pysource)
+            pysource = self.mutator(pysource)
         index = self.get_index(pysource, self.id_field)
         if index in self.id_cache:
             pysource = self.id_cache[index]
