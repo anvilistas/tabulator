@@ -69,9 +69,9 @@ container:
   properties: {tooltip: '', background: '', foreground: '', border: '', visible: true,
     role: null, html: "<div style=\"height:152px; margin:8px 0;\">\n    <div class='placeholder-table'></div>\n\
       </div>\n\n<script type=\"module\" type=\"text/javascript\">\nimport {TabulatorFull\
-      \ as Tabulator} from \"https://cdn.skypack.dev/tabulator-tables@5.4.4\";\n\n\
+      \ as Tabulator} from \"https://cdn.skypack.dev/tabulator-tables@6.2.0\";\n\n\
       let p = Promise.resolve();\nif (!window.anvilTabulatorLoaded) {\n  window.anvilTabulatorLoaded\
-      \ = true;\n  const l = document.createElement(\"link\");\n  l.href = \"https://cdn.jsdelivr.net/npm/tabulator-tables@5.4.4/dist/css/tabulator_bootstrap3.min.css\"\
+      \ = true;\n  const l = document.createElement(\"link\");\n  l.href = \"https://cdn.jsdelivr.net/npm/tabulator-tables@6.2.0/dist/css/tabulator_bootstrap3.min.css\"\
       ;\n  l.rel = \"stylesheet\";\n  p = new Promise((resolve) => {\n    l.onload\
       \ = resolve;\n    l.onerror = resolve;\n  });\n  document.body.appendChild(l);\n\
       }\n\np.then(() => {\n  $('.placeholder-table').each(function() {\n    new Tabulator(this,\
