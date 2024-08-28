@@ -8,15 +8,13 @@ from ._js_tabulator import Module, Tabulator
 _body = """
 class CustomModule extends Module {
     static moduleName = name;
-    static {
-        for (const key in kws) {
-            this[key] = kws[key];
-        }
-    }
     constructor(table) {
         super(table);
         cls(this, table);
     }
+}
+for (const key in kws) {
+    this[key] = kws[key];
 }
 return CustomModule;
 """
