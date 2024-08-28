@@ -14,8 +14,9 @@ class CustomModule extends Module {
     }
 }
 for (const key in kws) {
-    this[key] = kws[key];
+    CustomModule[key] = kws[key];
 }
+
 return CustomModule;
 """
 _mkJsModule = _Function("Tabulator", "Module", "cls", "name", "kws", _body)
