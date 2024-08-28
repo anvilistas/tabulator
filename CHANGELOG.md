@@ -1,3 +1,7 @@
+# v3.0.0
+
+- Moves to Tabulator 6.2.0
+
 # v2.2.22
 
 - Add `mutator` option when using app tables
