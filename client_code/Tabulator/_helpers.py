@@ -11,7 +11,7 @@ try:
 except ImportError:
     in_designer = False
 
-from ._js_tabulator import TabulatorModule
+from ._js_tabulator import TabulatorModule, theme_url
 
 _RE_SNAKE = RegExp("_[a-z]", "g")
 _replace = String.prototype.replace
@@ -104,7 +104,7 @@ def _inject_theme(theme):
     link = document.createElement("link")
     if theme in _themes:
         theme = "_" + theme if theme != "standard" else ""
-        theme = f"https://cdn.jsdelivr.net/npm/tabulator-tables@6.2.0/dist/css/tabulator{theme}.min.css"
+        theme = theme_url.format(theme)
     link.href = theme
     link.rel = "stylesheet"
     link.crossorigin = "anonymous"

@@ -13,3 +13,6 @@ startup_form: null
 native_deps: {head_html: ''}
 db_schema: {}
 renamed: true
+config_schema:
+  client:
+    cdn: {type: boolean, default_value: true}

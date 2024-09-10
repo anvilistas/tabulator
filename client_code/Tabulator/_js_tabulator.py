@@ -1,11 +1,22 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2022 Stu Cork
 
+import anvil
 from anvil.js import import_from, report_exceptions
 from anvil.js.window import Function
 
 # from anvil.js.window import TabulatorModule
-url = "https://cdn.skypack.dev/pin/tabulator-tables@v6.2.0-cLdAJBWLGfS7gDBKHqT0/mode=imports,min/optimized/tabulator-tables.js"
+url = "https://cdn.skypack.dev/pin/tabulator-tables@v6.2.5-B1KrV1TyUSjV9ySkbbZY/mode=imports,min/optimized/tabulator-tables.js"
+
+theme_url = (
+    "https://cdn.jsdelivr.net/npm/tabulator-tables@6.2.5/dist/css/tabulator{}.min.css"
+)
+
+config = anvil.app.get_client_config("tabulator")
+if not config.get("cdn", True):
+    url = "./_/theme/tabulator-tables/js/tabulator_esm.min.js"
+    theme_url = "./_/theme/tabulator-tables/css/tabulator{}.min.css"
+
 TabulatorModule = import_from(url)
 
 
