@@ -16,3 +16,4 @@ renamed: true
 config_schema:
   client:
     cdn: {type: boolean, default_value: true}
+    minified: {type: boolean, default_value: true}
