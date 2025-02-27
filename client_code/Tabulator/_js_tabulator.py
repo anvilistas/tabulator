@@ -13,13 +13,13 @@ cdn = config.get("cdn", True)
 minified = config.get("minified", True)
 
 if cdn:
-    min = ",min" if minified else ""
-    url = f"https://cdn.skypack.dev/pin/tabulator-tables@v6.2.5-B1KrV1TyUSjV9ySkbbZY/mode=imports{min}/optimized/tabulator-tables.js"
-    theme_url = "https://cdn.jsdelivr.net/npm/tabulator-tables@6.2.5/dist/css/tabulator{}.min.css"
+    prefix = "https://cdn.jsdelivr.net/npm/tabulator-tables@6.3.1/dist/"
 else:
-    min = ".min" if minified else ""
-    url = f"./_/theme/tabulator-tables/js/tabulator_esm{min}.js"
-    theme_url = "./_/theme/tabulator-tables/css/tabulator{}.min.css"
+    prefix = "./_/theme/tabulator-tables/"
+
+min_ = ".min" if minified else ""
+url = f"{prefix}js/tabulator_esm{min_}.js"
+theme_url = f"{prefix}css/tabulator{{}}.min.css"
 
 
 TabulatorModule = import_from(url)
