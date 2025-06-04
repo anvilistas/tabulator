@@ -1,8 +1,6 @@
 import sys
 from datetime import datetime as _datetime
 
-import anvil
-
 __version__ = "0.3.5"
 
 NOTSET = 0
@@ -96,7 +94,7 @@ class Logger:
         )
 
 
-logger = Logger("**tabulator**", format="{name}: {msg}", level=INFO)
+logger = Logger("$$Tabulator$$", format="{name}: {msg}", level=INFO)
 
 
 def debug_logging(enable=True):
