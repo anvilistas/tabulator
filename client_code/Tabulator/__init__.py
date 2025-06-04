@@ -28,6 +28,7 @@ from ._helpers import (
     _toCamel,
 )
 from ._js_tabulator import Tabulator as _Tabulator
+from ._logger import debug_logging, logger
 
 row_selection_column = {
     "formatter": "rowSelection",
