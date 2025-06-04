@@ -799,3 +799,22 @@ def tabulator_cell_edited(self, cell, **event_args):
 def select_visible(self):
     self.tabulator.get_models("visible") # returns a list of models that are visible
 ```
+
+
+## Debug Logging
+
+By default debug logging is disabled. To enable it use the following code:
+
+```python
+from tabulator.Tabulator import Tabulator
+Tabulator.debug_logging(True)
+```
+
+Debug logging will show python debug messages during instantiation and initialization of the tabulator component.
+This can be helpful for debugging issues with the tabulator component.
+
+The underlying JavaScript tabulator component also has a debug logging feature.
+See the tabulator docs for debug logging and add these options to the tabulator options.
+
+Messages from the JavaScript Tabulator component will be logged to the browser console.
+
