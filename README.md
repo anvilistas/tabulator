@@ -1,18 +1,18 @@
 # Anvil Tabulator
+
 A dependency for anvil.works that wraps the JavaScript Tabulator Library (version 5.2)
 
 This app is available as a [third party dependency](https://anvil.works/forum/t/third-party-dependencies/8712) using the code: `TGQCF3WT6FVL2EM2`
 
-|||
-|---|---|
+|                       |                                                                                                                                                   |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Dependency Clone Link | [<img src="https://anvil.works/img/forum/copy-app.png" height='40px'>](https://anvil.works/build#clone:TGQCF3WT6FVL2EM2=SMZUM3MICK67JEIH25IJXCWP) |
-|Live Example | [example-tabulator.anvil.app](https://example-tabulator.anvil.app/) |
-|Example Clone Link | [<img src="https://anvil.works/img/forum/copy-app.png" height='40px'>](https://anvil.works/build#clone:JVL5ORAAPZ6SVWDU=JA27THWRHTGHH7XK4U36PRN4)|
+| Live Example          | [example-tabulator.anvil.app](https://example-tabulator.anvil.app/)                                                                               |
+| Example Clone Link    | [<img src="https://anvil.works/img/forum/copy-app.png" height='40px'>](https://anvil.works/build#clone:JVL5ORAAPZ6SVWDU=JA27THWRHTGHH7XK4U36PRN4) |
 
 ---
 
 The documentation below should be read in conjunction with the [JS Tabulator docs (5.4)](http://tabulator.info/docs/5.4).
-
 
 # Docs
 
@@ -30,23 +30,30 @@ The documentation below should be read in conjunction with the [JS Tabulator doc
 - [App Tables](#app-tables)
 - [Using Models](#using-models)
 
-
 ---
+
 ### Creating a Tabulator Component
 
 In JS Tabulator a tabulator instance is defined like:
+
 ```js
 var table = new Tabulator("#example-table", {
- 	data:tabledata,
- 	columns:[
-	 	{title:"Name", field:"name", width:150},
-	 	{title:"Age", field:"age", hozAlign:"left", formatter:"progress"},
-	 	{title:"Favourite Color", field:"col"},
-	 	{title:"Date Of Birth", field:"dob", sorter:"date", hozAlign:"center"},
- 	],
-     // other options within this object
+  data: tabledata,
+  columns: [
+    { title: "Name", field: "name", width: 150 },
+    { title: "Age", field: "age", hozAlign: "left", formatter: "progress" },
+    { title: "Favourite Color", field: "col" },
+    {
+      title: "Date Of Birth",
+      field: "dob",
+      sorter: "date",
+      hozAlign: "center",
+    },
+  ],
+  // other options within this object
 });
 ```
+
 In Anvil Tabulator add the Tabulator Component in the design view and then set the data and columns at runtime.
 
 ```python
@@ -70,6 +77,7 @@ In Anvil Tabulator, some options are available in the designer as properties.
 Other options can be set at runtime.
 
 Either by setting overriding the `options` property
+
 ```python
 self.tabulator.options = {
     "selectable": "highlight",
@@ -78,6 +86,7 @@ self.tabulator.options = {
 ```
 
 or by updating it
+
 ```python
 self.tabulator.options.update(
     selectable="highlight",
@@ -132,14 +141,14 @@ Calling an Anvil Tabulator method directly calls the underlying JS method.
 Any methods not available in the autocompleter can also be called.
 Check the call signatures in the JS Tabulator docs.
 
-
 ```python
 # not available in the autocomplete but can still be called
 self.tabulator.previous_page()
 ```
+
 Keyword arguments are not supported (JS doesn't have keyword arguments).
 
-*(The only exception to this is `set_query()` which does support kwargs)*
+_(The only exception to this is `set_query()` which does support kwargs)_
 
 ---
 
@@ -153,9 +162,11 @@ Doing something like this in the `__init__` method
 ```python
 self.tabulator.set_sort("name", "asc")
 ```
+
 would throw an `AttributeError` or `RuntimeError` since the tabulator instance does not exist yet.
 
 Instead do:
+
 ```python
 def tabulator_table_built(self, **event_args):
     self.tabulator.set_sort("name", "asc")
@@ -166,7 +177,6 @@ The exception to this is the `self.tabulator.on()` and `self.tabulator.off()` me
 These can be called before the tabulator is built.
 
 You can check whether a tabulator instance has been built using the `self.tabulator.initialized` property.
-
 
 ---
 
@@ -200,7 +210,6 @@ self.tabulator.columns = [
 
 `labelField` and `urlPrefix` are part of the `formatter_params` value so must be camelCase.
 
-
 ---
 
 ### Formatters, Sorters, Editors, Filters
@@ -215,6 +224,7 @@ Can be either a function, Anvil Component or Anvil Form.
 If it is a function it should return an Anvil Component, dom node or string or dom string.
 
 in JS Tabulator
+
 ```js
 function nameFormatter(cell, formatterParams, onRendered) {
     return "Mr" + cell.getValue();
@@ -228,6 +238,7 @@ function nameFormatter(cell, formatterParams, onRendered) {
 ```
 
 in Anvil Tabulator
+
 ```python
 def name_formatter(cell, **params):
     return "Mr" + cell.get_value()
@@ -276,7 +287,6 @@ This allows you to use dom strings like `f"<span style={'red'}>{cell.get_value()
 but it can cause security issues where the value of the cell is something you do not control (see xss attacks).
 If you just want to display text with a custom formatter, it may be better to return an Anvil Label with the `text` property assigned to the data.
 
-
 **Row Selction Formatter**
 
 If you need a checkbox style selection column you can add one manually.
@@ -310,8 +320,6 @@ row_selection_column = {
 
 If you use the `FrozenColumns` module you may need to add `"frozen": True` to this definiton.
 Adding this column will turn on the `selectable` option to `"highlight"`. (Unless you've already set it in your options)
-
-
 
 **Custom Editors**
 
@@ -372,7 +380,7 @@ def color_editor(cell, **editor_params):
 ```
 
 The `x-close-editor` event can be raised with or without a value.
-When raised without a `value` paramater this is equivalent to  `self.raise_event("x-cancel")`.
+When raised without a `value` paramater this is equivalent to `self.raise_event("x-cancel")`.
 When raised with a `value` parameter this is equivalent to raising the event `self.raise_event("x-success", value=value)`.
 
 **Custom Sorters**
@@ -402,14 +410,14 @@ self.tabulator.columns = [
 In JS Tabulator
 
 ```js
-function customFilter(data, filterParams){
-    //data - the data for the row being filtered
-    //filterParams - params object passed to the filter
+function customFilter(data, filterParams) {
+  //data - the data for the row being filtered
+  //filterParams - params object passed to the filter
 
-    return data.name == "bob" && data.height < filterParams.height; //must return a boolean, true if it passes the filter.
+  return data.name == "bob" && data.height < filterParams.height; //must return a boolean, true if it passes the filter.
 }
 
-table.setFilter(customFilter, {height:3});
+table.setFilter(customFilter, { height: 3 });
 ```
 
 in Anvil Tabulator
@@ -427,7 +435,6 @@ self.tabulator.set_filter(custom_filter, {"height":3})
 
 A custom Header Filter component behaves much like an Custom Edit Component.
 The only difference is that no `cell` argument is provided.
-
 
 **Custom Header Filter Func**
 
@@ -449,10 +456,8 @@ Anvil favours python date and datetime objects.
 This is reflected in the built-in `"date"` and `"datetime"` Formatters, Editors and Sorters.
 These built-in Formatters, Editors and Sorters have been overridden to expect python objects.
 
-
 _If you would like to use JS Tabulator datetime formatter/sorter use `"luxon_datetime"` in place of `"datetime"`._
 _You will need `luxon.js` imported via CDN in your Native Libraries for this to work._
-
 
 ```python
     self.tabulator.columns = [
@@ -496,8 +501,6 @@ Otherwise, it can be set to an Anvil.tz object e.g.
 
 ```
 
-
-
 ---
 
 ### Modules
@@ -506,15 +509,13 @@ JS Tabulator has a modular design.
 To add features a Module that exposes those features can be added
 
 ```js
-
-import {Tabulator, FormatModule, EditModule} from 'tabulator-tables';
+import { Tabulator, FormatModule, EditModule } from "tabulator-tables";
 
 Tabulator.registerModule([FormatModule, EditModule]);
 
 var table = new Tabulator("#example-table", {
   //table setup options
 });
-
 ```
 
 In Anvil Tabulator certain modules are included by default.
@@ -536,6 +537,7 @@ Tabulator.modules = {
     "Sort",
 }
 ```
+
 i.e. the modules property on the Tabulator component is a set of strings.
 These modules will be registered at runtime before the first Tabulator instance is created.
 You can adjust this list by adjusting the set.
@@ -549,6 +551,9 @@ Tabulator.modules.add("Persistance")
 
 or by overriding the modules property with a new `set`, `list`, `tuple` of modules.
 
+**NB**
+You can only register modules before the first Tabulator instance is created.
+Subsequent calls to `Tabulator.register_module` will have no effect.
 
 ---
 
@@ -596,6 +601,10 @@ other common CSS classes for the bootstrap theme can be added like
 self.tabulator.options.update(css_class=["table-striped", "table-bordered", "table-condensed"])
 ```
 
+**NB**
+You can only change the theme before the first Tabulator instance is created.
+Subsequent calls to `Tabulator.theme` will have no effect.
+
 ---
 
 ### Default Options
@@ -603,11 +612,13 @@ self.tabulator.options.update(css_class=["table-striped", "table-bordered", "tab
 JS Tabulator has various default options.
 
 In JS Tabulator:
+
 ```python
 Tabulator.defaultOptions.layout = "fitData"
 ```
 
 In Anvil Tabulator
+
 ```python
 from tabulator.Tabulator import Tabulator
 Tabulator.default_options["layout"] = "fitData"
@@ -615,7 +626,6 @@ Tabulator.default_options["layout"] = "fitData"
 
 Note that `default_options` will not override any designer propeties.
 e.g. setting `Tabulator.default_options["header_visible"] = False` will have no effect.
-
 
 ---
 
@@ -637,7 +647,7 @@ To get started, instead of setting the `self.tabulator.data` attribute, provide 
     }
 ```
 
-*You may want to make a server call to retrieve a `client_readable` view of an `app_table`*
+_You may want to make a server call to retrieve a `client_readable` view of an `app_table`_
 
 If an `app_table` option is provided the data will be retrieved by calling `.search()`.
 The search will be adjusted depending on the header sorting.
@@ -700,19 +710,16 @@ def select_visible(self):
     self.tabulator.get_table_rows("visible")
 ```
 
-
 All queries and searches are cached. If you need to reload/refresh the data in the tabulator component,
 you can call `self.tabulator.replace_data()` or `self.tabulator.set_data()`.
 This will create a fresh call to `search()` on the `app_table`, effectively clearing any cached values.
 You can stay on the same page by surrounding the call with `x = self.tabulator.get_page()` and `self.tabulator.set_page(x)`.
-
 
 **Row Selection Column with `app_table` option**
 
 Using the `row_selection_column` does **not** work well with the `app_table` option.
 If you want to use the `row_selection_column` with the `app_table` option it's best to
 set the `progress_load` option to `"load"` and set `pagination` to `False`.
-
 
 **Row cache**
 
@@ -749,7 +756,6 @@ self.tabulator.options = {
 
 ```
 
-
 ### Using Models
 
 Anvil Tabulator provides an API for working with a list of models as opposed to a list of dicts.
@@ -784,7 +790,6 @@ and so changing the `getter` to the function `getattr()` is necessary.
 All data sources must have a unique identifier. The field used as the unique identifier is set
 by the `tabulator.index` property - this defaults to `"id"`. This can be changed in the design view or in the tabulator options.
 
-
 If you want to retrieve the original models from tabulator events you can use the `get_model()` or `get_models()` methods.
 
 ```python
@@ -799,7 +804,6 @@ def tabulator_cell_edited(self, cell, **event_args):
 def select_visible(self):
     self.tabulator.get_models("visible") # returns a list of models that are visible
 ```
-
 
 ## Debug Logging
 
