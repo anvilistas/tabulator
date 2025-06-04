@@ -70,6 +70,7 @@ class Tabulator(TabulatorTemplate):
         return TabulatorTemplate.__new__(cls, **properties)
 
     def __init__(self, **properties):
+        logger.debug(f"__init__ called with properties={properties}")
         self._t = None
         self._dom_node = dom_node = _get_dom_node(self)
         self._queued = []
@@ -87,15 +88,23 @@ class Tabulator(TabulatorTemplate):
 
     @classmethod
     def _setup(cls):
+        logger.debug("Setup called")
+        logger.debug(f"Default options: {cls.default_options}")
         for key, val in cls.default_options.items():
             _Tabulator.defaultOptions[key] = val
         if cls._registered:
+            logger.debug("Setup: already completed, skipping setup")
             return
         _inject_theme(cls.theme)
+        logger.debug(f"Injected theme: {cls.theme}")
+        logger.debug("Registering modules")
         cls.register_module(cls.modules)
+        logger.debug("Registering custom modules")
         cls.register_module(custom_modules)
         _datetime_overrides.init_overrides()
+        logger.debug("Initialized datetime overrides")
         _ignore_resize_observer_error()
+        logger.debug("Set up resize observer error handler")
         cls._registered = True
 
     @staticmethod
@@ -103,6 +112,7 @@ class Tabulator(TabulatorTemplate):
         if type(modules) not in (set, tuple, list):
             modules = [modules]
         modules = [_to_module(m) for m in modules]
+        logger.debug(f"Calling Tabulator.registerModule with modules: {modules}")
         _Tabulator.registerModule(modules)
 
     # because row_formatter is not a tabulator event but it is an anvil tabulator event
@@ -110,6 +120,9 @@ class Tabulator(TabulatorTemplate):
         self.raise_event("row_formatter", row=row)
 
     def _initialize(self):
+        logger.debug("Initializing tabulator")
+        logger.debug(f"Options: {self.options}")
+
         options = _camelKeys(self._options) | _camelKeys(self.options)
         options["columns"] = [_camelKeys(defn) for defn in options["columns"]]
         options["columnDefaults"] = _camelKeys(options["columnDefaults"])
@@ -137,11 +150,15 @@ class Tabulator(TabulatorTemplate):
         ):
             options["selectable"] = "highlight"
 
+        logger.debug(f"Initializing tabulator with options: {options}")
+
         t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
         self._t = t
+        logger.debug("Tabulator initialized")
 
         for meth, event, handler in self._queued:
+            logger.debug(f"Calling self.{meth}({event}, {handler})")
             t[meth](event, handler)
         self._queued.clear()
 
@@ -208,18 +225,22 @@ class Tabulator(TabulatorTemplate):
 
     def _queue_or_call(self, meth, event, handler):
         if self._t is None:
+            logger.debug(f"not initialized, queuing {meth} {event}")
             self._queued.append([meth, _toCamel(event), handler])
         else:
+            logger.debug(f"initialized, calling {meth} {event}")
             self._t[meth](_toCamel(event), handler)
 
     # we queue event handlers and set them on initialization
     def on(self, event, handler):
+        logger.debug(f"on called for event='{event}' handler={handler}")
         """Add an event handler to any tablulator event (can be snake case), check the call signature from the tabulator docs"""
         with_reporting = _report_exceptions(handler)
         self._handlers[(event, handler)] = with_reporting
         self._queue_or_call("on", event, with_reporting)
 
     def off(self, event, handler=None):
+        logger.debug(f"off called for event='{event}' handler={handler}")
         """Remove an event handler to any tablulator event (can be snake case)"""
         if handler is not None:
             handler = self._handlers.pop((event, handler), handler)
