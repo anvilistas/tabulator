@@ -5,7 +5,7 @@ from anvil import HtmlTemplate as _HtmlTemplate
 from anvil.js import get_dom_node as _get_dom_node
 from anvil.js import report_exceptions as _report_exceptions
 
-from . import _datetime_overrides
+from . import _datetime_overrides, _logger
 from ._anvil_designer import TabulatorTemplate
 from ._custom_modules import custom_modules
 from ._defaults import (
@@ -28,7 +28,6 @@ from ._helpers import (
     _toCamel,
 )
 from ._js_tabulator import Tabulator as _Tabulator
-from . import _logger
 from ._logger import logger
 
 row_selection_column = {

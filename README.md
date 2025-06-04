@@ -817,4 +817,3 @@ The underlying JavaScript tabulator component also has a debug logging feature.
 See the tabulator docs for debug logging and add these options to the tabulator options.
 
 Messages from the JavaScript Tabulator component will be logged to the browser console.
-
