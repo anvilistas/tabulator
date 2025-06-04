@@ -28,7 +28,7 @@ from ._helpers import (
     _toCamel,
 )
 from ._js_tabulator import Tabulator as _Tabulator
-from ._logger import debug_logging, logger
+from ._logger import logger
 
 row_selection_column = {
     "formatter": "rowSelection",
@@ -64,6 +64,10 @@ class Tabulator(TabulatorTemplate):
     modules = _default_modules
     default_options = _default_table_options
     _registered = False
+
+    @staticmethod
+    def debug_logging(enable=True):
+        logger.level = DEBUG if enable else INFO
 
     def __new__(cls, **properties):
         cls._setup()
