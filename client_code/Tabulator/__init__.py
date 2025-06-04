@@ -101,7 +101,7 @@ class Tabulator(TabulatorTemplate):
             logger.debug("Setup: already completed, skipping setup")
             return
         _inject_theme(cls.theme)
-        logger.debug(f"Injected theme: {cls.theme}")
+        logger.debug(f"Injected theme: {cls.theme!r}")
         logger.debug("Registering modules")
         cls.register_module(cls.modules)
         logger.debug("Registering custom modules")
@@ -155,15 +155,13 @@ class Tabulator(TabulatorTemplate):
         ):
             options["selectable"] = "highlight"
 
-        logger.debug(f"Initializing tabulator with options: {options}")
-
         t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
         self._t = t
         logger.debug("Tabulator initialized")
 
         for meth, event, handler in self._queued:
-            logger.debug(f"Calling self.{meth}({event}, {handler})")
+            logger.debug(f"Calling self.{meth}({event!r}, {handler})")
             t[meth](event, handler)
         self._queued.clear()
 
@@ -230,22 +228,20 @@ class Tabulator(TabulatorTemplate):
 
     def _queue_or_call(self, meth, event, handler):
         if self._t is None:
-            logger.debug(f"not initialized, queuing {meth} {event}")
+            logger.debug(f"not initialized, queuing self.{meth}({event!r}, {handler})")
             self._queued.append([meth, _toCamel(event), handler])
         else:
-            logger.debug(f"initialized, calling {meth} {event}")
+            logger.debug(f"initialized, calling self.{meth}({event!r}, {handler})")
             self._t[meth](_toCamel(event), handler)
 
     # we queue event handlers and set them on initialization
     def on(self, event, handler):
-        logger.debug(f"on called for event='{event}' handler={handler}")
         """Add an event handler to any tablulator event (can be snake case), check the call signature from the tabulator docs"""
         with_reporting = _report_exceptions(handler)
         self._handlers[(event, handler)] = with_reporting
         self._queue_or_call("on", event, with_reporting)
 
     def off(self, event, handler=None):
-        logger.debug(f"off called for event='{event}' handler={handler}")
         """Remove an event handler to any tablulator event (can be snake case)"""
         if handler is not None:
             handler = self._handlers.pop((event, handler), handler)

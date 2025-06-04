@@ -94,7 +94,7 @@ class Logger:
         )
 
 
-logger = Logger("$$Tabulator$$", format="{name}: {msg}", level=INFO)
+logger = Logger("$Tabulator", format="{name}: {msg}", level=INFO)
 
 
 def debug_logging(enable=True):
