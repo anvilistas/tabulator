@@ -28,7 +28,10 @@ def fieldgetter(*fields, getter=None):
 
         def g(row, obj):
             for field in fields[:-1]:
-                if row is not None:
+                if isinstance(row, dict):
+                    # simple object
+                    row = row.get(field)
+                elif row is not None:
                     # None because of linked rows being None
                     row = getter(row, field)
                 obj = obj.setdefault(field, {})
