@@ -37,7 +37,10 @@ def fieldgetter(*fields, getter=None):
                 obj = obj.setdefault(field, {})
 
             if row is not None:
-                obj[fields[-1]] = getter(row, fields[-1])
+                if isinstance(row, dict):
+                    obj[fields[-1]] = row.get(fields[-1])
+                else:
+                    obj[fields[-1]] = getter(row, fields[-1])
 
     return g
 
