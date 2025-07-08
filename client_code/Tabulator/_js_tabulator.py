@@ -13,7 +13,8 @@ cdn = config.get("cdn", True)
 minified = config.get("minified", True)
 
 if cdn:
-    prefix = "https://cdn.jsdelivr.net/npm/tabulator-tables@6.3.1/dist/"
+    # DON'T BUMP UNTIL THIS IS FIXED https://github.com/olifolkerd/tabulator/issues/4622
+    prefix = "https://cdn.jsdelivr.net/npm/tabulator-tables@6.2.5/dist/"
 else:
     prefix = "./_/theme/tabulator-tables/"
 
