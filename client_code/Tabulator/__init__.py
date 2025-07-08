@@ -121,6 +121,11 @@ class Tabulator(TabulatorTemplate):
 
     # because row_formatter is not a tabulator event but it is an anvil tabulator event
     def _row_formatter(self, row):
+        # Fix a bug where rowHeight was causing issues with scrolling
+        rowHeight = row.getTable().options.get("rowHeight")
+        if rowHeight:
+            row.getElement().style.setProperty("height", f"{rowHeight}px")
+
         self.raise_event("row_formatter", row=row)
 
     def _initialize(self):
