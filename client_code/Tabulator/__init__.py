@@ -22,6 +22,7 @@ from ._helpers import (
     _ignore_resize_observer_error,
     _inject_theme,
     _merge,
+    _normalizeOptions,
     _options_property,
     _spacing_property,
     _to_module,
