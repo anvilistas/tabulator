@@ -25,6 +25,15 @@ def _camelKeys(d):
     return {_toCamel(key): val for key, val in d.items()}
 
 
+def _normalizeOptions(options):
+    # selectable was removed in tabulator 6 in favour of selectableRows
+    # but we still support it for backwards compatibility
+    if "selectable" in options:
+        options["selectableRows"] = options["selectable"]
+        del options["selectable"]
+    return options
+
+
 def _merge(default, properties, **overrides):
     merged = overrides
     for key, val in default.items():

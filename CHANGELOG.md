@@ -394,7 +394,7 @@ This is most useful if you have multiple Tabulator components and don't want to 
 The default `default_options` are:
 
 ```python
-Tabulator.default_options = {"layout": "fitColumns", "selectable": False}
+Tabulator.default_options = {"layout": "fitColumns"}
 ```
 *(as well as all the JS Tabulator default options)*
 
