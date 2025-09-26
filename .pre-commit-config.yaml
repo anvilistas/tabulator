@@ -4,7 +4,9 @@ repos:
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer
+        exclude: ".*/assets/tabulator-tables/.*"
     -   id: trailing-whitespace
+        exclude: ".*/assets/tabulator-tables/.*"
   - repo: https://github.com/psf/black
     rev: 24.8.0 # Replace by any tag/version: https://github.com/psf/black/tags
     hooks:

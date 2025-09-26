@@ -22,6 +22,7 @@ from ._helpers import (
     _ignore_resize_observer_error,
     _inject_theme,
     _merge,
+    _normalizeOptions,
     _options_property,
     _spacing_property,
     _to_module,
@@ -133,6 +134,7 @@ class Tabulator(TabulatorTemplate):
         logger.debug(f"Options: {self.options}")
 
         options = _camelKeys(self._options) | _camelKeys(self.options)
+        options = _normalizeOptions(options)
         options["columns"] = [_camelKeys(defn) for defn in options["columns"]]
         options["columnDefaults"] = _camelKeys(options["columnDefaults"])
         if in_designer and type(self) is Tabulator:
@@ -154,10 +156,9 @@ class Tabulator(TabulatorTemplate):
         # if we're using the rowSelection make sure things are selectable
         if (
             any(col.get("formatter") == "rowSelection" for col in options["columns"])
-            and options.get("selectable") is None
-            and Tabulator.default_options.get("selectable") is False
+            and options.get("selectableRows") is None
         ):
-            options["selectable"] = "highlight"
+            options["selectableRows"] = "highlight"
 
         t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
