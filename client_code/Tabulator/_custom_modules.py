@@ -4,13 +4,12 @@ from functools import partial
 
 from anvil import Component
 from anvil.js import get_dom_node, report_exceptions
-from anvil.js.window import Function, document, window
+from anvil.js.window import Function, document, window, ResizeObserver
 
 from ._helpers import assert_no_suspension
 from ._module_helpers import AbstractModule, tabulator_module
 
 JsProxy = type(document)
-
 
 @tabulator_module("cssClassAdder")
 class CssClassAdder(AbstractModule):
@@ -44,8 +43,19 @@ class ComponentFormatter(AbstractModule):
         cell.modules.anvilComponent = component
         if component.visible:
             component.visible = None
+        domNode = get_dom_node(component)
+        def on_resize(*args):
+            cell.checkHeight()
+        observer = ResizeObserver(on_resize)
+        def page_added(**args):
+            observer.observe(domNode)
+        def page_removed(**args):
+            observer.disconnect()
+        observer.observe(domNode)
+        component.add_event_handler("x-anvil-page-added", page_added)
+        component.add_event_handler("x-page-removed", page_removed)
         self.table.anvil_form.add_component(component)
-        return get_dom_node(component)
+        return domNode
 
     def cell_render(self, cell):
         component = cell.modules.get("anvilComponent")
