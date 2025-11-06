@@ -156,6 +156,7 @@ class CustomDataLoader(AbstractModule):
         mod.registerTableOption("useModel", False)
         mod.registerTableOption("loadingIndicator", True)
         mod.registerTableOption("mutator", None)
+        mod.registerTableOption("customSortKeys", {})
         mod.registerTableFunction("clearAppTableCache", self.reset_cache)
         mod.registerTableFunction("getTableRows", self.get_py_sources)
         mod.registerTableFunction("getModels", self.get_py_sources)
@@ -249,12 +250,12 @@ class CustomDataLoader(AbstractModule):
 
     def get_ordering_excluding_custom(self, params):
         sort = params.get("sort") or ()
-        custom_sort_keys = self.table.options.get("custom_sort_keys", {})
+        custom_sort_keys = self.table.options.get("customSortKeys", {})
         db_sorts = [s for s in sort if s.field not in custom_sort_keys]
         return tuple(order_by(s.field, s.dir == "asc") for s in db_sorts)
 
     def has_custom_sort(self, params):
-        custom_sort_keys = self.table.options.get("custom_sort_keys", {})
+        custom_sort_keys = self.table.options.get("customSortKeys", {})
         if not custom_sort_keys:
             return False
         sort = params.get("sort") or ()
@@ -262,7 +263,7 @@ class CustomDataLoader(AbstractModule):
 
     def apply_custom_sort(self, py_sources, params):
         sort = params.get("sort") or ()
-        custom_sort_keys = self.table.options.get("custom_sort_keys", {})
+        custom_sort_keys = self.table.options.get("customSortKeys", {})
 
         custom_sorts = []
         for s in sort:
