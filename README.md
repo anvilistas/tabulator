@@ -27,8 +27,7 @@ The documentation below should be read in conjunction with the [JS Tabulator doc
 - [Modules](#modules)
 - [Themes](#themes)
 - [Default Options](#default-options)
-- [App Tables](#app-tables)
-- [Using Models](#using-models)
+- [Working with Data Sources](#working-with-data-sources)
 
 ---
 
@@ -629,54 +628,84 @@ e.g. setting `Tabulator.default_options["header_visible"] = False` will have no 
 
 ---
 
-### App Tables
+### Working with Data Sources
 
-Anvil Tabulator provides an API for working with anvil `app_tables`
-When working with `app_tables` your table should have a unique id column.
-Set Tabulator's `index` property to the unique id column name.
-Note Tabulator expects each data object to have an `index` key in order work with the data effectively.
-If you don't have a unique id column then Tabulator will fallback to using the row id as the `index`.
+Anvil Tabulator provides flexible APIs for working with different data sources. This section covers:
 
-To get started, instead of setting the `self.tabulator.data` attribute, provide the tabulator component with an `app_table` in the options.
+- Simple list data (dicts)
+- Anvil App Tables with remote loading
+- Model/class-based data
+- Combining models with App Tables
+
+#### Basic Data: Lists of Dictionaries
+
+The simplest way to use Tabulator is with a list of dictionaries:
 
 ```python
-    self.tabulator.options = {
-        "app_table": app_tables.my_table,
-        "data_loader": False, # display JS Tabulators 'loading' component
-        "loading_indicator": False # defaults to True - whether to use the anvil spinner during page loading
-    }
+self.tabulator.data = [
+    {"id": 1, "name": "Alice", "age": 30},
+    {"id": 2, "name": "Bob", "age": 25},
+]
+self.tabulator.columns = [
+    {"title": "Name", "field": "name"},
+    {"title": "Age", "field": "age"},
+]
 ```
+
+That's it! No additional configuration required for basic usage.
+
+---
+
+#### Working with App Tables
+
+Anvil Tabulator provides an API for working with Anvil `app_tables` with remote data loading, pagination, and filtering.
+
+**Basic Setup**
+
+**Your table should have a unique ID column.** Set Tabulator's `index` property to specify which column to use as the unique identifier:
+
+```python
+self.tabulator.options = {
+    "app_table": app_tables.my_table,
+    "index": "uid",  # Required: your unique ID column name
+    "data_loader": False,  # Display JS Tabulator's 'loading' component
+    "loading_indicator": True,  # Use Anvil spinner during page loading (default)
+}
+```
+
+Tabulator expects each data object to have an `index` key to work with the data effectively. If you don't have a unique ID column, Tabulator will fall back to using the row ID.
 
 _You may want to make a server call to retrieve a `client_readable` view of an `app_table`_
 
-If an `app_table` option is provided the data will be retrieved by calling `.search()`.
-The search will be adjusted depending on the header sorting.
+When an `app_table` option is provided, data is retrieved by calling `.search()` with sorting applied automatically based on header clicks.
 
-Other options that work will with the `app_table` option:
+**Progressive Loading and Pagination**
+
+For large datasets, use progressive loading:
 
 ```python
-    self.tabulator.options = {
-        "app_table": app_tables.my_table,
-        "height" 400,
-        "pagination": False,
-        "progressive_load": "load", # enable progressive loading
-        "progressive_load_delay": 200, # wait 200 milliseconds between each request
-    }
+# Option 1: Load mode - fetch new pages as needed
+self.tabulator.options = {
+    "app_table": app_tables.my_table,
+    "height": 400,
+    "pagination": False,
+    "progressive_load": "load",
+    "progressive_load_delay": 200,  # ms between requests
+}
 
-    # OR
-
-    self.tabulator.options = {
-        "app_table": app_tables.my_table,
-        "height" 400,
-        "pagination": False,
-        "progressive_load": "scroll", # load data into the table as the user scrolls
-        "progressive_load_scroll_margin": 300, # trigger next data request when scroll bar is 300px or less from the bottom of the table
-    }
-
+# Option 2: Scroll mode - load as user scrolls
+self.tabulator.options = {
+    "app_table": app_tables.my_table,
+    "height": 400,
+    "pagination": False,
+    "progressive_load": "scroll",
+    "progressive_load_scroll_margin": 300,  # px from bottom to trigger load
+}
 ```
 
-It is also possible to set queries on the data, similar to JS Tabulator's `set_filter()` method.
-Instead use `set_query()`. Any valid query using Anvil's query API will be supported.
+**Queries and Filtering**
+
+Use `set_query()` to filter data (similar to JS Tabulator's `set_filter()` but for app_tables):
 
 ```python
 import anvil.tables.query as q
@@ -687,122 +716,262 @@ def text_box_1_change(self, **event_args):
         self.tabulator.clear_query()
     else:
         self.tabulator.set_query(name=q.ilike(f"%{name}%"))
-
 ```
 
-**Retrieving app_table rows**
+Any valid Anvil query API syntax is supported.
 
-If you want to retrieve an app_table row from the a tabulator event, use the `.get_table_row()` or `.get_table_rows()` method.
+**Retrieving App Table Rows**
+
+In event handlers, use `.get_table_row()` or `.get_table_rows()` to access the original app_table rows:
 
 ```python
 def tabulator_row_click(self, row, **event_args):
-    # row is a tabulator row_component
-    # row.get_data() returns a javascript wrapped data object - probably not what you want
+    # row is a tabulator row component
+    # row.get_data() returns a JavaScript-wrapped data object
     data = row.get_data()
+
     # row.get_table_row() returns the original anvil app_table row 😃
     table_row = row.get_table_row()
 
 def tabulator_cell_edited(self, cell, **event_args):
-    cell = cell.get_table_row() # also possible
+    table_row = cell.get_table_row()  # Also works on cells
 
 def select_visible(self):
-    # returns a list of app_table rows that are visible
-    self.tabulator.get_table_rows("visible")
+    # Returns a list of app_table rows that are visible
+    visible_rows = self.tabulator.get_table_rows("visible")
 ```
 
-All queries and searches are cached. If you need to reload/refresh the data in the tabulator component,
-you can call `self.tabulator.replace_data()` or `self.tabulator.set_data()`.
-This will create a fresh call to `search()` on the `app_table`, effectively clearing any cached values.
-You can stay on the same page by surrounding the call with `x = self.tabulator.get_page()` and `self.tabulator.set_page(x)`.
+**Refreshing Data**
 
-**Row Selection Column with `app_table` option**
-
-Using the `row_selection_column` does **not** work well with the `app_table` option.
-If you want to use the `row_selection_column` with the `app_table` option it's best to
-set the `progress_load` option to `"load"` and set `pagination` to `False`.
-
-**Row cache**
-
-For performance reasons rows and data are cached when using the `app_table` option.
-If you update a table row or add a new row, you may need to clear Tabulator's cache.
-You can do this with `self.tabulator.clear_app_table_cache()`.
-After calling this method you will probably want to call `self.tabulator.replace_data()`.
-
-**Row Mutation**
-
-You can mutate a row from an app table to a different object by passing a callable to
-the `mutator` option. This callable should take a data tables row as its single argument
-and return whatever object you would like to use in the tabulator in its place.
-
-For example, if you were using the `Book` class from the example for the Anvil Extras
-persistence module, you might do the following:
+All queries and searches are cached. To reload/refresh data:
 
 ```python
-
-from anvil_extras.persistence import persisted_class
-
-
-@persisted_class
-class Book:
-    key = "title"
-
-
-self.tabulator.options = {
-    "app_table": app_tables.books,
-    "mutator": Book,
-    "index": "title",
-    "getter": getattr,
-}
-
+# Refresh and stay on current page
+current_page = self.tabulator.get_page()
+self.tabulator.replace_data()  # or self.tabulator.set_data()
+self.tabulator.set_page(current_page)
 ```
 
-### Using Models
+This creates a fresh call to `search()` on the `app_table`, clearing cached values.
 
-Anvil Tabulator provides an API for working with a list of models as opposed to a list of dicts.
+**Row Cache Management**
 
-Define the model that represents your data structure
+For performance, rows and data are cached when using the `app_table` option. If you update a table row or add a new row, clear the cache:
+
+```python
+self.tabulator.clear_app_table_cache()
+self.tabulator.replace_data()  # Reload with fresh data
+```
+
+**Row Selection Column with App Tables**
+
+Using the `row_selection_column` does **not** work well with the `app_table` option unless you use:
+
+```python
+self.tabulator.options = {
+    "app_table": app_tables.my_table,
+    "progressive_load": "load",
+    "pagination": False,
+}
+```
+
+---
+
+#### Working with Models
+
+Instead of dictionaries, you can use custom classes (models) to represent your data.
+
+**Defining Models**
+
+Define a model class that represents your data structure:
 
 ```python
 class Author:
-    def __init__(self, uid, name):
+    def __init__(self, uid, name, birth_year):
         self.uid = uid
         self.name = name
+        self.birth_year = birth_year
 
+    @property
+    def age(self):
+        from datetime import datetime
+        return datetime.now().year - self.birth_year
 ```
 
-Add the following code, and set the `index` property in the designer to `uid` or in the `self.tabulator.options`.
-(You must have a unique id property for each model instance)
+**Setup for Model Data**
 
 ```python
-    self.tabulator.columns = [{"title":"Name", "field":"name"}]
-    self.tabulator.options = {
-        "index": "uid", # or set the index property here
-        "use_model": True,
-        "getter": getattr,
-    }
-    self.data = my_list_of_authors
+self.tabulator.columns = [
+    {"title": "Name", "field": "name"},
+    {"title": "Age", "field": "age"},
+]
+self.tabulator.options = {
+    "index": "uid",  # Required: unique identifier field
+    "use_model": True,
+    "getter": getattr,  # Use getattr instead of dict access
+}
+self.tabulator.data = my_list_of_authors
 ```
 
-By default the `getter` is set to `operator.getitem` i.e. it expects a dictionary.
-For this model class, the data is generated by getting the name attribute on each Author instance,
-and so changing the `getter` to the function `getattr()` is necessary.
+**Why `getter: getattr`?**
 
-All data sources must have a unique identifier. The field used as the unique identifier is set
-by the `tabulator.index` property - this defaults to `"id"`. This can be changed in the design view or in the tabulator options.
+By default, Tabulator uses `operator.getitem` (dictionary access: `data["field"]`). For model classes with attributes, change the getter to `getattr()` so it uses `data.field` instead.
 
-If you want to retrieve the original models from tabulator events you can use the `get_model()` or `get_models()` methods.
+**Retrieving Models from Events**
+
+Use `get_model()` or `get_models()` to access the original model instances:
 
 ```python
 def tabulator_row_click(self, row, **event_args):
-    # row is a tabulator row_component
-    model = row.get_model()
-    # the model associated with the tabulator row
+    # row is a tabulator row component
+    model = row.get_model()  # Returns the Author instance
+    print(f"Clicked: {model.name}, age {model.age}")
 
 def tabulator_cell_edited(self, cell, **event_args):
     model = cell.get_model()
 
 def select_visible(self):
-    self.tabulator.get_models("visible") # returns a list of models that are visible
+    # Returns a list of model instances that are visible
+    visible_models = self.tabulator.get_models("visible")
+```
+
+---
+
+#### Combining Models with App Tables
+
+When using `app_table` data sources, rows may be instances of model classes rather than plain data tables rows. These models can have computed properties or methods that don't exist as columns in the underlying database.
+
+There are two ways to work with models and app_tables:
+
+**1. Anvil Model Classes** (Recommended for Anvil Data Tables)
+
+If your Data Table has a [model class defined](https://anvil.works/docs/data-tables/model-classes), rows from a `client_readable` view are automatically instances of that model class:
+
+```python
+# Server-side: model class is defined for app_tables.books
+@tables.model_class('books')
+class Book:
+    @property
+    def display_name(self):
+        return f"{self.title} by {self.author}"
+
+    @property
+    def is_recent(self):
+        return (datetime.now() - self.published_date).days < 365
+
+# Client-side: rows are already Book instances
+books_view = anvil.server.call('get_books_view')  # Returns client_readable view
+
+self.tabulator.options = {
+    "app_table": books_view,
+    "index": "isbn",
+    # No mutator needed - rows are already Book instances
+    # No use_model needed - only for standalone lists
+}
+```
+
+**2. Custom Classes with Mutator** (For other class types)
+
+For custom classes (like `anvil_extras.persistence` or your own classes), use the `mutator` option to transform each row:
+
+```python
+from anvil_extras.persistence import persisted_class
+
+@persisted_class
+class Book:
+    key = "title"
+
+    @property
+    def display_name(self):
+        return f"{self.title} by {self.author}"
+
+self.tabulator.options = {
+    "app_table": app_tables.books,
+    "mutator": Book,  # Transform each row into a Book instance
+    "index": "title",
+    "getter": getattr,
+}
+```
+
+**Sorting Considerations for Both Scenarios**
+
+When using `app_table`, sorting normally happens on the remote database. This is efficient for large datasets because only the requested page is fetched.
+
+However, **computed properties** (like `Book.display_name` or `Book.is_recent` above) don't exist as database columns, so remote sorting isn't possible for these fields.
+
+**Custom Sort Keys**
+
+Use the `custom_sort_keys` option to define client-side sort functions for computed properties:
+
+```python
+# Works with both Anvil model classes AND custom classes
+self.tabulator.options = {
+    "app_table": books_view,  # or app_tables.books with mutator
+    "index": "isbn",
+    "custom_sort_keys": {
+        "display_name": lambda book: book.display_name,
+        "is_recent": lambda book: book.is_recent,
+        "priority": lambda book: book.calculate_priority(),
+    }
+}
+
+self.tabulator.columns = [
+    {"title": "ISBN", "field": "isbn", "sorter": True},  # Remote sort (DB column)
+    {"title": "Title", "field": "title", "sorter": True},  # Remote sort (DB column)
+    {"title": "Display", "field": "display_name", "sorter": True},  # Custom sort
+    {"title": "Recent", "field": "is_recent", "sorter": True},  # Custom sort
+]
+```
+
+**How Custom Sort Keys Work**
+
+When a user sorts by a field listed in `custom_sort_keys`:
+
+1. **All matching data** is fetched from the remote source (respecting any filters/queries)
+2. The custom sort function is applied **client-side** in Python
+3. Results are sorted and paginated
+4. The requested page is displayed
+
+**Important Trade-offs**
+
+⚠️ **Performance Implications:**
+
+- Custom sorting requires fetching **all matching rows**, not just one page
+- Sorting happens in Python on the client
+- Lazy loading benefits are lost when sorting by custom keys
+- Performance depends on total dataset size, not page size
+
+💡 **Best Practices:**
+
+- Use remote sorting (database columns) whenever possible for large datasets
+- Reserve `custom_sort_keys` for computed properties that can't be database columns
+- Consider adding frequently-sorted computed values as actual database columns if possible
+- Use `progressive_load: "load"` for better UX during the initial data fetch
+- Be mindful of dataset size - works well for hundreds of rows, may struggle with thousands
+
+**Multiple Sort Keys**
+
+Sorts are applied in the order specified by the user:
+
+```python
+"custom_sort_keys": {
+    "priority": lambda item: item.calculate_priority(),
+    "status": lambda item: item.status_order(),
+}
+```
+
+If sorting by `[{"field": "priority", "dir": "asc"}, {"field": "status", "dir": "desc"}]`, items are first sorted by priority (ascending), then by status (descending) for ties.
+
+**Mixing Remote and Custom Sorts**
+
+You can mix remote (database) and custom sorts in the same table. The UX is seamless - users don't see the difference:
+
+```python
+self.tabulator.columns = [
+    {"title": "Title", "field": "title", "sorter": True},  # Remote: efficient
+    {"title": "Author", "field": "author", "sorter": True},  # Remote: efficient
+    {"title": "Display", "field": "display_name", "sorter": True},  # Custom: fetches all data
+]
 ```
 
 ## Debug Logging

@@ -156,6 +156,7 @@ class CustomDataLoader(AbstractModule):
         mod.registerTableOption("useModel", False)
         mod.registerTableOption("loadingIndicator", True)
         mod.registerTableOption("mutator", None)
+        mod.registerTableOption("customSortKeys", {})
         mod.registerTableFunction("clearAppTableCache", self.reset_cache)
         mod.registerTableFunction("getTableRows", self.get_py_sources)
         mod.registerTableFunction("getModels", self.get_py_sources)
@@ -247,6 +248,34 @@ class CustomDataLoader(AbstractModule):
         sort = params.get("sort") or ()
         return tuple(order_by(s.field, s.dir == "asc") for s in sort)
 
+    def get_ordering_excluding_custom(self, params):
+        sort = params.get("sort") or ()
+        custom_sort_keys = self.table.options.get("customSortKeys", {})
+        db_sorts = [s for s in sort if s.field not in custom_sort_keys]
+        return tuple(order_by(s.field, s.dir == "asc") for s in db_sorts)
+
+    def has_custom_sort(self, params):
+        custom_sort_keys = self.table.options.get("customSortKeys", {})
+        if not custom_sort_keys:
+            return False
+        sort = params.get("sort") or ()
+        return any(s.field in custom_sort_keys for s in sort)
+
+    def apply_custom_sort(self, py_sources, params):
+        sort = params.get("sort") or ()
+        custom_sort_keys = self.table.options.get("customSortKeys", {})
+
+        custom_sorts = []
+        for s in sort:
+            if s.field in custom_sort_keys:
+                custom_sorts.append((s.field, s.dir, custom_sort_keys[s.field]))
+
+        for field, direction, key_func in reversed(custom_sorts):
+            reverse = direction == "desc"
+            py_sources.sort(key=key_func, reverse=reverse)
+
+        return py_sources
+
     def db_data_check(self, data, params, config, silent):
         return self.db is not None
 
@@ -293,12 +322,40 @@ class CustomDataLoader(AbstractModule):
 
     @report_exceptions
     def request_db_data(self, data, params, config, silent, prev):
-        ordering = self.get_ordering(params)
         query = params["query"]
         scrollLeft = self.table.rowManager.scrollLeft
-        with self.context:
-            iter_ = self.get_search_iter(ordering, query)
-            p = Promise.resolve(iter_.get_remote_data(params["page"], params["size"]))
+
+        if self.has_custom_sort(params):
+            with self.context:
+                ordering = self.get_ordering_excluding_custom(params)
+                iter_ = self.get_search_iter(ordering, query)
+                all_data_list = iter_.get_all_data()
+
+                py_sources = [
+                    self.id_cache[item[self.id_field]] for item in all_data_list
+                ]
+                py_sources = self.apply_custom_sort(py_sources, params)
+                sorted_data = [
+                    self.data_cache[self.index_getter(pysource, self.id_field)]
+                    for pysource in py_sources
+                ]
+
+                page = params["page"]
+                size = params["size"]
+                start_idx = (page - 1) * size
+                end_idx = start_idx + size
+                paginated_data = sorted_data[start_idx:end_idx]
+                last_page = ceil(len(sorted_data) / size)
+
+                p = Promise.resolve({"data": paginated_data, "last_page": last_page})
+        else:
+            ordering = self.get_ordering(params)
+            with self.context:
+                iter_ = self.get_search_iter(ordering, query)
+                p = Promise.resolve(
+                    iter_.get_remote_data(params["page"], params["size"])
+                )
+
         setTimeout(lambda: self.table.rowManager.scrollHorizontal(scrollLeft))
         return p
 
