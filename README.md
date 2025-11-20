@@ -404,6 +404,10 @@ self.tabulator.columns = [
 
 ```
 
+
+_NB: To turn off a sorter for a particular column set the `"header_sort"` to `False`._
+
+
 **Custom Filters**
 
 In JS Tabulator
