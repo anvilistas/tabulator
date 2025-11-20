@@ -170,3 +170,33 @@ Module.prototype.registerTableFunction = function (name, func) {
 
 """,
 )(TabulatorModule.Module)
+
+
+Function(
+    "SortModule",
+    """
+const findSorter = SortModule.prototype.findSorter;
+
+SortModule.prototype.findSorter = function(column) {
+    try {
+        return findSorter.call(this, column);
+    } catch (error) {
+        var row = this.table.rowManager.activeRows[0],
+            field, value;
+
+        if(row){
+            row = row.getData();
+            field = column.getField();
+
+            if(field){
+                value = column.getFieldValue(row);
+                throw new TypeError(`Cannot determine sorter type for column "${field}": value is not a string, number, boolean, or undefined. Got type: ${typeof value}.
+You probably need to set a custom sorter function for this column.`);
+            }
+        }
+        throw error;
+    }
+};
+
+""",
+)(TabulatorModule.SortModule)
