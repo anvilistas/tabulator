@@ -9,6 +9,7 @@ from anvil.js import report_exceptions
 from anvil.js.window import Object, Promise, setTimeout
 from anvil.server import no_loading_indicator
 from anvil.tables import TableError, order_by
+from anvil.tables import query as q
 
 from ._module_helpers import AbstractModule, tabulator_module
 
@@ -157,6 +158,7 @@ class CustomDataLoader(AbstractModule):
         mod.registerTableOption("loadingIndicator", True)
         mod.registerTableOption("mutator", None)
         mod.registerTableOption("customSortKeys", {})
+        mod.registerTableOption("queryPageSize", None)
         mod.registerTableFunction("clearAppTableCache", self.reset_cache)
         mod.registerTableFunction("getTableRows", self.get_py_sources)
         mod.registerTableFunction("getModels", self.get_py_sources)
@@ -183,6 +185,7 @@ class CustomDataLoader(AbstractModule):
             msg = f"Expected a table as the tabulator 'app_table' options, got {type(db).__name__}"
             raise TypeError(msg)
         self.db = db
+        self.page_size = options.get("queryPageSize")
         options.paginationMode = "remote"
         options.sortMode = "remote"
         options.filterMode = "remote"
@@ -239,7 +242,8 @@ class CustomDataLoader(AbstractModule):
 
     @lru_cache
     def get_search_iter(self, ordering, query):
-        search = self.db.search(*ordering, *query.args, **query.kws)
+        page_size_arg = (q.page_size(self.page_size),) if self.page_size else ()
+        search = self.db.search(*page_size_arg, *ordering, *query.args, **query.kws)
         options = self.table.options
         mutator = options.get("mutator")
         return DataIterator(search, self, mutator)
