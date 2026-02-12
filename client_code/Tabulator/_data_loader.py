@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2022 Stu Cork
+from datetime import datetime
 from functools import lru_cache
 from math import ceil
 from operator import getitem
@@ -11,9 +12,14 @@ from anvil.server import no_loading_indicator
 from anvil.tables import TableError, order_by
 from anvil.tables import query as q
 
+from ._logger import logger
 from ._module_helpers import AbstractModule, tabulator_module
 
 JsProxy = type(Promise)
+
+
+def _elapsed_ms(start):
+    return int((datetime.now() - start).total_seconds() * 1000)
 
 
 def fieldgetter(*fields, getter=None):
@@ -111,6 +117,8 @@ class DataIterator:
         self.cache.append(data)
 
     def paginate(self, upto):
+        start = datetime.now()
+        before = len(self.cache)
         try:
             for _ in range(upto):
                 self.cache_next()
@@ -119,8 +127,13 @@ class DataIterator:
                 lambda: self.data_loader.mod.dispatchExternal("appTableDataLoaded")
             )
             pass
+        added = len(self.cache) - before
+        logger.debug(
+            f"paginate target={upto} added={added} cache_size={len(self.cache)} elapsed_ms={_elapsed_ms(start)}"
+        )
 
     def get_remote_data(self, page, size):
+        start = datetime.now()
         last_page = ceil(self.len / size)
 
         current_index = page * size
@@ -130,10 +143,17 @@ class DataIterator:
         self.paginate(current_index - current_size)
 
         data = self.cache[prev_index:current_index]
+        logger.debug(
+            f"remote_data page={page} size={size} rows={len(data)} total={self.len} elapsed_ms={_elapsed_ms(start)}"
+        )
         return {"data": data, "last_page": last_page}
 
     def get_all_data(self):
+        start = datetime.now()
         self.paginate(self.len)
+        logger.debug(
+            f"all_data rows={len(self.cache)} total={self.len} elapsed_ms={_elapsed_ms(start)}"
+        )
         return self.cache
 
 
@@ -191,6 +211,9 @@ class CustomDataLoader(AbstractModule):
         options.filterMode = "remote"
         self.mod.subscribe("data-loading", self.db_data_check)
         self.mod.subscribe("data-load", self.request_db_data)
+        logger.debug(
+            "initialized db-backed data loader (remote pagination/sort/filter)"
+        )
         if options.get("loadingIndicator"):
             self.context = loading_indicator
         else:
@@ -205,6 +228,7 @@ class CustomDataLoader(AbstractModule):
         self.mod.subscribe("data-loading", self.model_data_check)
         self.mod.subscribe("data-load", self.request_model_data)
         self.mod.subscribe("row-data-init-before", self.init_model_data)
+        logger.debug("initialized model-backed data loader")
 
     @report_exceptions
     def initialize(self):
@@ -239,9 +263,13 @@ class CustomDataLoader(AbstractModule):
         self.get_search_iter.cache_clear()
         self.id_cache.clear()
         self.data_cache.clear()
+        logger.debug("cleared app table caches")
 
     @lru_cache
     def get_search_iter(self, ordering, query):
+        logger.debug(
+            f"search cache miss ordering={ordering!r} query_args={query.args!r} query_kws={query.kws!r} page_size={self.page_size!r}"
+        )
         page_size_arg = (q.page_size(self.page_size),) if self.page_size else ()
         search = self.db.search(*page_size_arg, *ordering, *query.args, **query.kws)
         options = self.table.options
@@ -322,14 +350,22 @@ class CustomDataLoader(AbstractModule):
 
     @report_exceptions
     def request_model_data(self, data, params, config, silent, prev):
-        return Promise.resolve(DataIterator(data, self).get_all_data())
+        start = datetime.now()
+        rv = DataIterator(data, self).get_all_data()
+        logger.debug(
+            f"model_data_request rows={len(rv)} elapsed_ms={_elapsed_ms(start)}"
+        )
+        return Promise.resolve(rv)
 
     @report_exceptions
     def request_db_data(self, data, params, config, silent, prev):
+        start = datetime.now()
         query = params["query"]
         scrollLeft = self.table.rowManager.scrollLeft
+        cache_before = self.get_search_iter.cache_info()
+        custom_sort = self.has_custom_sort(params)
 
-        if self.has_custom_sort(params):
+        if custom_sort:
             with self.context:
                 ordering = self.get_ordering_excluding_custom(params)
                 iter_ = self.get_search_iter(ordering, query)
@@ -359,7 +395,15 @@ class CustomDataLoader(AbstractModule):
                 p = Promise.resolve(
                     iter_.get_remote_data(params["page"], params["size"])
                 )
-
+        cache_after = self.get_search_iter.cache_info()
+        cache_state = "hit" if cache_after.hits > cache_before.hits else "miss"
+        logger.debug(
+            "db_data_request "
+            f"page={params['page']} size={params['size']} cache={cache_state} "
+            f"custom_sort={custom_sort} query_page_size={self.page_size!r} "
+            f"query_args={query.args!r} query_kws={query.kws!r} "
+            f"elapsed_ms={_elapsed_ms(start)}"
+        )
         setTimeout(lambda: self.table.rowManager.scrollHorizontal(scrollLeft))
         return p
 
@@ -404,6 +448,9 @@ class Query:
         if type(other) is not Query:
             return NotImplemented
         return self.args == other.args and self.kws == other.kws
+
+    def __repr__(self):
+        return f"Query(args={self.args!r}, kws={self.kws!r})"
 
 
 EMPTY_QUERY = Query()
