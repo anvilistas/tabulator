@@ -179,7 +179,7 @@ class CustomDataLoader(AbstractModule):
         mod.registerTableOption("mutator", None)
         mod.registerTableOption("customSortKeys", {})
         mod.registerTableOption("queryPageSize", None)
-        mod.registerTableOption("initialData", None)
+        mod.registerTableOption("initialPageData", None)
         mod.registerTableFunction("clearAppTableCache", self.reset_cache)
         mod.registerTableFunction("getTableRows", self.get_py_sources)
         mod.registerTableFunction("getModels", self.get_py_sources)
