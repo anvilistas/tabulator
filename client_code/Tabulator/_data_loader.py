@@ -179,6 +179,7 @@ class CustomDataLoader(AbstractModule):
         mod.registerTableOption("mutator", None)
         mod.registerTableOption("customSortKeys", {})
         mod.registerTableOption("queryPageSize", None)
+        mod.registerTableOption("initialPageData", None)
         mod.registerTableFunction("clearAppTableCache", self.reset_cache)
         mod.registerTableFunction("getTableRows", self.get_py_sources)
         mod.registerTableFunction("getModels", self.get_py_sources)
@@ -218,6 +219,7 @@ class CustomDataLoader(AbstractModule):
             self.context = loading_indicator
         else:
             self.context = no_loading_indicator
+        self._initial_page_data = options.get("initialPageData")
 
     def initialize_model(self, options):
         modes = ("paginationMode", "filterMode", "sortMode")
@@ -359,6 +361,15 @@ class CustomDataLoader(AbstractModule):
 
     @report_exceptions
     def request_db_data(self, data, params, config, silent, prev):
+        if self._initial_page_data is not None:
+            initial = self._initial_page_data
+            self._initial_page_data = None
+            logger.debug("request_db_data: using initialPageData")
+            processed = DataIterator(initial["data"], self).get_all_data()
+            return Promise.resolve(
+                {"data": processed, "last_page": initial["last_page"]}
+            )
+        logger.debug(f"request_db_data: server fetch page={params.get('page')}")
         start = datetime.now()
         query = params["query"]
         scrollLeft = self.table.rowManager.scrollLeft
