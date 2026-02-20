@@ -219,7 +219,7 @@ class CustomDataLoader(AbstractModule):
             self.context = loading_indicator
         else:
             self.context = no_loading_indicator
-        self._initial_data = options.get("initialData")
+        self._initial_page_data = options.get("initialPageData")
 
     def initialize_model(self, options):
         modes = ("paginationMode", "filterMode", "sortMode")
@@ -361,10 +361,10 @@ class CustomDataLoader(AbstractModule):
 
     @report_exceptions
     def request_db_data(self, data, params, config, silent, prev):
-        if self._initial_data is not None:
-            initial = self._initial_data
-            self._initial_data = None
-            logger.debug("request_db_data: using initialData")
+        if self._initial_page_data is not None:
+            initial = self._initial_page_data
+            self._initial_page_data = None
+            logger.debug("request_db_data: using initialPageData")
             processed = DataIterator(initial["data"], self).get_all_data()
             return Promise.resolve(
                 {"data": processed, "last_page": initial["last_page"]}
