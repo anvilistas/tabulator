@@ -61,8 +61,9 @@ _error_to_field = {KeyError: "key", AttributeError: "attribute", TableError: "co
 
 class DataIterator:
     def __init__(self, data_source, data_loader, mutator=None):
+        self._data_source = data_source
         self.iter = iter(data_source)
-        self.len = len(data_source)
+        self._len = None
         self.cache = []
         self.id_field = data_loader.id_field
         self.id_cache = data_loader.id_cache
@@ -73,6 +74,12 @@ class DataIterator:
         self.mutator = mutator
         if self.data_loader.data_initialized:
             self.get_index = self.index_getter
+
+    @property
+    def len(self):
+        if self._len is None:
+            self._len = len(self._data_source)
+        return self._len
 
     def to_dict(self, row):
         as_dict = {}
