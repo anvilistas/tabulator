@@ -175,6 +175,19 @@ def tabulator_table_built(self, **event_args):
 The exception to this is the `self.tabulator.on()` and `self.tabulator.off()` method.
 These can be called before the tabulator is built.
 
+Some wrapper properties are also safe to assign before or after the table is built:
+
+- `self.tabulator.data`
+- `self.tabulator.columns`
+- `self.tabulator.pagination_size`
+
+Before build these become part of the initial table definition.
+After build they update the live table using the corresponding Tabulator APIs.
+
+Other option-style properties should be treated as initialization-time configuration.
+For example, values such as `pagination`, `layout`, `header_visible`, `column_defaults`, `auto_columns`, and `index`
+should generally be set before the table is built.
+
 You can check whether a tabulator instance has been built using the `self.tabulator.initialized` property.
 
 ---
@@ -190,6 +203,8 @@ You can always use camelCase but if you prefer to use snake case it is supported
 - keys in the tabulator `options` definition
 - keys in the tabulator `column` definition
 - keys in the tabulator `column_defaults` definition
+
+This includes column definitions assigned either before or after the `table_built` event.
 
 Snake case is not supported for any values in a definition.
 

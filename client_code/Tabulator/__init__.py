@@ -22,6 +22,7 @@ from ._helpers import (
     _ignore_resize_observer_error,
     _inject_theme,
     _merge,
+    _normalizeColumns,
     _normalizeOptions,
     _options_property,
     _spacing_property,
@@ -135,7 +136,7 @@ class Tabulator(TabulatorTemplate):
 
         options = _camelKeys(self._options) | _camelKeys(self.options)
         options = _normalizeOptions(options)
-        options["columns"] = [_camelKeys(defn) for defn in options["columns"]]
+        options["columns"] = _normalizeColumns(options["columns"])
         options["columnDefaults"] = _camelKeys(options["columnDefaults"])
         if in_designer and type(self) is Tabulator:
             pagination = options.get("pagination")
@@ -216,7 +217,18 @@ class Tabulator(TabulatorTemplate):
         return self._t is not None and self._t.initialized
 
     data = _options_property("data", "getData", "setData")
-    columns = _options_property("columns", None, "setColumns")
+
+    @property
+    def columns(self):
+        return self._options.get("columns")
+
+    @columns.setter
+    def columns(self, value):
+        self._options["columns"] = value
+        if self._t is None:
+            return
+        self._t.setColumns(_normalizeColumns(value))
+
     column_defaults = _options_property("columnDefaults")
     auto_columns = _options_property("autoColumns")
     header_visible = _options_property("headerVisible")
