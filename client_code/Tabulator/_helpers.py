@@ -34,6 +34,10 @@ def _normalizeOptions(options):
     return options
 
 
+def _normalizeColumns(columns):
+    return [_camelKeys(defn) for defn in columns]
+
+
 def _merge(default, properties, **overrides):
     merged = overrides
     for key, val in default.items():
