@@ -415,9 +415,8 @@ def _live_reload_copy(value):
         return {key: _live_reload_copy(item) for key, item in value.items()}
     if type(value) in (list, tuple):
         return [_live_reload_copy(item) for item in value]
-    if type(value) is type(_Promise):
-        if _Array.isArray(value):
-            return [_live_reload_copy(item) for item in value]
-        if _Object.getPrototypeOf(value) == _Object.prototype:
-            return {key: _live_reload_copy(value[key]) for key in _Object.keys(value)}
+    if _Array.isArray(value):
+        return [_live_reload_copy(item) for item in value]
+    if _Object.getPrototypeOf(value) == _Object.prototype:
+        return {key: _live_reload_copy(value[key]) for key in _Object.keys(value)}
     raise TypeError("Tabulator live reload supports only plain local row data")
