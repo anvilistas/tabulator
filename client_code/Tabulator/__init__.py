@@ -2,12 +2,13 @@
 # Copyright (c) 2022 Stu Cork
 
 from anvil import HtmlTemplate as _HtmlTemplate
+from anvil.js import ProxyType as _ProxyType
 from anvil.js import await_promise as _await_promise
 from anvil.js import get_dom_node as _get_dom_node
 from anvil.js import report_exceptions as _report_exceptions
-from anvil.js.window import Array as _Array
 from anvil.js.window import Object as _Object
 from anvil.js.window import Promise as _Promise
+from anvil.js.window import window as _window
 
 from . import _datetime_overrides, _logger
 from ._anvil_designer import TabulatorTemplate
@@ -83,6 +84,7 @@ class Tabulator(TabulatorTemplate):
         logger.debug(f"__init__ called with properties={properties}")
         self._t = None
         self._live_reload_ready = False
+        self._live_reload_initial_data = None
         self._dom_node = dom_node = _get_dom_node(self)
         self._queued = []
         self._handlers = {}
@@ -166,6 +168,20 @@ class Tabulator(TabulatorTemplate):
         ):
             options["selectableRows"] = "highlight"
 
+        # Tabulator mutates native row objects during editing. Snapshot the
+        # constructor's dataset before handing it to JavaScript, in IDE runs
+        # only; published tables do not pay for this extra copy.
+        params = getattr(_window, "anvilParams", None)
+        if params and params.inIDE:
+            try:
+                self._live_reload_initial_data = _live_reload_copy(
+                    options.get("data") or []
+                )
+            except TypeError:
+                # Unsupported initial rows still render normally, but cannot
+                # participate in portable reload state.
+                self._live_reload_initial_data = None
+
         t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
         self._t = t
@@ -234,11 +250,12 @@ class Tabulator(TabulatorTemplate):
     def __anvil_live_reload_state__(self):
         """Experimental runtime snapshot; reading must not change the table."""
         t = self._t
-        if not self._live_reload_ready:
+        if not self._live_reload_ready or self._live_reload_initial_data is None:
             return None
         if not _live_reload_uses_local_data(t):
             return None
         return {
+            "initial_data": self._live_reload_initial_data,
             "data": _live_reload_copy(t.getData()),
             "sorters": [{"column": s.field, "dir": s.dir} for s in t.getSorters()],
             "selected": [
@@ -269,12 +286,19 @@ class Tabulator(TabulatorTemplate):
         # Its loader owns that data; never replace it with the old local rows.
         if not _live_reload_uses_local_data(t):
             return
-        _await_promise(t.setData(state["data"]))
+        # New constructor data takes effect. Only retain edited rows while the
+        # constructor's dataset is unchanged, as with a column/title edit.
+        if (
+            self._live_reload_initial_data is not None
+            and self._live_reload_initial_data == state.get("initial_data")
+        ):
+            _await_promise(t.setData(state["data"]))
         t.setSort(state["sorters"])
         t.deselectRow()
         t.selectRow(state["selected"])
         if state["page"] is not None and t.options.pagination:
-            _await_promise(t.setPage(state["page"]))
+            # Changed constructor data can have fewer pages than the old table.
+            _await_promise(t.setPage(min(state["page"], t.getPageMax())))
 
     def __anvil_live_reload_dispose__(self):
         """Called for retired replacements, never for cached hide/show."""
@@ -430,10 +454,12 @@ def _live_reload_copy(value):
         return value
     if type(value) is dict:
         return {key: _live_reload_copy(item) for key, item in value.items()}
-    if type(value) in (list, tuple):
+    # Native arrays are ProxyList instances, which inherit Python list.
+    if isinstance(value, (list, tuple)):
         return [_live_reload_copy(item) for item in value]
-    if _Array.isArray(value):
-        return [_live_reload_copy(item) for item in value]
-    if _Object.getPrototypeOf(value) == _Object.prototype:
-        return {key: _live_reload_copy(value[key]) for key in _Object.keys(value)}
+    if (
+        isinstance(value, _ProxyType)
+        and _Object.getPrototypeOf(value) == _Object.prototype
+    ):
+        return {key: _live_reload_copy(item) for key, item in dict(value).items()}
     raise TypeError("Tabulator live reload supports only plain local row data")
