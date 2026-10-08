@@ -409,8 +409,10 @@ for method in _methods:
 
 
 def _live_reload_uses_local_data(table):
+    # Ajax is optional in the core build; its getter exists only when registered.
+    get_ajax_url = getattr(table, "getAjaxUrl", None)
     return not (
-        table.getAjaxUrl()
+        (get_ajax_url is not None and get_ajax_url())
         or table.options.get("appTable") is not None
         or table.options.get("useModel")
         or any(
