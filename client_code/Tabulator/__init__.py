@@ -234,10 +234,7 @@ class Tabulator(TabulatorTemplate):
         t = self._t
         if not self._live_reload_ready:
             return None
-        if any(
-            t.options.get(mode) == "remote"
-            for mode in ("paginationMode", "sortMode", "filterMode")
-        ):
+        if not _live_reload_uses_local_data(t):
             return None
         return {
             "data": _live_reload_copy(t.getData()),
@@ -266,6 +263,10 @@ class Tabulator(TabulatorTemplate):
                 t.on("tableBuilt", built)
 
             _await_promise(_Promise(wait_for_build))
+        # A constructor can switch the replacement to a source-backed table.
+        # Its loader owns that data; never replace it with the old local rows.
+        if not _live_reload_uses_local_data(t):
+            return
         _await_promise(t.setData(state["data"]))
         t.setSort(state["sorters"])
         t.deselectRow()
@@ -405,6 +406,18 @@ class Tabulator(TabulatorTemplate):
 
 for method in _methods:
     delattr(Tabulator, method)
+
+
+def _live_reload_uses_local_data(table):
+    return not (
+        table.getAjaxUrl()
+        or table.options.get("appTable") is not None
+        or table.options.get("useModel")
+        or any(
+            table.options.get(mode) == "remote"
+            for mode in ("paginationMode", "sortMode", "filterMode")
+        )
+    )
 
 
 def _live_reload_copy(value):
