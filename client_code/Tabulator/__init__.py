@@ -172,7 +172,7 @@ class Tabulator(TabulatorTemplate):
         # constructor's dataset before handing it to JavaScript, in IDE runs
         # only; published tables do not pay for this extra copy.
         params = getattr(_window, "anvilParams", None)
-        if params and params.inIDE:
+        if params and getattr(params, "inIDE", False):
             try:
                 self._live_reload_initial_data = _live_reload_copy(
                     options.get("data") or []
