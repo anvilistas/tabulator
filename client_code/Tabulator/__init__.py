@@ -2,8 +2,12 @@
 # Copyright (c) 2022 Stu Cork
 
 from anvil import HtmlTemplate as _HtmlTemplate
+from anvil.js import await_promise as _await_promise
 from anvil.js import get_dom_node as _get_dom_node
 from anvil.js import report_exceptions as _report_exceptions
+from anvil.js.window import Array as _Array
+from anvil.js.window import Object as _Object
+from anvil.js.window import Promise as _Promise
 
 from . import _datetime_overrides, _logger
 from ._anvil_designer import TabulatorTemplate
@@ -78,6 +82,7 @@ class Tabulator(TabulatorTemplate):
     def __init__(self, **properties):
         logger.debug(f"__init__ called with properties={properties}")
         self._t = None
+        self._live_reload_ready = False
         self._dom_node = dom_node = _get_dom_node(self)
         self._queued = []
         self._handlers = {}
@@ -164,6 +169,13 @@ class Tabulator(TabulatorTemplate):
         t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
         self._t = t
+        self._live_reload_ready = False
+
+        def live_reload_ready(*args):
+            self._live_reload_ready = True
+            t.off("tableBuilt", live_reload_ready)
+
+        t.on("tableBuilt", live_reload_ready)
         logger.debug("Tabulator initialized")
 
         for meth, event, handler in self._queued:
@@ -215,6 +227,57 @@ class Tabulator(TabulatorTemplate):
     @property
     def initialized(self):
         return self._t is not None and self._t.initialized
+
+    @property
+    def __anvil_live_reload_state__(self):
+        """Experimental runtime snapshot; reading must not change the table."""
+        t = self._t
+        if not self._live_reload_ready:
+            return None
+        if any(
+            t.options.get(mode) == "remote"
+            for mode in ("paginationMode", "sortMode", "filterMode")
+        ):
+            return None
+        return {
+            "data": _live_reload_copy(t.getData()),
+            "sorters": [{"column": s.field, "dir": s.dir} for s in t.getSorters()],
+            "selected": [
+                _live_reload_copy(row.getIndex()) for row in t.getSelectedRows()
+            ],
+            "page": t.getPage() if t.options.pagination else None,
+        }
+
+    @__anvil_live_reload_state__.setter
+    def __anvil_live_reload_state__(self, state):
+        if state is None:
+            return
+        if self._t is None:
+            self.remove_event_handler("show", self._show)
+            self._initialize()
+        t = self._t
+        if not self._live_reload_ready:
+
+            def wait_for_build(resolve, reject):
+                def built(*args):
+                    t.off("tableBuilt", built)
+                    resolve(None)
+
+                t.on("tableBuilt", built)
+
+            _await_promise(_Promise(wait_for_build))
+        _await_promise(t.setData(state["data"]))
+        t.setSort(state["sorters"])
+        t.deselectRow()
+        t.selectRow(state["selected"])
+        if state["page"] is not None and t.options.pagination:
+            _await_promise(t.setPage(state["page"]))
+
+    def __anvil_live_reload_dispose__(self):
+        """Called for retired replacements, never for cached hide/show."""
+        if self._t is not None:
+            self._t.destroy()
+            self._t = None
 
     data = _options_property("data", "getData", "setData")
 
@@ -342,3 +405,19 @@ class Tabulator(TabulatorTemplate):
 
 for method in _methods:
     delattr(Tabulator, method)
+
+
+def _live_reload_copy(value):
+    """Copy supported local row data without retaining JavaScript proxies."""
+    if value is None or type(value) in (str, bool, int, float):
+        return value
+    if type(value) is dict:
+        return {key: _live_reload_copy(item) for key, item in value.items()}
+    if type(value) in (list, tuple):
+        return [_live_reload_copy(item) for item in value]
+    if type(value) is type(_Promise):
+        if _Array.isArray(value):
+            return [_live_reload_copy(item) for item in value]
+        if _Object.getPrototypeOf(value) == _Object.prototype:
+            return {key: _live_reload_copy(value[key]) for key in _Object.keys(value)}
+    raise TypeError("Tabulator live reload supports only plain local row data")
