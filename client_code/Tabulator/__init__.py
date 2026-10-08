@@ -169,6 +169,8 @@ class Tabulator(TabulatorTemplate):
         t = _Tabulator(self._dom_node, options)
         t.anvil_form = self
         self._t = t
+        # Native initialized becomes true before initial data loading completes;
+        # tableBuilt is the point at which a reload snapshot can read the rows.
         self._live_reload_ready = False
 
         def live_reload_ready(*args):
